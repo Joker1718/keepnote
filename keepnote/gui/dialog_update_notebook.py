@@ -49,7 +49,7 @@ MESSAGE_TEXT = _("This notebook has format version %d and must be updated to "
                  "version %d before opening.")
 
 
-class UpdateNoteBookDialog (object):
+class UpdateNoteBookDialog :
     """Updates a notebook"""
 
     def __init__(self, app, main_window):
@@ -139,10 +139,9 @@ class UpdateNoteBookDialog (object):
             def func(task):
                 try:
                     shutil.copytree(notebook_filename, new_filename)
-                except Exception, e:
-                    print >>sys.stderr, e
-                    print >>sys.stderr, "'%s' '%s'" % (notebook_filename,
-                                                       new_filename)
+                except Exception as e:
+                    sys.stderr.write(str(e) + "\n")
+                    sys.stderr.write(f"'{notebook_filename}' '{new_filename}'\n")
                     raise
             task = tasklib.Task(func)
             dialog2 = dialog_wait.WaitDialog(self.dialog)

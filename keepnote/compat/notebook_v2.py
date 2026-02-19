@@ -49,37 +49,37 @@ from keepnote import safefile
 # NOTE: the <?xml ?> header is left off to keep it compatiable with IE,
 # for the time being.
 # constants
-BLANK_NOTE = u"""\
+BLANK_NOTE = """\
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><body></body></html>
 """
 
-XML_HEADER = u"""\
+XML_HEADER = """\
 <?xml version="1.0" encoding="UTF-8"?>
 """
 
 NOTEBOOK_FORMAT_VERSION = 2
 ELEMENT_NODE = 1
-NODE_META_FILE = u"node.xml"
-PAGE_DATA_FILE = u"page.html"
-PLAIN_TEXT_DATA_FILE = u"page.txt"
-PREF_FILE = u"notebook.nbk"
-NOTEBOOK_META_DIR = u"__NOTEBOOK__"
-NOTEBOOK_ICON_DIR = u"icons"
-TRASH_DIR = u"__TRASH__"
-TRASH_NAME = u"Trash"
-DEFAULT_PAGE_NAME = u"New Page"
-DEFAULT_DIR_NAME = u"New Folder"
+NODE_META_FILE = "node.xml"
+PAGE_DATA_FILE = "page.html"
+PLAIN_TEXT_DATA_FILE = "page.txt"
+PREF_FILE = "notebook.nbk"
+NOTEBOOK_META_DIR = "__NOTEBOOK__"
+NOTEBOOK_ICON_DIR = "icons"
+TRASH_DIR = "__TRASH__"
+TRASH_NAME = "Trash"
+DEFAULT_PAGE_NAME = "New Page"
+DEFAULT_DIR_NAME = "New Folder"
 DEFAULT_FONT_FAMILY = "Sans"
 DEFAULT_FONT_SIZE = 10
 DEFAULT_FONT = "%s %d" % (DEFAULT_FONT_FAMILY, DEFAULT_FONT_SIZE)
 
 # content types
-CONTENT_TYPE_PAGE = u"text/xhtml+xml"
+CONTENT_TYPE_PAGE = "text/xhtml+xml"
 #CONTENT_TYPE_PLAIN_TEXT = "text/plain"
-CONTENT_TYPE_TRASH = u"application/x-notebook-trash"
-CONTENT_TYPE_DIR = u"application/x-notebook-dir"
-CONTENT_TYPE_UNKNOWN = u"application/x-notebook-unknown"
+CONTENT_TYPE_TRASH = "application/x-notebook-trash"
+CONTENT_TYPE_DIR = "application/x-notebook-dir"
+CONTENT_TYPE_UNKNOWN = "application/x-notebook-unknown"
 
 NULL = object()
 
@@ -89,26 +89,26 @@ NULL = object()
 #=============================================================================
 # filename creation functions
 
-REGEX_SLASHES = re.compile(ur"[/\\]")
-REGEX_BAD_CHARS = re.compile(ur"[\?'&<>|`:;]")
+REGEX_SLASHES = re.compile(r"[/\\]")
+REGEX_BAD_CHARS = re.compile(r"[\?'&<>|`:;]")
 
-def get_valid_filename(filename, default=u"folder"):
+def get_valid_filename(filename, default="folder"):
     """Converts a filename into a valid one
 
     Strips bad characters from filename
     """
 
-    filename = re.sub(REGEX_SLASHES, u"-", filename)
-    filename = re.sub(REGEX_BAD_CHARS, u"", filename)
-    filename = filename.replace(u"\t", " ")
-    filename = filename.strip(u" \t.")
+    filename = re.sub(REGEX_SLASHES, "-", filename)
+    filename = re.sub(REGEX_BAD_CHARS, "", filename)
+    filename = filename.replace("\t", " ")
+    filename = filename.strip(" \t.")
 
     # don't allow files to start with two underscores
-    if filename.startswith(u"__"):
+    if filename.startswith("__"):
         filename = filename[2:]
 
     # don't allow pure whitespace filenames
-    if filename == u"":
+    if filename == "":
         filename = default
 
     # use only lower case, some filesystems have trouble with mixed case
@@ -117,7 +117,7 @@ def get_valid_filename(filename, default=u"folder"):
     return filename
 
 
-def get_unique_filename(path, filename, ext=u"", sep=u" ", number=2,
+def get_unique_filename(path, filename, ext="", sep=" ", number=2,
                         return_number=False, use_number=False):
     """Returns a unique version of a filename for a given directory"""
 
@@ -145,13 +145,13 @@ def get_unique_filename(path, filename, ext=u"", sep=u" ", number=2,
         i += 1
 
 
-def get_valid_unique_filename(path, filename, ext=u"", sep=u" ", number=2):
+def get_valid_unique_filename(path, filename, ext="", sep=" ", number=2):
     """Returns a valid and unique version of a filename for a given path"""
     return get_unique_filename(path, get_valid_filename(filename),
                                ext, sep, number)
 
 
-def get_unique_filename_list(filenames, filename, ext=u"", sep=u" ", number=2):
+def get_unique_filename_list(filenames, filename, ext="", sep=" ", number=2):
     """Returns a unique filename for a given list of existing files"""
     filenames = set(filenames)
 
@@ -247,9 +247,9 @@ def get_notebook_version(filename):
 
     try:
         g_notebook_pref_parser.read(pref, filename)
-    except IOError, e:
+    except OSError as e:
         raise NoteBookError("Cannot read notebook preferences", e)
-    except xmlo.XmlError, e:
+    except xmlo.XmlError as e:
         raise NoteBookError("Notebook preference data is corrupt", e)
 
     return pref.version
@@ -291,7 +291,7 @@ class NoteBookVersionError (NoteBookError):
 
 # TODO: finish
 
-class NoteBookAttr (object):
+class NoteBookAttr :
     """
     A NoteBookAttr is a metadata attribute that can be associated to
     nodes in a NoteBook.
@@ -329,13 +329,13 @@ class NoteBookAttr (object):
         self.default = default
 
 
-class UnknownAttr (object):
+class UnknownAttr :
     def __init__(self, value):
         self.value = value
 
 
 
-class NoteBookTable (object):
+class NoteBookTable :
     def __init__(self, name, attrs=[]):
         self.name = name
         self.attrs = list(attrs)
@@ -392,7 +392,7 @@ default_notebook_table = NoteBookTable("default", attrs=[title_attr,
 
 
 
-class NoteBookNode (object):
+class NoteBookNode :
     """A general base class for all nodes in a NoteBook"""
 
     def __init__(self, path, title="", parent=None, notebook=None,
@@ -420,7 +420,7 @@ class NoteBookNode (object):
 
         try:
             os.mkdir(path)
-        except OSError, e:
+        except OSError as e:
             raise NoteBookError("Cannot create node", e)
 
         self._attr["created_time"] = get_timestamp()
@@ -597,7 +597,7 @@ class NoteBookNode (object):
 
             try:
                 os.rename(path, path2)
-            except OSError, e:
+            except OSError as e:
                 raise NoteBookError("Do not have permission for move", e)
 
             self._set_basename(path2)
@@ -629,7 +629,7 @@ class NoteBookNode (object):
         path = self.get_path()
         try:
             shutil.rmtree(path)
-        except OSError, e:
+        except OSError as e:
             raise NoteBookError("Do not have permission to delete", e)
 
         self._parent._remove_child(self)
@@ -702,8 +702,8 @@ class NoteBookNode (object):
             self._attr["title"] = title
             self._set_basename(path2)
             self.save(True)
-        except (OSError, NoteBookError), e:
-            raise NoteBookError("Cannot rename '%s' to '%s'" % (path, path2), e)
+        except (OSError, NoteBookError) as e:
+            raise NoteBookError(f"Cannot rename '{path}' to '{path2}'", e)
 
         self.notify_change(False)
 
@@ -737,7 +737,7 @@ class NoteBookNode (object):
 
         try:
             files = os.listdir(path)
-        except OSError, e:
+        except OSError as e:
             raise NoteBookError("Do not have permission to read folder contents", e)
 
         for filename in files:
@@ -748,8 +748,8 @@ class NoteBookNode (object):
                 if node:
                     self._children.append(node)
 
-            except NoteBookError, e:
-                print >>sys.stderr, "error reading", path2
+            except NoteBookError as e:
+                sys.stderr.write("error reading " + path2 + "\n")
                 traceback.print_exception(*sys.exc_info())
                 continue
                 # TODO: raise warning, not all children read
@@ -868,8 +868,8 @@ class NoteBookNode (object):
             out = safefile.open(datafile, "w", codec="utf-8")
             out.write(BLANK_NOTE)
             out.close()
-        except IOError, e:
-            raise NoteBookError("Cannot initialize richtext file '%s'" % datafile, e)
+        except OSError as e:
+            raise NoteBookError(f"Cannot initialize richtext file '{datafile}'", e)
 
 
     def get_meta_file(self):
@@ -942,8 +942,8 @@ class NoteBookPlainText (NoteBookNode):
         try:
             out = safefile.open(datafile, "w", codec="utf-8")
             out.close()
-        except IOError, e:
-            raise NoteBookError("Cannot initialize richtext file '%s'" % datafile, e)
+        except OSError as e:
+            raise NoteBookError(f"Cannot initialize richtext file '{datafile}'", e)
 
 
 class NoteBookDir (NoteBookNode):
@@ -980,7 +980,7 @@ class NoteBookTrash (NoteBookDir):
         raise NoteBookError("The Trash folder cannot be deleted.")
 
 
-class NoteBookPreferences (object):
+class NoteBookPreferences :
     """Preference data structure for a NoteBook"""
     def __init__(self):
 
@@ -999,9 +999,9 @@ g_notebook_pref_parser = xmlo.XmlObject(
         xmlo.Tag("quick_pick_icons", tags=[
             xmlo.TagMany("icon",
                 iterfunc=lambda s: range(len(s.quick_pick_icons)),
-                get=lambda (s,i),x:
-                    s.quick_pick_icons.append(x),
-                set=lambda (s,i): s.quick_pick_icons[i])
+                get=lambda si,x:
+                    si[0].quick_pick_icons.append(x),
+                set=lambda si: si[0].quick_pick_icons[si[1]])
         ])
     ]))
 
@@ -1187,7 +1187,7 @@ class NoteBook (NoteBookDir):
                 self._trash = NoteBookTrash(TRASH_NAME, self)
                 self._trash.create()
                 self._add_child(self._trash)
-            except NoteBookError, e:
+            except NoteBookError as e:
                 raise NoteBookError("Cannot create Trash folder", e)
 
 
@@ -1313,9 +1313,9 @@ class NoteBook (NoteBookDir):
                 os.mkdir(self.get_icon_dir())
 
             g_notebook_pref_parser.write(self.pref, self.get_pref_file())
-        except (IOError, OSError), e:
+        except OSError as e:
             raise NoteBookError("Cannot save notebook preferences", e)
-        except xmlo.XmlError, e:
+        except xmlo.XmlError as e:
             raise NoteBookError("File format error", e)
 
 
@@ -1323,9 +1323,9 @@ class NoteBook (NoteBookDir):
         """Reads the NoteBook's preferneces from the file-system"""
         try:
             g_notebook_pref_parser.read(self.pref, self.get_pref_file())
-        except IOError, e:
+        except OSError as e:
             raise NoteBookError("Cannot read notebook preferences", e)
-        except xmlo.XmlError, e:
+        except xmlo.XmlError as e:
             raise NoteBookError("Notebook preference data is corrupt", e)
 
         if self.pref.version > NOTEBOOK_FORMAT_VERSION:
@@ -1338,7 +1338,7 @@ class NoteBook (NoteBookDir):
 # TODO: perhaps factory and metadata reader should be combined?
 #
 
-class NoteBookNodeFactory (object):
+class NoteBookNodeFactory :
     """
     This is a factory class that creates NoteBookNode's.
     """
@@ -1396,7 +1396,7 @@ class NoteBookNodeFactory (object):
 
 
 
-class NoteBookNodeMetaData (object):
+class NoteBookNodeMetaData :
     """Reads and writes metadata for NoteBookNode objects"""
 
     def __init__(self):
@@ -1437,8 +1437,8 @@ class NoteBookNodeMetaData (object):
 
             out.write("</node>\n")
             out.close()
-        except Exception, e:
-            print e
+        except Exception as e:
+            sys.stderr.write(str(e) + "\n")
             raise NoteBookError("Cannot write meta data", e)
 
 
@@ -1462,10 +1462,10 @@ class NoteBookNodeMetaData (object):
             self._parser.ParseFile(infile)
             infile.close()
 
-        except xml.parsers.expat.ExpatError, e:
+        except xml.parsers.expat.ExpatError as e:
             raise NoteBookError("Cannot read meta data", e)
 
-        except Exception, e:
+        except Exception as e:
             raise NoteBookError("Cannot read meta data", e)
 
 

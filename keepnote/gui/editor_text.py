@@ -174,12 +174,12 @@ class TextEditor (KeepNoteEditor):
                 else:
                     self.clear_view()
 
-            except UnicodeDecodeError, e:
+            except UnicodeDecodeError as e:
                 self.clear_view()
-            except RichTextError, e:
+            except RichTextError as e:
                 self.clear_view()
                 self.emit("error", e.msg, e)
-            except Exception, e:
+            except Exception as e:
                 keepnote.log_error()
                 self.clear_view()
                 self.emit("error", "Unknown error", e)
@@ -235,13 +235,13 @@ class TextEditor (KeepNoteEditor):
                 self._page.set_attr_timestamp("modified_time")
                 self._page.save()
 
-            except RichTextError, e:
+            except RichTextError as e:
                 self.emit("error", e.msg, e)
 
-            except NoteBookError, e:
+            except NoteBookError as e:
                 self.emit("error", e.msg, e)
 
-            except Exception, e:
+            except Exception as e:
                 self.emit("error", str(e), e)
 
     def save_needed(self):
@@ -280,7 +280,7 @@ class TextEditor (KeepNoteEditor):
         else:
             try:
                 self._app.open_webpage(url)
-            except KeepNoteError, e:
+            except KeepNoteError as e:
                 self.emit("error", e.msg, e)
 
 

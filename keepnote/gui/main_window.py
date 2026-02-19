@@ -415,7 +415,7 @@ class KeepNoteWindow (gtk.Window):
             if len(filename) > maxsize:
                 base = os.path.basename(filename)
                 pre = max(maxsize - len(base), 10)
-                return os.path.join(filename[:pre] + u"...", base)
+                return os.path.join(filename[:pre] + "...", base)
             else:
                 return filename
 
@@ -424,7 +424,7 @@ class KeepNoteWindow (gtk.Window):
 
         # populate menu
         for i, notebook in enumerate(recent_notebooks):
-            item = gtk.MenuItem(u"%d. %s" % (i+1, make_filename(notebook)))
+            item = gtk.MenuItem(f"{i+1:d}. {make_filename(notebook)}")
             item.connect("activate", make_func(notebook))
             item.show()
             menu.append(item)
@@ -558,7 +558,7 @@ class KeepNoteWindow (gtk.Window):
                 # turn off try icon
                 self._tray_icon.set_property("visible", False)
 
-        except Exception, e:
+        except Exception as e:
             self.error("Error while closing", e, sys.exc_info()[2])
 
         return False
@@ -592,7 +592,7 @@ class KeepNoteWindow (gtk.Window):
             self.viewer.save()
             self.set_status(_("Notebook saved"))
 
-        except Exception, e:
+        except Exception as e:
             if not silent:
                 self.error(_("Could not save notebook."), e, sys.exc_info()[2])
                 self.set_status(_("Error saving notebook"))
@@ -624,8 +624,8 @@ class KeepNoteWindow (gtk.Window):
             notebook.create(filename)
             notebook.set_attr("title", os.path.basename(filename))
             notebook.close()
-            self.set_status(_("Created '%s'") % notebook.get_title())
-        except NoteBookError, e:
+            self.set_status(_("Created '{0}'").format(notebook.get_title()))
+        except NoteBookError as e:
             self.error(_("Could not create new notebook."),
                        e, sys.exc_info()[2])
             self.set_status("")
@@ -781,7 +781,7 @@ class KeepNoteWindow (gtk.Window):
         self._restore_windows(notebook, open_here=open_here)
 
         if not new:
-            self.set_status(_("Loaded '%s'") % notebook.get_title())
+            self.set_status(_("Loaded '{0}'").format(notebook.get_title()))
         self.update_title()
 
         # save notebook to recent notebooks
@@ -825,7 +825,7 @@ class KeepNoteWindow (gtk.Window):
                     # terminate if search is canceled
                     if task.aborted():
                         break
-            except Exception, e:
+            except Exception as e:
                 self.error(_("Error during index"), e, sys.exc_info()[2])
             task.finish()
 
@@ -857,15 +857,15 @@ class KeepNoteWindow (gtk.Window):
         if notebook is None:
             self.set_title(keepnote.PROGRAM_NAME)
         else:
-            title = notebook.get_attr("title", u"")
+            title = notebook.get_attr("title", "")
             if node is None:
                 node = self.get_current_node()
             if node is not None:
-                title += u": " + node.get_attr("title", "")
+                title += ": " + node.get_attr("title", "")
 
             modified = notebook.save_needed()
             if modified:
-                self.set_title(u"* %s" % title)
+                self.set_title("* %s" % title)
                 self.set_status(_("Notebook modified"))
             else:
                 self.set_title(title)
@@ -920,7 +920,7 @@ class KeepNoteWindow (gtk.Window):
 
         try:
             self.get_notebook().empty_trash()
-        except NoteBookError, e:
+        except NoteBookError as e:
             self.error(_("Could not empty trash."), e, sys.exc_info()[2])
 
     #=================================================
@@ -941,7 +941,7 @@ class KeepNoteWindow (gtk.Window):
 
         try:
             self._app.run_external_app_node(app, node, kind)
-        except KeepNoteError, e:
+        except KeepNoteError as e:
             self.emit("error", e.msg, e, sys.exc_info()[2])
 
     #=====================================================
@@ -990,12 +990,12 @@ class KeepNoteWindow (gtk.Window):
         # therefore we should copy error log before viewing it
         try:
             filename = os.path.realpath(keepnote.get_user_error_log())
-            filename2 = filename + u".bak"
+            filename2 = filename + ".bak"
             shutil.copy(filename, filename2)
 
             # use text editor to view error log
             self._app.run_external_app("text_editor", filename2)
-        except Exception, e:
+        except Exception as e:
             self.error(_("Could not open error log") + ":\n" + str(e),
                        e, sys.exc_info()[2])
 
@@ -1005,7 +1005,7 @@ class KeepNoteWindow (gtk.Window):
             # use text editor to view error log
             filename = keepnote.get_user_pref_dir()
             self._app.run_external_app("file_explorer", filename)
-        except Exception, e:
+        except Exception as e:
             self.error(_("Could not open error log") + ":\n" + str(e),
                        e, sys.exc_info()[2])
 
@@ -1018,7 +1018,7 @@ class KeepNoteWindow (gtk.Window):
         def func(dialog, link, data):
             try:
                 self._app.open_webpage(link)
-            except KeepNoteError, e:
+            except KeepNoteError as e:
                 self.error(e.msg, e, sys.exc_info()[2])
         gtk.about_dialog_set_url_hook(func, None)
 
@@ -1031,7 +1031,7 @@ class KeepNoteWindow (gtk.Window):
         about.set_license(keepnote.LICENSE_NAME)
         about.set_translator_credits(keepnote.TRANSLATOR_CREDITS)
 
-        license_file = keepnote.get_resource(u"rc", u"COPYING")
+        license_file = keepnote.get_resource("rc", "COPYING")
         if os.path.exists(license_file):
             about.set_license(open(license_file).read())
 
@@ -1054,7 +1054,7 @@ class KeepNoteWindow (gtk.Window):
             self.stats_bar.pop(0)
             self.stats_bar.push(0, text)
         else:
-            raise Exception("unknown bar '%s'" % bar)
+            raise Exception(f"unknown bar '{bar}'")
 
     def error(self, text, error=None, tracebk=None):
         """Display an error message"""
@@ -1522,7 +1522,7 @@ class SearchBox (gtk.Entry):
                         # add result to gui
                         self._window.get_viewer().add_search_result(node)
 
-                except Exception, e:
+                except Exception as e:
                     self._window.error(_("Unexpected error"), e)
                     more = False
                 finally:
@@ -1555,7 +1555,7 @@ class SearchBox (gtk.Entry):
                     lock.acquire()
                 lock.release()
                 queue.put(None)
-            except Exception, e:
+            except Exception as e:
                 self.error(_("Unexpected error"), e)
 
             # wait for gui thread to finish

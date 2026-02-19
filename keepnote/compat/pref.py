@@ -37,19 +37,19 @@ from keepnote.util import compose
 from keepnote import orderdict
 
 
-OLD_USER_PREF_DIR = u"takenote"
-OLD_USER_PREF_FILE = u"takenote.xml"
-OLD_XDG_USER_EXTENSIONS_DIR = u"takenote/extensions"
-OLD_XDG_USER_EXTENSIONS_DATA_DIR = u"takenote/extensions_data"
+OLD_USER_PREF_DIR = "takenote"
+OLD_USER_PREF_FILE = "takenote.xml"
+OLD_XDG_USER_EXTENSIONS_DIR = "takenote/extensions"
+OLD_XDG_USER_EXTENSIONS_DATA_DIR = "takenote/extensions_data"
 
 
-USER_PREF_DIR = u"keepnote"
-USER_PREF_FILE = u"keepnote.xml"
-USER_EXTENSIONS_DIR = u"extensions"
-USER_EXTENSIONS_DATA_DIR = u"extensions_data"
+USER_PREF_DIR = "keepnote"
+USER_PREF_FILE = "keepnote.xml"
+USER_EXTENSIONS_DIR = "extensions"
+USER_EXTENSIONS_DATA_DIR = "extensions_data"
 
-XDG_USER_EXTENSIONS_DIR = u"keepnote/extensions"
-XDG_USER_EXTENSIONS_DATA_DIR = u"keepnote/extensions_data"
+XDG_USER_EXTENSIONS_DIR = "keepnote/extensions"
+XDG_USER_EXTENSIONS_DATA_DIR = "keepnote/extensions_data"
 
 
 #=============================================================================
@@ -83,7 +83,7 @@ def get_new_pref_dir(home):
 
 def get_home():
     """Return HOME directory"""
-    home = keepnote.ensure_unicode(os.getenv(u"HOME"), FS_ENCODING)
+    home = keepnote.ensure_unicode(os.getenv("HOME"), FS_ENCODING)
     if home is None:
         raise EnvError("HOME environment variable must be specified")
     return home
@@ -194,7 +194,7 @@ DEFAULT_HSASH_POS = 200
 DEFAULT_VIEW_MODE = "vertical"
 DEFAULT_AUTOSAVE_TIME = 10 * 1000 # 10 sec (in msec)
 
-class ExternalApp (object):
+class ExternalApp :
     """Class represents the information needed for calling an external application"""
 
     def __init__(self, key, title, prog, args=[]):
@@ -204,7 +204,7 @@ class ExternalApp (object):
         self.args = args
 
 
-class KeepNotePreferences (object):
+class KeepNotePreferences :
     """Preference data structure for the KeepNote application"""
     
     def __init__(self):
@@ -429,8 +429,8 @@ g_keepnote_pref_parser = xmlo.XmlObject(
         xmlo.Tag("recent_notebooks", tags=[
            xmlo.TagMany("notebook",
                 iterfunc=lambda s: range(len(s.recent_notebooks)),
-                get=lambda (s, i), x: s.recent_notebooks.append(x),
-                set=lambda (s, i): s.recent_notebooks[i]
+                get=lambda si, x: si[0].recent_notebooks.append(x),
+                set=lambda si: si[0].recent_notebooks[si[1]]
                         )
            ]),
 
@@ -439,8 +439,8 @@ g_keepnote_pref_parser = xmlo.XmlObject(
             xmlo.Tag("disabled", tags=[
                 xmlo.TagMany("extension",
                 iterfunc=lambda s: range(len(s.disabled_extensions)),
-                get=lambda (s, i), x: s.disabled_extensions.append(x),
-                set=lambda (s, i): s.disabled_extensions[i]
+                get=lambda si, x: si[0].disabled_extensions.append(x),
+                set=lambda si: si[0].disabled_extensions[si[1]]
                         )
                 ]),
             ]),
@@ -450,40 +450,40 @@ g_keepnote_pref_parser = xmlo.XmlObject(
 
            xmlo.TagMany("app",
                 iterfunc=lambda s: range(len(s.external_apps)),
-                before=lambda (s,i):
-                        s.external_apps.append(ExternalApp("", "", "")),
+                before=lambda si:
+                        si[0].external_apps.append(ExternalApp("", "", "")),
                 tags=[
                     xmlo.Tag("title",
-                        get=lambda (s,i),x:
-                             setattr(s.external_apps[i], "title", x),
-                        set=lambda (s,i): s.external_apps[i].title),
+                        get=lambda si,x:
+                             setattr(si[0].external_apps[si[1]], "title", x),
+                        set=lambda si: si[0].external_apps[si[1]].title),
                     xmlo.Tag("name",
-                        get=lambda (s,i),x:
-                             setattr(s.external_apps[i], "key", x),
-                        set=lambda (s,i): s.external_apps[i].key),
+                        get=lambda si,x:
+                             setattr(si[0].external_apps[si[1]], "key", x),
+                        set=lambda si: si[0].external_apps[si[1]].key),
                     xmlo.Tag("program",                             
-                        get=lambda (s,i),x:
-                             setattr(s.external_apps[i], "prog", x),
-                        set=lambda (s,i): s.external_apps[i].prog)]
+                        get=lambda si,x:
+                             setattr(si[0].external_apps[si[1]], "prog", x),
+                        set=lambda si: si[0].external_apps[si[1]].prog)]
            )]
           
         ),
         xmlo.Tag("timestamp_formats", tags=[
             xmlo.TagMany("timestamp_format",
                 iterfunc=lambda s: range(len(s.timestamp_formats)),
-                before=lambda (s,i): setattr(s, "_last_timestamp_name", "") or
-                                     setattr(s, "_last_timestamp_format", ""),
-                after=lambda (s,i):
-                    s.timestamp_formats.__setitem__(
-                        s._last_timestamp_name,
-                        s._last_timestamp_format),
+                before=lambda si: setattr(si[0], "_last_timestamp_name", "") or
+                                     setattr(si[0], "_last_timestamp_format", ""),
+                after=lambda si:
+                    si[0].timestamp_formats.__setitem__(
+                        si[0]._last_timestamp_name,
+                        si[0]._last_timestamp_format),
                 tags=[
                     xmlo.Tag("name",
-                        get=lambda (s,i),x: setattr(s, "_last_timestamp_name", x),
-                        set=lambda (s,i): s.timestamp_formats.keys()[i]),
+                        get=lambda si,x: setattr(si[0], "_last_timestamp_name", x),
+                        set=lambda si: list(si[0].timestamp_formats.keys())[si[1]]),
                     xmlo.Tag("format",
-                        get=lambda (s,i),x: setattr(s, "_last_timestamp_format", x),
-                        set=lambda (s,i): s.timestamp_formats.values()[i])
+                        get=lambda si,x: setattr(si[0], "_last_timestamp_format", x),
+                        set=lambda si: list(si[0].timestamp_formats.values())[si[1]])
                     ]
             )]
         )

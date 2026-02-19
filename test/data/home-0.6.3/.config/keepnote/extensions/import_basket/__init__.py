@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 
     KeepNote
@@ -118,7 +117,7 @@ def unescape(text):
                 print "keyerror"
                 pass
         return text # leave as is
-    return re.sub("&#?\w+;", fixup, text)
+    return re.sub(r"&#?\w+;", fixup, text)
 
 
 # http://diveintopython.org/html_processing/index.html

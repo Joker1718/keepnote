@@ -61,13 +61,13 @@ def get_lock_file(lockfile):
     while True:
         try:
             # try to create file with exclusive access
-            fd = os.open(lockfile, os.O_CREAT | os.O_EXCL | os.O_RDWR, 0600)
+            fd = os.open(lockfile, os.O_CREAT | os.O_EXCL | os.O_RDWR, 0o600)
 
             # creation succeeded, we have the lock
             acquire = True
             break
 
-        except OSError, e:
+        except OSError as e:
             if e.errno != errno.EEXIST:
                 # unknown error, re-raise
                 raise
@@ -79,7 +79,7 @@ def get_lock_file(lockfile):
                 acquire = False
                 break
 
-            except OSError, e:
+            except OSError as e:
                 if e.errno != errno.ENOENT:
                     # unknown error, re-raise
                     raise
@@ -130,8 +130,8 @@ def open_socket(port=None, start_port=4000, end_port=10000, tries=10):
             s.bind(("localhost", port2))
             s.listen(1)
             break
-        except socket.error, e:
-            print >>sys.stderr, "could not open socket:", str(e)
+        except OSError as e:
+            sys.stderr.write("could not open socket: " + str(e) + "\n")
             port2 = None
 
     if port2 is None:
@@ -153,7 +153,7 @@ def listen_commands(sock, connfunc, args):
     while True:
         try:
             conn, addr = sock.accept()
-        except socket.error:
+        except OSError:
             continue
 
         thread.start_new_thread(connfunc, (conn, addr) + args)
@@ -201,9 +201,9 @@ def process_connection(conn, addr, passwd, execfunc):
         conn.shutdown(socket.SHUT_RDWR)
         conn.close()
 
-    except socket.error, e:
+    except OSError as e:
         # socket error, close connection
-        print >>sys.stderr, e, ": error with connection"
+        sys.stderr.write(str(e) + ": error with connection\n")
         conn.close()
 
 
@@ -269,7 +269,7 @@ def format_command(argv):
     return " ".join(escape(x) for x in argv)
 
 
-class CommandExecutor (object):
+class CommandExecutor :
 
     def __init__(self):
         self._execfunc = None
@@ -334,7 +334,7 @@ class CommandExecutor (object):
                     if len(c) == 0:
                         break
                     sys.stdout.write(c)
-            except socket.error:
+            except OSError:
                 pass
             sys.stdout.flush()
 
@@ -439,12 +439,12 @@ def parse_result(result):
     The end of the socket stream is determined by this syntax
 
     Let $ be \x00
-    Let \ be \xff
+    Let \\ be \xff
 
     abc$          =>  abc
-    abc\$def$     =>  abc$def
+    abc\\$def$     =>  abc$def
     abc\\$        =>  abc\
-    abcd\\\$def$  =>  abc\$def
+    abcd\\\\$def$  =>  abc\\$def
 
     """
 

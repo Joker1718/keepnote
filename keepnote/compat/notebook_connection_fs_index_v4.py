@@ -36,7 +36,7 @@ import traceback
 try:
     import pysqlite2
     import pysqlite2.dbapi2 as sqlite
-except Exception, e:
+except Exception as e:
     import sqlite3  as sqlite
 #sqlite.enable_shared_cache(True)
 #sqlite.threadsafety = 0
@@ -48,7 +48,7 @@ import keepnote
 
 
 # index filename
-INDEX_FILE = u"index.sqlite"
+INDEX_FILE = "index.sqlite"
 INDEX_VERSION = 3
 
 
@@ -77,7 +77,7 @@ def match_words(infile, words):
 
 
 
-class AttrIndex (object):
+class AttrIndex :
     """Indexing information for an attribute"""
 
     def __init__(self, name, type, multivalue=False, index_value=False):
@@ -105,22 +105,20 @@ class AttrIndex (object):
         # multivalue is not implemented yet
         assert not self._multivalue
 
-        cur.execute(u"""CREATE TABLE IF NOT EXISTS %s
+        cur.execute(f"""CREATE TABLE IF NOT EXISTS {self._table_name}
                            (nodeid TEXT,
-                            value %s,
+                            value {self._type},
                             UNIQUE(nodeid) ON CONFLICT REPLACE);
-                        """ % (self._table_name, self._type))
-        cur.execute(u"""CREATE INDEX IF NOT EXISTS %s
-                           ON %s (nodeid);""" % (self._index_name,
-                                                 self._table_name))
+                        """)
+        cur.execute(f"""CREATE INDEX IF NOT EXISTS {self._index_name}
+                           ON {self._table_name} (nodeid);""")
 
         if self._index_value:
-            cur.execute(u"""CREATE INDEX IF NOT EXISTS %s
-                           ON %s (value);""" % (self._index_value_name,
-                                                self._table_name))
+            cur.execute(f"""CREATE INDEX IF NOT EXISTS {self._index_value_name}
+                           ON {self._table_name} (value);""")
 
     def drop(self, cur):
-        cur.execute(u"DROP TABLE IF EXISTS %s" % self._table_name)
+        cur.execute(f"DROP TABLE IF EXISTS {self._table_name}")
             
 
     def add_node(self, cur, nodeid, attr):
@@ -131,14 +129,13 @@ class AttrIndex (object):
 
     def remove_node(self, cur, nodeid):
         """Remove node from index"""
-        cur.execute(u"DELETE FROM %s WHERE nodeid=?" % self._table_name, 
+        cur.execute(f"DELETE FROM {self._table_name} WHERE nodeid=?", 
                     (nodeid,))
 
 
     def get(self, cur, nodeid):
         """Get information for a node from the index"""
-        cur.execute(u"""SELECT value FROM %s WHERE nodeid = ?""" % 
-                    self._table_name, (nodeid,))
+        cur.execute(f"""SELECT value FROM {self._table_name} WHERE nodeid = ?""", (nodeid,))
         values = [row[0] for row in cur.fetchall()]
 
         # return value
@@ -154,13 +151,13 @@ class AttrIndex (object):
         """Set the information for a node in the index"""
 
         # insert new row
-        cur.execute(u"""INSERT INTO %s VALUES (?, ?)""" % self._table_name,
+        cur.execute(f"""INSERT INTO {self._table_name} VALUES (?, ?)""",
                         (nodeid, value))
 
 
 # TODO: remove uniroot
 
-class NoteBookIndex (object):
+class NoteBookIndex :
     """Index for a NoteBook"""
 
     def __init__(self, conn, index_file):
@@ -198,7 +195,7 @@ class NoteBookIndex (object):
             #self.con.execute(u"PRAGMA read_uncommitted = true;")
 
             self.init_index(auto_clear=auto_clear)
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             self._on_corrupt(e, sys.exc_info()[2])
             raise
 
@@ -230,7 +227,7 @@ class NoteBookIndex (object):
                     self.con.commit()
                 except:
                     self.open()
-        except Exception, e:
+        except Exception as e:
             self._on_corrupt(e, sys.exc_info()[2])
 
         
@@ -251,9 +248,9 @@ class NoteBookIndex (object):
 
     def _get_version(self):
         """Get version from database"""
-        self.con.execute(u"""CREATE TABLE IF NOT EXISTS Version 
+        self.con.execute("""CREATE TABLE IF NOT EXISTS Version 
                             (version INTEGER, update_date DATE);""")
-        version = self.con.execute(u"SELECT MAX(version) FROM Version").fetchone()
+        version = self.con.execute("SELECT MAX(version) FROM Version").fetchone()
         if version is not None:
             version = version[0]
         return version
@@ -261,7 +258,7 @@ class NoteBookIndex (object):
 
     def _set_version(self, version=INDEX_VERSION):
         """Set the version of the database"""
-        self.con.execute(u"INSERT INTO Version VALUES (?, datetime('now'));", 
+        self.con.execute("INSERT INTO Version VALUES (?, datetime('now'));", 
                          (version,))
 
 
@@ -283,7 +280,7 @@ class NoteBookIndex (object):
 
             
             # init NodeGraph table
-            con.execute(u"""CREATE TABLE IF NOT EXISTS NodeGraph 
+            con.execute("""CREATE TABLE IF NOT EXISTS NodeGraph 
                            (nodeid TEXT,
                             parentid TEXT,
                             basename TEXT,
@@ -292,29 +289,29 @@ class NoteBookIndex (object):
                             UNIQUE(nodeid) ON CONFLICT REPLACE);
                         """)
 
-            con.execute(u"""CREATE INDEX IF NOT EXISTS IdxNodeGraphNodeid 
+            con.execute("""CREATE INDEX IF NOT EXISTS IdxNodeGraphNodeid 
                            ON NodeGraph (nodeid);""")
-            con.execute(u"""CREATE INDEX IF NOT EXISTS IdxNodeGraphParentid 
+            con.execute("""CREATE INDEX IF NOT EXISTS IdxNodeGraphParentid 
                            ON NodeGraph (parentid);""")
             
 
             # full text table
             try:
                 # test for fts3 availability
-                con.execute(u"DROP TABLE IF EXISTS fts3test;")
+                con.execute("DROP TABLE IF EXISTS fts3test;")
                 con.execute(
                     "CREATE VIRTUAL TABLE fts3test USING fts3(col TEXT);")
                 con.execute("DROP TABLE fts3test;")
 
                 # create fulltext table if it does not already exist
-                if not list(con.execute(u"""SELECT 1 FROM sqlite_master 
+                if not list(con.execute("""SELECT 1 FROM sqlite_master 
                                    WHERE name == 'fulltext';""")):
-                    con.execute(u"""CREATE VIRTUAL TABLE 
+                    con.execute("""CREATE VIRTUAL TABLE 
                                 fulltext USING 
                                 fts3(nodeid TEXT, content TEXT,
                                      tokenize=porter);""")
                 self._has_fulltext = True
-            except Exception, e:
+            except Exception as e:
                 keepnote.log_error(e)
                 self._has_fulltext = False
 
@@ -336,11 +333,10 @@ class NoteBookIndex (object):
             #if not self._need_index:
             #    self._need_index = self.check_index()
 
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             self._on_corrupt(e, sys.exc_info()[2])
 
-            keepnote.log_message("reinitializing index '%s'\n" %
-                                 self._index_file)
+            keepnote.log_message(f"reinitializing index '{self._index_file}'\n")
             self.clear()
 
     
@@ -357,7 +353,7 @@ class NoteBookIndex (object):
         mtime_index = self.get_mtime()
         mtime = keepnote.notebook.connection.fs.last_node_change(
             self._nconn._get_node_path(self._nconn.get_rootid()))
-        keepnote.log_message("%f seconds\n" % (time.time() - start))
+        keepnote.log_message(f"{time.time() - start:f} seconds\n")
         return (mtime > mtime_index)
                     
 
@@ -382,17 +378,17 @@ class NoteBookIndex (object):
 
     def _drop_tables(self):
         """drop NodeGraph tables"""
-        self.con.execute(u"DROP TABLE IF EXISTS NodeGraph")
-        self.con.execute(u"DROP INDEX IF EXISTS IdxNodeGraphNodeid")
-        self.con.execute(u"DROP INDEX IF EXISTS IdxNodeGraphParentid")
-        self.con.execute(u"DROP TABLE IF EXISTS fulltext;")
+        self.con.execute("DROP TABLE IF EXISTS NodeGraph")
+        self.con.execute("DROP INDEX IF EXISTS IdxNodeGraphNodeid")
+        self.con.execute("DROP INDEX IF EXISTS IdxNodeGraphParentid")
+        self.con.execute("DROP TABLE IF EXISTS fulltext;")
         
         # drop attribute tables
         table_names = [x for (x,) in self.con.execute(
-            u"""SELECT name FROM sqlite_master WHERE name LIKE 'Attr_%'""")]
+            """SELECT name FROM sqlite_master WHERE name LIKE 'Attr_%'""")]
 
         for table_name in table_names:
-            self.con.execute(u"""DROP TABLE %s;""" % table_name)
+            self.con.execute(f"DROP TABLE {table_name};")
         
 
     
@@ -438,8 +434,7 @@ class NoteBookIndex (object):
 
 
         # perform indexing
-        for nodeid in preorder(conn, rootid):
-            yield nodeid
+        yield from preorder(conn, rootid)
 
         # record index complete
         self._need_index = False
@@ -447,7 +442,7 @@ class NoteBookIndex (object):
 
     def get_node_mtime(self, nodeid):
         
-        self.cur.execute(u"""SELECT mtime FROM NodeGraph
+        self.cur.execute("""SELECT mtime FROM NodeGraph
                              WHERE nodeid=?""", (nodeid,))
         row = self.cur.fetchone()
         if row:
@@ -481,12 +476,12 @@ class NoteBookIndex (object):
             # get info
             if parentid is None:
                 parentid = self._uniroot
-                basename = u""
+                basename = ""
             symlink = False
             
             # update nodegraph
             self.cur.execute(
-                u"""INSERT INTO NodeGraph VALUES (?, ?, ?, ?, ?)""", 
+                """INSERT INTO NodeGraph VALUES (?, ?, ?, ?, ?)""", 
                 (nodeid, parentid, basename, mtime, symlink))
 
             # update attrs
@@ -497,9 +492,9 @@ class NoteBookIndex (object):
             infile = self._nconn.read_data_as_plain_text(nodeid)
             self.index_node_text(nodeid, attr, infile)
             
-        except Exception, e:
-            keepnote.log_error("error index node %s '%s'" % 
-                               (nodeid, attr.get("title", "")))
+        except Exception as e:
+            keepnote.log_error("error index node {0} '{1}'".format(
+                               nodeid, attr.get("title", "")))
             self._on_corrupt(e, sys.exc_info()[2])
 
 
@@ -511,7 +506,7 @@ class NoteBookIndex (object):
         
         try:
             # delete node
-            self.cur.execute(u"DELETE FROM NodeGraph WHERE nodeid=?", (nodeid,))
+            self.cur.execute("DELETE FROM NodeGraph WHERE nodeid=?", (nodeid,))
 
             # update attrs
             for attr in self._attrs.itervalues():
@@ -522,7 +517,7 @@ class NoteBookIndex (object):
             #    u"SELECT nodeid FROM NodeGraph WHERE parentid=?", (nodeid,)):
             #    self.remove_node(childid)
 
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             self._on_corrupt(e, sys.exc_info()[2])
 
 
@@ -531,7 +526,7 @@ class NoteBookIndex (object):
         try:
             text = attr.get("title", "") + "\n" + "".join(infile)
             self.insert_text(nodeid, text)
-        except Exception, e:
+        except Exception as e:
             keepnote.log_error()
 
 
@@ -540,13 +535,13 @@ class NoteBookIndex (object):
         if not self._has_fulltext:
             return
 
-        if list(self.cur.execute(u"SELECT 1 FROM fulltext WHERE nodeid = ?",
+        if list(self.cur.execute("SELECT 1 FROM fulltext WHERE nodeid = ?",
                                  (nodeid,))):
             self.cur.execute(
-                u"UPDATE fulltext SET content = ? WHERE nodeid = ?;",
+                "UPDATE fulltext SET content = ? WHERE nodeid = ?;",
                 (text, nodeid))
         else:
-            self.cur.execute(u"INSERT INTO fulltext VALUES (?, ?);",
+            self.cur.execute("INSERT INTO fulltext VALUES (?, ?);",
                              (nodeid, text))
 
 
@@ -568,7 +563,7 @@ class NoteBookIndex (object):
                 # continue to walk up parent
                 path.append(nodeid)
 
-                self.cur.execute(u"""SELECT nodeid, parentid, basename
+                self.cur.execute("""SELECT nodeid, parentid, basename
                                 FROM NodeGraph
                                 WHERE nodeid=?""", (nodeid,))
                 row = self.cur.fetchone()
@@ -590,7 +585,7 @@ class NoteBookIndex (object):
             path.reverse()
             return path
 
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             self._on_corrupt(e, sys.exc_info()[2])
             raise
 
@@ -608,7 +603,7 @@ class NoteBookIndex (object):
             while parentid != self._uniroot:
                 # continue to walk up parent
 
-                self.cur.execute(u"""SELECT nodeid, parentid, basename
+                self.cur.execute("""SELECT nodeid, parentid, basename
                                 FROM NodeGraph
                                 WHERE nodeid=?""", (nodeid,))
                 row = self.cur.fetchone()
@@ -632,7 +627,7 @@ class NoteBookIndex (object):
             path.reverse()
             return path
 
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             self._on_corrupt(e, sys.exc_info()[2])
             raise
 
@@ -643,7 +638,7 @@ class NoteBookIndex (object):
         # TODO: handle multiple parents
 
         try:
-            self.cur.execute(u"""SELECT nodeid, parentid, basename, mtime
+            self.cur.execute("""SELECT nodeid, parentid, basename, mtime
                                 FROM NodeGraph
                                 WHERE nodeid=?""", (nodeid,))
             row = self.cur.fetchone()
@@ -657,14 +652,14 @@ class NoteBookIndex (object):
                     "basename": row[2],
                     "mtime": row[3]}
             
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             self._on_corrupt(e, sys.exc_info()[2])
             raise
 
         
     def has_node(self, nodeid):
         """Returns True if index has node"""
-        self.cur.execute(u"""SELECT nodeid, parentid, basename, mtime
+        self.cur.execute("""SELECT nodeid, parentid, basename, mtime
                              FROM NodeGraph
                              WHERE nodeid=?""", (nodeid,))
         return self.cur.fetchone() is not None
@@ -673,12 +668,12 @@ class NoteBookIndex (object):
     def list_children(self, nodeid):
                 
         try:
-            self.cur.execute(u"""SELECT nodeid, basename
+            self.cur.execute("""SELECT nodeid, basename
                                 FROM NodeGraph
                                 WHERE parentid=?""", (nodeid,))
             return list(self.cur.fetchall())
             
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             self._on_corrupt(e, sys.exc_info()[2])
             raise
 
@@ -686,12 +681,12 @@ class NoteBookIndex (object):
     def has_children(self, nodeid):
         
         try:
-            self.cur.execute(u"""SELECT nodeid
+            self.cur.execute("""SELECT nodeid
                                 FROM NodeGraph
                                 WHERE parentid=?""", (nodeid,))
             return self.cur.fetchone() != None
             
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             self._on_corrupt(e, sys.exc_info()[2])
             raise
 
@@ -705,14 +700,14 @@ class NoteBookIndex (object):
         try:
             # order titles by exact matches and then alphabetically
             self.cur.execute(
-                u"""SELECT nodeid, value FROM %s WHERE value LIKE ?
-                           ORDER BY value != ?, value """ % 
-                self._attrs["title"].get_table_name(),
-                (u"%" + query + u"%", query))
+                """SELECT nodeid, value FROM {0} WHERE value LIKE ?
+                           ORDER BY value != ?, value """.format(
+                self._attrs["title"].get_table_name()),
+                ("%" + query + "%", query))
 
             return list(self.cur.fetchall())
 
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             self._on_corrupt(e, sys.exc_info()[2])
             raise
 

@@ -38,7 +38,7 @@ import keepnote
 from keepnote import get_resource
 
 
-class WaitDialog (object):
+class WaitDialog :
     """General dialog for background tasks"""
 
     def __init__(self, parent_window):
@@ -100,8 +100,8 @@ class WaitDialog (object):
             # filter for messages we process
             messages = filter(lambda x: isinstance(x, tuple) and len(x) == 2,
                               self._task.get_messages())
-            texts = filter(lambda (a, b): a == "text", messages)
-            details = filter(lambda (a, b): a == "detail", messages)
+            texts = filter(lambda ab: ab[0] == "text", messages)
+            details = filter(lambda ab: ab[0] == "detail", messages)
 
             # update text
             if len(texts) > 0:

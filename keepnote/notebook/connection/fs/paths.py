@@ -2,7 +2,7 @@ import os
 
 
 # Constants.
-NODE_META_FILE = u"node.xml"
+NODE_META_FILE = "node.xml"
 
 
 def get_node_meta_file(nodepath):
@@ -20,12 +20,12 @@ def path_local2node(filename):
 
     On windows:
 
-      aaa\bbb\ccc  =>  aaa/bbb/ccc
+      aaa\bbb\\ccc  =>  aaa/bbb/ccc
     """
 
-    if os.path.sep == u"/":
+    if os.path.sep == "/":
         return filename
-    return filename.replace(os.path.sep, u"/")
+    return filename.replace(os.path.sep, "/")
 
 
 def path_node2local(filename):
@@ -38,9 +38,9 @@ def path_node2local(filename):
 
     On windows:
 
-      aaa/bbb/ccc  =>  aaa\bbb\ccc
+      aaa/bbb/ccc  =>  aaa\bbb\\ccc
     """
 
-    if os.path.sep == u"/":
+    if os.path.sep == "/":
         return filename
-    return filename.replace(u"/", os.path.sep)
+    return filename.replace("/", os.path.sep)

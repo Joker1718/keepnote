@@ -51,7 +51,7 @@ class XmlError (StandardError):
     pass
 
 
-class Tag (object):
+class Tag :
     def __init__(self, name,
                  get=None,
                  set=None,
@@ -125,9 +125,8 @@ class Tag (object):
             
             try:
                 self._read_data(self._object, data)
-            except Exception, e:
-                raise XmlError("Error parsing tag '%s': %s" % (self.name,
-                                                               str(e)))
+            except Exception as e:
+                raise XmlError(f"Error parsing tag '{self.name}': {str(e)}")
 
     
     def add(self, tag):
@@ -179,9 +178,8 @@ class TagMany (Tag):
             try:
                 if self._read_item is not None:
                     self._read_item((self._object, self._index), data)
-            except Exception, e:
-                raise XmlError("Error parsing tag '%s': %s" % (tag.name,
-                                                               str(e)))
+            except Exception as e:
+                raise XmlError(f"Error parsing tag '{self.name}': {str(e)}")
         
         if self._afterfunc:
             self._afterfunc((self._object, self._index))
@@ -206,7 +204,7 @@ class TagMany (Tag):
 
         
 
-class XmlObject (object):
+class XmlObject :
     def __init__(self, *tags):
         self._object = None
         self._root_tag = Tag("", tags=tags)
@@ -248,7 +246,7 @@ class XmlObject (object):
     
     def read(self, obj, filename):
         if isinstance(filename, basestring):
-            infile = open(filename, "r")
+            infile = open(filename)
         else:
             infile = filename
         self._object = obj
@@ -262,12 +260,12 @@ class XmlObject (object):
 
         try:
             parser.ParseFile(infile)
-        except xml.parsers.expat.ExpatError, e:
-            raise XmlError("Error reading file '%s': %s" % (filename, str(e)))
+        except xml.parsers.expat.ExpatError as e:
+            raise XmlError(f"Error reading file '{filename}': {str(e)}")
 
         if len(self._current_tags) > 1:
-            print [x.name for x in self._current_tags]
-            raise XmlError("Incomplete file '%s'" % filename)
+            sys.stdout.write(str([x.name for x in self._current_tags]) + "\n")
+            raise XmlError(f"Incomplete file '{filename}'")
         
         infile.close()
 
@@ -313,23 +311,23 @@ if __name__ == "__main__":
             Tag("external_apps", tags=[
                 TagMany("app",
                         iterfunc=lambda s: range(len(s.apps)),
-                        get=lambda (s,i), x: s.apps.append(x),
-                        set=lambda (s,i): s.apps[i])]),
+                        get=lambda si, x: si[0].apps.append(x),
+                        set=lambda si: si[0].apps[si[1]])]),
             Tag("external_apps2", tags=[
                 TagMany("app",
                         iterfunc=lambda s: range(len(s.apps2)),
-                        before=lambda s,i: s.apps2.append([None, None]),
+                        before=lambda si: si[0].apps2.append([None, None]),
                         tags=[Tag("name",
-                                  get=lambda (s,i),x: s.apps2[i].__setitem__(0, x),
-                                  set=lambda (s,i): s.apps2[i][0]),
+                                  get=lambda si,x: si[0].apps2[si[1]].__setitem__(0, x),
+                                  set=lambda si: si[0].apps2[si[1]][0]),
                               Tag("prog",
-                                  get=lambda (s,i),x: s.apps2[i].__setitem__(1,x),
-                                  set=lambda (s,i): s.apps2[i][1])
+                                  get=lambda si,x: si[0].apps2[si[1]].__setitem__(1,x),
+                                  set=lambda si: si[0].apps2[si[1]][1])
                         ])
             ]),
         ]))
 
-    class Pref (object):
+    class Pref :
         def __init__(self):
             self.window_size = (0, 0)
             self.window_pos = (0, 0)

@@ -59,7 +59,7 @@ def move_to_end_of_line(it):
     return it
 
 
-class Stream (object):
+class Stream :
 
     def __init__(self, callback):
         self._callback = callback
@@ -72,7 +72,7 @@ class Stream (object):
 
 
 
-class PythonDialog (object):
+class PythonDialog :
     """Python dialog"""
     
     def __init__(self, main_window):
@@ -221,15 +221,15 @@ class PythonDialog (object):
 
     def print_info(self):
 
-        print "COMMON INFORMATION"
-        print "=================="
-        print
+        sys.stdout.write("COMMON INFORMATION\n")
+        sys.stdout.write("==================\n")
+        sys.stdout.write("\n")
 
         keepnote.print_runtime_info(sys.stdout)
 
-        print "Open notebooks"
-        print "--------------"
-        print "\n".join(n.get_path() for n in self.app.iter_notebooks())
+        sys.stdout.write("Open notebooks\n")
+        sys.stdout.write("--------------\n")
+        sys.stdout.write("\n".join(n.get_path() for n in self.app.iter_notebooks()) + "\n")
         
 
 
@@ -242,7 +242,7 @@ def execute(code, vars, stdout, stderr):
     sys.stderr = stderr
     try:
         exec(code, vars)
-    except Exception, e:
+    except Exception as e:
         keepnote.log_error(e, sys.exc_info()[2], stderr)
     sys.stdout = __stdout
     sys.stderr = __stderr

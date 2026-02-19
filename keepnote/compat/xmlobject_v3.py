@@ -56,11 +56,11 @@ def str2bool(s):
     
 def str_no_none(x):
     if x is None:
-        return u""
+        return ""
     return x
 
 
-class Tag (object):
+class Tag :
     def __init__(self, name,
                  get=None,
                  set=None,
@@ -143,9 +143,8 @@ class Tag (object):
             
             try:
                 self._read_data(self._object, data)
-            except Exception, e:
-                raise XmlError("Error parsing tag '%s': %s" % (self.name,
-                                                               str(e)))
+            except Exception as e:
+                raise XmlError(f"Error parsing tag '{self.name}': {str(e)}")
     
     def add(self, tag):
         """Add a tag child to this tag"""
@@ -293,7 +292,7 @@ class TagList (TagMany):
 '''            
         
 
-class XmlObject (object):
+class XmlObject :
     """Represents an object <--> XML document binding"""
     
     def __init__(self, *tags):
@@ -341,7 +340,7 @@ class XmlObject (object):
         """Read XML from 'filename' and store data into object 'obj'"""
         
         if isinstance(filename, basestring):
-            infile = open(filename, "r")
+            infile = open(filename)
         else:
             infile = filename
         self._object = obj
@@ -356,12 +355,12 @@ class XmlObject (object):
 
         try:
             parser.ParseFile(infile)
-        except xml.parsers.expat.ExpatError, e:
-            raise XmlError("Error reading file '%s': %s" % (filename, str(e)))
+        except xml.parsers.expat.ExpatError as e:
+            raise XmlError(f"Error reading file '{filename}': {str(e)}")
 
         if len(self._current_tags) > 1:
-            print [x.name for x in self._current_tags]
-            raise XmlError("Incomplete file '%s'" % filename)
+            sys.stdout.write(str([x.name for x in self._current_tags]) + "\n")
+            raise XmlError(f"Incomplete file '{filename}'")
         
         infile.close()
 
@@ -377,9 +376,9 @@ class XmlObject (object):
             out = filename
             need_close = False
         
-        out.write(u"<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+        out.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
         self._root_tag.write(obj, out)
-        out.write(u"\n")
+        out.write("\n")
         if need_close:
             out.close()
         
@@ -406,23 +405,23 @@ if __name__ == "__main__":
             Tag("external_apps", tags=[
                 TagMany("app",
                         iterfunc=lambda s: range(len(s.apps)),
-                        get=lambda (s,i), x: s.apps.append(x),
-                        set=lambda (s,i): s.apps[i])]),
+                        get=lambda si, x: si[0].apps.append(x),
+                        set=lambda si: si[0].apps[si[1]])]),
             Tag("external_apps2", tags=[
                 TagMany("app",
                         iterfunc=lambda s: range(len(s.apps2)),
-                        before=lambda (s,i): s.apps2.append([None, None]),
+                        before=lambda si: si[0].apps2.append([None, None]),
                         tags=[Tag("name",
-                                  get=lambda (s,i),x: s.apps2[i].__setitem__(0, x),
-                                  set=lambda (s,i): s.apps2[i][0]),
+                                  get=lambda si,x: si[0].apps2[si[1]].__setitem__(0, x),
+                                  set=lambda si: si[0].apps2[si[1]][0]),
                               Tag("prog",
-                                  get=lambda (s,i),x: s.apps2[i].__setitem__(1,x),
-                                  set=lambda (s,i): s.apps2[i][1])
+                                  get=lambda si,x: si[0].apps2[si[1]].__setitem__(1,x),
+                                  set=lambda si: si[0].apps2[si[1]][1])
                         ])
             ]),
         ]))
 
-    class Pref (object):
+    class Pref :
         def __init__(self):
             self.window_size = (0, 0)
             self.window_pos = (0, 0)

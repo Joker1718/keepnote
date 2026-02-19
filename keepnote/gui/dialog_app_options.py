@@ -70,17 +70,17 @@ def on_browse(parent, title, filename, entry,
     dialog.destroy()
 
 
-class Section (object):
+class Section :
     """A Section in the Options Dialog"""
 
-    def __init__(self, key, dialog, app, label=u"", icon=None):
+    def __init__(self, key, dialog, app, label="", icon=None):
         self.key = key
         self.dialog = dialog
         self.label = label
         self.icon = icon
 
         self.frame = gtk.Frame("")
-        self.frame.get_label_widget().set_text("<b>%s</b>" % label)
+        self.frame.get_label_widget().set_text(f"<b>{label}</b>")
         self.frame.get_label_widget().set_use_markup(True)
         self.frame.set_property("shadow-type", gtk.SHADOW_NONE)
 
@@ -105,7 +105,7 @@ class Section (object):
 class GeneralSection (Section):
 
     def __init__(self, key, dialog, app,
-                 label=u"", icon="keepnote-16x16.png"):
+                 label="", icon="keepnote-16x16.png"):
         Section.__init__(self, key, dialog, app, label, icon)
 
         self.notebook = None
@@ -250,7 +250,7 @@ class GeneralSection (Section):
 
 class LookAndFeelSection (Section):
 
-    def __init__(self, key, dialog, app, label=u"", icon="lookandfeel.png"):
+    def __init__(self, key, dialog, app, label="", icon="lookandfeel.png"):
         Section.__init__(self, key, dialog, app, label, icon)
 
         w = self.get_default_widget()
@@ -332,7 +332,7 @@ class LookAndFeelSection (Section):
 
 class LanguageSection (Section):
 
-    def __init__(self, key, dialog, app, label=u"", icon=None):
+    def __init__(self, key, dialog, app, label="", icon=None):
         Section.__init__(self, key, dialog, app, label, icon)
 
         w = self.get_default_widget()
@@ -381,7 +381,7 @@ class LanguageSection (Section):
 
 class HelperAppsSection (Section):
 
-    def __init__(self, key, dialog, app, label=u"", icon=None):
+    def __init__(self, key, dialog, app, label="", icon=None):
         Section.__init__(self, key, dialog, app, label, icon)
 
         self.entries = {}
@@ -461,7 +461,7 @@ class HelperAppsSection (Section):
 
 class DatesSection (Section):
 
-    def __init__(self, key, dialog, app, label=u"", icon="time.png"):
+    def __init__(self, key, dialog, app, label="", icon="time.png"):
         Section.__init__(self, key, dialog, app, label, icon)
 
         self.date_xml = gtk.glade.XML(
@@ -472,19 +472,19 @@ class DatesSection (Section):
 
     def load_options(self, app):
         for name in ["same_day", "same_month", "same_year", "diff_year"]:
-            self.date_xml.get_widget("date_%s_entry" % name).\
+            self.date_xml.get_widget(f"date_{name}_entry").\
                 set_text(app.pref.get("timestamp_formats", name))
 
     def save_options(self, app):
         # save date formatting
         for name in ["same_day", "same_month", "same_year", "diff_year"]:
             app.pref.set("timestamp_formats", name, unicode_gtk(
-                self.date_xml.get_widget("date_%s_entry" % name).get_text()))
+                self.date_xml.get_widget(f"date_{name}_entry").get_text()))
 
 
 class EditorSection (Section):
 
-    def __init__(self, key, dialog, app, label=u"", icon=None):
+    def __init__(self, key, dialog, app, label="", icon=None):
         Section.__init__(self, key, dialog, app, label, icon)
 
         w = self.get_default_widget()
@@ -522,7 +522,7 @@ class EditorSection (Section):
 
 class AllNoteBooksSection (Section):
 
-    def __init__(self, key, dialog, app, label=u"", icon="folder.png"):
+    def __init__(self, key, dialog, app, label="", icon="folder.png"):
         Section.__init__(self, key, dialog, app, label, icon)
 
         w = self.get_default_widget()
@@ -538,7 +538,7 @@ class AllNoteBooksSection (Section):
 
 class NoteBookSection (Section):
 
-    def __init__(self, key, dialog, app, notebook, label=u"",
+    def __init__(self, key, dialog, app, notebook, label="",
                  icon="folder.png"):
         Section.__init__(self, key, dialog, app, label, icon)
         self.entries = {}
@@ -584,16 +584,14 @@ class NoteBookSection (Section):
 
             self.notebook_index_dir.set_text(
                 self.notebook.pref.get("index_dir",
-                                       default=u"", type=basestring))
+                                       default="", type=basestring))
 
     def save_options(self, app):
         if self.notebook is not None:
             pref = self.notebook.pref
 
             # save notebook font
-            pref.set("default_font", "%s %d" % (
-                self.notebook_font_family.get_family(),
-                self.notebook_font_size.get_value()))
+            pref.set("default_font", f"{self.notebook_font_family.get_family()} {self.notebook_font_size.get_value():d}")
 
             # alternative index directory
             pref.set("index_dir",  self.notebook_index_dir.get_text())
@@ -601,7 +599,7 @@ class NoteBookSection (Section):
 
 class ExtensionsSection (Section):
 
-    def __init__(self, key, dialog, app, label=u"", icon=None):
+    def __init__(self, key, dialog, app, label="", icon=None):
         Section.__init__(self, key, dialog, app, label, icon)
 
         self.app = app
@@ -746,9 +744,7 @@ class ExtensionWidget (gtk.EventBox):
         # name
         frame2 = gtk.Frame("")
         frame2.set_property("shadow-type", gtk.SHADOW_NONE)
-        frame2.get_label_widget().set_text("<b>%s</b> (%s/%s)" %
-                                           (ext.name, ext.type,
-                                            ext.key))
+        frame2.get_label_widget().set_text(f"<b>{ext.name}</b> ({ext.type}/{ext.key})")
         frame2.get_label_widget().set_use_markup(True)
         frame2.show()
         frame.add(frame2)
@@ -805,7 +801,7 @@ class ExtensionWidget (gtk.EventBox):
 
 #=============================================================================
 
-class ApplicationOptionsDialog (object):
+class ApplicationOptionsDialog :
     """Application options"""
 
     def __init__(self, app):
@@ -854,7 +850,7 @@ class ApplicationOptionsDialog (object):
 
         # add notebook options
         self.notebook_sections = [
-            self.add_section(NoteBookSection("notebook_%d" % i,
+            self.add_section(NoteBookSection(f"notebook_{i:d}",
                                              self.dialog, self.app,
                                              notebook,
                                              notebook.get_title()),

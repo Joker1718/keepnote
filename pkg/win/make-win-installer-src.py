@@ -1,4 +1,3 @@
-
 import sys
 from keepnote import PROGRAM_NAME, PROGRAM_VERSION_TEXT
 

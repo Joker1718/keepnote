@@ -36,7 +36,7 @@ from keepnote.notebook.connection import NoteBookConnection
 
 #=============================================================================
 
-class Node (object):
+class Node :
     def __init__(self, attr={}):
         self.attr = dict(attr)
         self.files = {}

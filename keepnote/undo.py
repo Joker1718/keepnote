@@ -45,7 +45,7 @@ def cat_funcs(funcs):
     return f
 
 
-class UndoStack (object):
+class UndoStack :
     """UndoStack for maintaining undo and redo actions"""
 
     def __init__(self, maxsize=sys.maxint):

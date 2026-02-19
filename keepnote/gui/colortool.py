@@ -118,11 +118,11 @@ def color_str_to_int16(colorstr):
 
 
 def color_int16_to_str(color):
-    return "#%02x%02x%02x" % (color[0]//256, color[1]//256, color[2]//256)
+    return f"#{color[0]//256:02x}{color[1]//256:02x}{color[2]//256:02x}"
 
 
 def color_int8_to_str(color):
-    return "#%02x%02x%02x" % (color[0], color[1], color[2])
+    return f"#{color[0]:02x}{color[1]:02x}{color[2]:02x}"
 
 
 # convert to str

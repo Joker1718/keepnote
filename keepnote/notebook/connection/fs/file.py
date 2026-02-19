@@ -24,7 +24,7 @@ def get_node_filename(node_path, filename):
     return os.path.join(node_path, path_node2local(filename))
 
 
-class FileFS(object):
+class FileFS:
     """
     Implements the NoteBook File API using the file-system.
     """
@@ -44,7 +44,7 @@ class FileFS(object):
             raise FileError("mode must be 'r', 'w', or 'a'")
 
         if filename.endswith("/"):
-            raise FileError("filename '%s' cannot end with '/'" % filename)
+            raise FileError(f"filename '{filename}' cannot end with '/'")
 
         path = self.get_node_path(nodeid) if _path is None else _path
         fullname = get_node_filename(path, filename)
@@ -57,10 +57,9 @@ class FileFS(object):
             # NOTE: always use binary mode to ensure no
             # Window-specific line ending conversion
             stream = safefile.open(fullname, mode + "b", codec=codec)
-        except Exception, e:
+        except Exception as e:
             raise FileError(
-                "cannot open file '%s' '%s': %s" %
-                (nodeid, filename, str(e)), e)
+                f"cannot open file '{nodeid}' '{filename}': {str(e)}", e)
 
         return stream
 
@@ -77,14 +76,13 @@ class FileFS(object):
             else:
                 # filename may not exist, delete is successful by default
                 pass
-        except Exception, e:
-            raise FileError("error deleting file '%s' '%s'" %
-                            (nodeid, filename), e)
+        except Exception as e:
+            raise FileError(f"error deleting file '{nodeid}' '{filename}'", e)
 
     def create_dir(self, nodeid, filename, _path=None):
         """Create directory within node."""
         if not filename.endswith("/"):
-            raise FileError("filename '%s' does not end with '/'" % filename)
+            raise FileError(f"filename '{filename}' does not end with '/'")
 
         path = self.get_node_path(nodeid) if _path is None else _path
         fullname = get_node_filename(path, filename)
@@ -92,14 +90,14 @@ class FileFS(object):
         try:
             if not os.path.isdir(fullname):
                 os.makedirs(fullname)
-        except Exception, e:
+        except Exception as e:
             raise FileError(
-                "cannot create dir '%s' '%s'" % (nodeid, filename), e)
+                f"cannot create dir '{nodeid}' '{filename}'", e)
 
     def list_dir(self, nodeid, filename="/", _path=None):
         """List data files in node."""
         if not filename.endswith("/"):
-            raise FileError("filename '%s' does not end with '/'" % filename)
+            raise FileError(f"filename '{filename}' does not end with '/'")
 
         path = self.get_node_path(nodeid) if _path is None else _path
         path = get_node_filename(path, filename)
@@ -107,8 +105,7 @@ class FileFS(object):
         try:
             filenames = os.listdir(path)
         except:
-            raise UnknownFile("cannot file file '%s' '%s'" %
-                              (nodeid, filename))
+            raise UnknownFile(f"cannot file file '{nodeid}' '{filename}'")
 
         for name in filenames:
             # TODO: extract this as a documented method.
@@ -147,9 +144,8 @@ class FileFS(object):
 
             # rename file
             os.rename(filepath1, filepath2)
-        except Exception, e:
-            raise FileError("could not move file '%s' '%s'" %
-                            (nodeid1, filename1), e)
+        except Exception as e:
+            raise FileError(f"could not move file '{nodeid1}' '{filename1}'", e)
 
     def copy_file(self, nodeid1, filename1, nodeid2, filename2,
                   _path1=None, _path2=None):
@@ -178,6 +174,6 @@ class FileFS(object):
                 # TODO: handle case where filename1 = "/" and
                 # filename2 could be an existing directory
                 shutil.copytree(fullname1, fullname2)
-        except Exception, e:
+        except Exception as e:
             raise FileError(
-                "unable to copy file '%s' '%s'" % (nodeid1, filename1), e)
+                f"unable to copy file '{nodeid1}' '{filename1}'", e)

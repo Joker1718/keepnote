@@ -1,4 +1,3 @@
-
 # python imports
 import unittest
 import os
@@ -128,9 +127,9 @@ class Heal (unittest.TestCase):
 
         time.sleep(1)
 
-        print fs.get_path_mtime(_tmpdir + u"/notebook_tamper/n1")
-        fs.mark_path_outdated(_tmpdir + u"/notebook_tamper/n1")
-        print fs.get_path_mtime(_tmpdir + u"/notebook_tamper/n1")
+        print fs.get_path_mtime(_tmpdir + "/notebook_tamper/n1")
+        fs.mark_path_outdated(_tmpdir + "/notebook_tamper/n1")
+        print fs.get_path_mtime(_tmpdir + "/notebook_tamper/n1")
 
         print "reopening notebook 1"
         book = notebook.NoteBook()

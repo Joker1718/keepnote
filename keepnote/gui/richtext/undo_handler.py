@@ -50,7 +50,7 @@ def add_child_to_buffer(textbuffer, it, anchor):
 #=============================================================================
 # RichTextBaseBuffer undoable actions
 
-class Action (object):
+class Action :
     """A base class for undoable actions in RichTextBuffer"""
 
     def __init__(self):
@@ -194,8 +194,8 @@ class TagAction (Action):
         # TODO: I can probably discard iter's.  Maybe make argument to
         # iter_buffer_contents
         self.contents = filter(
-            lambda (kind, it, param):
-            kind in ("begin", "end") and param == self.tag,
+            lambda kip:
+            kip[0] in ("begin", "end") and kip[2] == self.tag,
             buffer_contents_iter_to_offset(
                 iter_buffer_contents(self.textbuffer, start, end)))
 
@@ -204,7 +204,7 @@ class TagAction (Action):
 # handler class
 
 
-class UndoHandler (object):
+class UndoHandler :
     """TextBuffer Handler that provides undo/redo functionality"""
 
     def __init__(self, textbuffer):

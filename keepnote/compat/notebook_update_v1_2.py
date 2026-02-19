@@ -83,7 +83,7 @@ def update_notebook(filename, desired_version, warn=lambda w: False,
                     node.set_attr("content_type", notebooklib.CONTENT_TYPE_DIR)
 
                 else:
-                    raise Exception("unknown node: '%s'" % str(type(node)))
+                    raise Exception(f"unknown node: '{str(type(node))}'")
 
                 # remove old kind attribute
                 del node._attr["kind"]
@@ -92,7 +92,7 @@ def update_notebook(filename, desired_version, warn=lambda w: False,
                 write_meta_data(node)
                 
                     
-            except Exception, e:
+            except Exception as e:
                 if not warn(e):
                     raise notebooklib.NoteBookError("Could not update notebook", e)
 
@@ -126,14 +126,13 @@ def write_meta_data(node):
             attr = node._notebook.notebook_attrs.get(key, None)
 
             if attr is not None:
-                out.write('<attr key="%s">%s</attr>\n' %
-                          (key, escape(attr.write(val))))
+                out.write(f'<attr key="{key}">{escape(attr.write(val))}</attr>\n')
                 
             elif key == "content_type":
-                out.write('<attr key="content_type">%s</attr>\n' % escape(val))
+                out.write(f'<attr key="content_type">{escape(val)}</attr>\n')
 
         out.write("</node>\n")
         out.close()
-    except Exception, e:
+    except Exception as e:
         raise notebooklib.NoteBookError("Cannot write meta data", e)
 

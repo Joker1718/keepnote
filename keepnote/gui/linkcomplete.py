@@ -1,4 +1,3 @@
-
 # pygtk imports
 import pygtk
 pygtk.require('2.0')

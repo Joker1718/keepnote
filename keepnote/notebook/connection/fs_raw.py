@@ -49,18 +49,18 @@ logging.getLogger('sqlitedict').setLevel(level=logging.WARNING)
 
 
 # constants
-XML_HEADER = u"""\
+XML_HEADER = """\
 <?xml version="1.0" encoding="UTF-8"?>
 """
 
-NODE_META_FILE = u"node.xml"
-NOTEBOOK_META_DIR = u"__NOTEBOOK__"
-NODEDIR = u"nodes"
+NODE_META_FILE = "node.xml"
+NOTEBOOK_META_DIR = "__NOTEBOOK__"
+NODEDIR = "nodes"
 MAX_LEN_NODE_FILENAME = 40
 NULL = object()
 
 
-class NodeFSSimple(object):
+class NodeFSSimple:
     """
     Stores node directories in a directory structure organized by nodeid.
 
@@ -102,10 +102,10 @@ class NodeFSSimple(object):
             return self._rootpath
 
         if len(nodeid) <= self._fansize or len(nodeid) > 255:
-            raise Exception('Nodeid has invalid length: "%s"' % nodeid)
+            raise Exception(f'Nodeid has invalid length: "{nodeid}"')
 
         if not self._is_valid(nodeid):
-            raise Exception('Nodeid is not simple: "%s"' % nodeid)
+            raise Exception(f'Nodeid is not simple: "{nodeid}"')
 
         return os.path.join(self._rootpath, self._othersdir, nodeid)
 
@@ -164,7 +164,7 @@ class NodeFSStandard(NodeFSSimple):
     BANNED_NODEIDS = ['.', '..']
 
     def __init__(self, rootpath, others='00_extra'):
-        super(NodeFSStandard, self).__init__(rootpath)
+        super().__init__(rootpath)
         self._othersdir = others
         assert(len(self._othersdir) > self._fansize)
 
@@ -186,15 +186,15 @@ class NodeFSStandard(NodeFSSimple):
             return self._rootpath
 
         if len(nodeid) < 1 or len(nodeid) > 255:
-            raise Exception('Nodeid has invalid length: "%s"' % nodeid)
+            raise Exception(f'Nodeid has invalid length: "{nodeid}"')
 
         if nodeid in self.BANNED_NODEIDS:
-            raise Exception('Nodeid is banned: "%s"' % nodeid)
+            raise Exception(f'Nodeid is banned: "{nodeid}"')
 
         # Contains invalid characters
         if not re.match(self.VALID_REGEX, nodeid):
             raise Exception(
-                'Nodeid contains invalid characters: "%s"' % nodeid)
+                f'Nodeid contains invalid characters: "{nodeid}"')
 
         if not self._is_other(nodeid):
             return os.path.join(self._rootpath,
@@ -206,14 +206,12 @@ class NodeFSStandard(NodeFSSimple):
 
     def iter_nodeids(self):
         """Iterates through all stored nodeids."""
-        for nodeid in super(NodeFSStandard, self).iter_nodeids():
-            yield nodeid
+        yield from super().iter_nodeids()
 
         # List other nodeids.
         otherspath = os.path.join(self._rootpath, self._othersdir)
         if os.path.exists(otherspath):
-            for filename in os.listdir(otherspath):
-                yield filename
+            yield from os.listdir(otherspath)
 
 
 class NodeFS(NodeFSStandard):
@@ -228,7 +226,7 @@ class NodeFS(NodeFSStandard):
     def __init__(self, rootpath, others='00_extra',
                  index='00_index.db', tablename='nodes',
                  alt_tablename='alt_nodes'):
-        super(NodeFS, self).__init__(rootpath, others=others)
+        super().__init__(rootpath, others=others)
         self._indexfile = os.path.join(self._rootpath, index)
         self._index = sqlitedict.open(self._indexfile, tablename,
                                       flag='c', autocommit=True)
@@ -284,7 +282,7 @@ class NodeFS(NodeFSStandard):
 
     def delete_nodedir(self, nodeid):
         """Delete directory of nodeid."""
-        super(NodeFS, self).delete_nodedir(nodeid)
+        super().delete_nodedir(nodeid)
 
         # non-standard ids need to be removed from the index.
         if self._is_nonstandard(nodeid):
@@ -296,7 +294,7 @@ class NodeFS(NodeFSStandard):
 
     def close(self):
         """Cease any more interaction with the filesystem."""
-        super(NodeFS, self).close()
+        super().close()
 
         # Close indexes, wait on thread cleanup.
         conn1 = self._index.conn
@@ -308,7 +306,7 @@ class NodeFS(NodeFSStandard):
 
     def iter_nodeids(self):
         """Iterates through all stored nodeids."""
-        for nodeid in super(NodeFS, self).iter_nodeids():
+        for nodeid in super().iter_nodeids():
             # Do not yield alternate nodeids.
             if nodeid not in self._index_alt:
                 yield nodeid

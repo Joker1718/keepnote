@@ -40,7 +40,7 @@ from .richtextbase_tags import RichTextTag
 # fonts buffer
 
 
-class RichTextBaseFont (object):
+class RichTextBaseFont :
     """Class for representing a font in a simple way"""
     def __init__(self):
         pass

@@ -75,8 +75,8 @@ class Extension (keepnote.gui.extension.Extension):
                     continue
                 try:
                     self.app.add_command(command)
-                except Exception, e:
-                    self.app.error("Could not add command '%s'" % command.name,
+                except Exception as e:
+                    self.app.error(f"Could not add command '{command.name}'",
                                    e, sys.exc_info()[2])
 
         else:
@@ -98,15 +98,15 @@ class Extension (keepnote.gui.extension.Extension):
 
         # start server in another thread
         host = "localhost"
-        url = "http://%s:%d/" % (host, port)
+        url = f"http://{host}:{port:d}/"
         server = NoteBookHttpServer(conn, host="localhost", port=port)
 
         if port in self._ports:
-            raise Exception("Server already on port %d" % port)
+            raise Exception(f"Server already on port {port:d}")
 
         self._ports[port] = server
 
-        keepnote.log_message("starting server:\n%s\n" % url)
+        keepnote.log_message(f"starting server:\n{url}\n")
         thread.start_new_thread(server.serve_forever, ())
 
         if host == "localhost":
@@ -118,11 +118,11 @@ class Extension (keepnote.gui.extension.Extension):
         port = int(args[1])
 
         if port not in self._ports:
-            raise Exception("No server is on port %d" % port)
+            raise Exception(f"No server is on port {port:d}")
 
         server = self._ports[port]
 
-        keepnote.log_message("stopping server on port %d...\n" % port)
+        keepnote.log_message(f"stopping server on port {port:d}...\n")
         server.shutdown()
 
         del self._ports[port]

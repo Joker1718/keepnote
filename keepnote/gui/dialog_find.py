@@ -34,7 +34,7 @@ import keepnote
 from keepnote import get_resource, unicode_gtk
 
 
-class KeepNoteFindDialog (object):
+class KeepNoteFindDialog :
     """ Find dialog """
 
     def __init__(self, editor):

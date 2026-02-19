@@ -41,7 +41,7 @@ def parse_utf(text):
         return unicode(text, "utf8")
 
 
-class DragDropTestDialog (object):
+class DragDropTestDialog :
     """Drag and drop testing dialog"""
 
     def __init__(self, main_window):
@@ -116,5 +116,5 @@ class DragDropTestDialog (object):
         buf.insert_at_cursor("sel.targets = " +
                              repr(selection_data.get_targets()) + "\n")
         buf.insert_at_cursor("type(sel.data) = " + str(type(data))+"\n")
-        print "sel.data = " + repr(data)[:1000]+"\n"
+        sys.stdout.write("sel.data = " + repr(data)[:1000]+"\n\n")
         buf.insert_at_cursor("sel.data = " + repr(data)[:5000] + "\n")

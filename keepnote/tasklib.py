@@ -35,7 +35,7 @@ RUNNING = 1
 STOPPING = 2
 
 
-class Task (object):
+class Task :
 
     def __init__(self, func=None, autofinish=True):
         self._lock = threading.RLock()

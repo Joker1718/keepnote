@@ -42,7 +42,7 @@ from keepnote.gui.icons import get_node_icon
 _ = keepnote.translate
 
 
-class TwoWayDict (object):
+class TwoWayDict :
 
     def __init__(self):
 

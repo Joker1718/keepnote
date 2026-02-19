@@ -1,4 +1,3 @@
-
 # python imports
 import os
 import unittest
@@ -62,7 +61,7 @@ class Sync (unittest.TestCase):
 
         # check for newer node
         attr = notebook2._conn.read_node(n.get_attr("nodeid"))
-        self.assert_(attr["title"] == "node2")
+        self.assertTrue(attr["title"] == "node2")
 
         # rename node and decrease modified time
         # transfer should detect conflict and reject transfer
@@ -75,5 +74,5 @@ class Sync (unittest.TestCase):
 
         # check for original node
         attr = notebook2._conn.read_node(n.get_attr("nodeid"))
-        self.assert_(attr["title"] == "node2")
+        self.assertTrue(attr["title"] == "node2")
         notebook2.close()

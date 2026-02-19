@@ -19,7 +19,7 @@ class TestCaseRichTextBuffer (BufferBase):
         self.buffer.insert_at_cursor(" again")
         self.buffer.toggle_tag_selected(italic)
         self.buffer.insert_at_cursor(" this is me")
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['hi there',
                            'BEGIN:bold',
                            ' hello',
@@ -33,7 +33,7 @@ class TestCaseRichTextBuffer (BufferBase):
         print
         dom.display()
 
-        self.assertEquals([display_item(x) for x in dom.get_contents()],
+        self.assertEqual([display_item(x) for x in dom.get_contents()],
                           ['hi there',
                            'BEGIN:bold',
                            ' hello',
@@ -48,29 +48,29 @@ class TestCaseRichTextBuffer (BufferBase):
         self.buffer.insert_at_cursor("hi there")
         self.buffer.insert_at_cursor(" again")
 
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['hi there again'])
 
         # undo insert
         self.buffer.undo()
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['hi there'])
 
         # undo insert
         self.buffer.undo()
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           [])
 
         # redo insert
         self.buffer.redo()
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['hi there'])
 
         # do bold insert
         bold = self.buffer.tag_table.lookup("bold")
         self.buffer.toggle_tag_selected(bold)
         self.buffer.insert_at_cursor(" hello")
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['hi there',
                            'BEGIN:bold',
                            ' hello',
@@ -78,24 +78,24 @@ class TestCaseRichTextBuffer (BufferBase):
 
         # undo bold insert
         self.buffer.undo()
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['hi there'])
 
         # undo everything
         self.buffer.undo()
         self.buffer.undo()
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           [])
 
         # redo first insert
         self.buffer.redo()
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['hi there'])
 
         # redo bold insert
         self.buffer.redo()
         self.buffer.redo()
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['hi there',
                            'BEGIN:bold',
                            ' hello',
@@ -108,7 +108,7 @@ class TestCaseRichTextBuffer (BufferBase):
         bold = self.buffer.tag_table.lookup("bold")
         self.buffer.toggle_tag_selected(bold)
         self.buffer.insert_at_cursor("hi there")
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['BEGIN:bold',
                            'hi there',
                            'END:bold'])
@@ -116,7 +116,7 @@ class TestCaseRichTextBuffer (BufferBase):
         # do unbold insert
         self.buffer.toggle_tag_selected(bold)
         self.buffer.insert_at_cursor(" hello")
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['BEGIN:bold',
                            'hi there',
                            'END:bold',
@@ -124,7 +124,7 @@ class TestCaseRichTextBuffer (BufferBase):
 
         # undo bold insert
         self.buffer.undo()
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['BEGIN:bold',
                            'hi there',
                            'END:bold'])
@@ -132,7 +132,7 @@ class TestCaseRichTextBuffer (BufferBase):
         # redo unbold insert
         # TEST: bug was that ' hello' would also be bold
         self.buffer.redo()
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['BEGIN:bold',
                            'hi there',
                            'END:bold',
@@ -153,13 +153,13 @@ class TestCaseRichTextBuffer (BufferBase):
 
         self.buffer.undo()
 
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['BEGIN:family Serif',
                            'hello',
                            'END:family Serif'])
 
         self.buffer.redo()
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['BEGIN:family Monospace',
                            'hello',
                            'END:family Monospace'])
@@ -177,13 +177,13 @@ class TestCaseRichTextBuffer (BufferBase):
                                        self.buffer.get_end_iter())
 
         self.buffer.undo()
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['BEGIN:size 20',
                            'hello',
                            'END:size 20'])
 
         self.buffer.redo()
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['BEGIN:size 30',
                            'hello',
                            'END:size 30'])

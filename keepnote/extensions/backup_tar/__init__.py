@@ -116,7 +116,7 @@ class Extension (extension.Extension):
                 time.strftime("-%Y-%m-%d"), ".tar.gz", ".")
         else: 
             filename = os.path.basename(notebook.get_path()) + \
-                time.strftime("-%Y-%m-%d") + u".tar.gz"
+                time.strftime("-%Y-%m-%d") + ".tar.gz"
         
         dialog.set_current_name(os.path.basename(filename))
 
@@ -137,8 +137,8 @@ class Extension (extension.Extension):
             filename = unicode_gtk(dialog.get_filename())
             dialog.destroy()
 
-            if u"." not in filename:
-                filename += u".tar.gz"
+            if "." not in filename:
+                filename += ".tar.gz"
 
             window.set_status("Archiving...")
             return self.archive_notebook(notebook, filename, window)
@@ -235,8 +235,7 @@ class Extension (extension.Extension):
 
         if window:
 
-            window.wait_dialog("Creating archive '%s'..." %
-                               os.path.basename(filename),
+            window.wait_dialog(f"Creating archive '{os.path.basename(filename)}'...",
                                "Beginning archive...",
                                task)
 
@@ -248,13 +247,13 @@ class Extension (extension.Extension):
                 window.set_status("Notebook archived")
                 return True
 
-            except NoteBookError, e:
+            except NoteBookError as e:
                 window.set_status("")
-                window.error("Error while archiving notebook:\n%s" % e.msg, e,
+                window.error(f"Error while archiving notebook:\n{e.msg}", e,
                              tracebk)
                 return False
 
-            except Exception, e:
+            except Exception as e:
                 window.set_status("")
                 window.error("unknown error", e, tracebk)
                 return False
@@ -276,8 +275,7 @@ class Extension (extension.Extension):
             task = tasklib.Task(lambda task:
                 restore_notebook(archive_filename, notebook_filename, True, task))
 
-            window.wait_dialog("Restoring notebook from '%s'..." %
-                               os.path.basename(archive_filename),
+            window.wait_dialog(f"Restoring notebook from '{os.path.basename(archive_filename)}'...",
                                "Opening archive...",
                                task)
 
@@ -288,12 +286,12 @@ class Extension (extension.Extension):
                     raise error
                 window.set_status("Notebook restored")
 
-            except NoteBookError, e:
+            except NoteBookError as e:
                 window.set_status("")
-                window.error("Error restoring notebook:\n%s" % e.msg, e, tracebk)
+                window.error(f"Error restoring notebook:\n{e.msg}", e, tracebk)
                 return
 
-            except Exception, e:
+            except Exception as e:
                 window.set_status("")
                 window.error("unknown error", e, tracebk)
                 return
@@ -323,12 +321,12 @@ def archive_notebook(notebook, filename, task=None):
 
 
     if os.path.exists(filename):
-        raise NoteBookError("File '%s' already exists" % filename)
+        raise NoteBookError(f"File '{filename}' already exists")
 
     # make sure all modifications are saved first
     try:
         notebook.save()
-    except Exception, e:
+    except Exception as e:
         raise NoteBookError("Could not save notebook before archiving", e)
 
 
@@ -341,7 +339,7 @@ def archive_notebook(notebook, filename, task=None):
     for root, dirs, files in os.walk(path):
         nfiles += len(files)
 
-    task.set_message(("text", "Archiving %d files..." % nfiles))
+    task.set_message(("text", f"Archiving {nfiles:d} files..."))
 
     nfiles2 = [0]
     def walk(path, arcname):
@@ -420,8 +418,7 @@ def restore_notebook(filename, path, rename, task=None):
             members = list(tar.getmembers())
 
             if task:
-                task.set_message(("text", "Restoring %d files..." %
-                                  len(members)))
+                task.set_message(("text", f"Restoring {len(members):d} files..."))
 
             for i, member in enumerate(members):
                 # FIX: tarfile does not seem to keep unicode and str straight
@@ -447,10 +444,10 @@ def restore_notebook(filename, path, rename, task=None):
                 os.rmdir(tmppath)
 
 
-        except NoteBookError, e:
+        except NoteBookError as e:
             raise e
         
-        except Exception, e:
+        except Exception as e:
             raise NoteBookError("File writing error while extracting notebook", e)
 
     else:
@@ -458,7 +455,7 @@ def restore_notebook(filename, path, rename, task=None):
             if task:
                 task.set_message(("text", "Restoring archive..."))
             tar.extractall(path)
-        except Exception, e:
+        except Exception as e:
             raise NoteBookError("File writing error while extracting notebook", e)
 
     task.finish()
@@ -476,12 +473,12 @@ def archive_notebook_zip(notebook, filename, task=None):
     """
 
     if os.path.exists(filename):
-        raise NoteBookError("File '%s' already exists" % filename)
+        raise NoteBookError(f"File '{filename}' already exists")
 
     # make sure all modifications are saved first
     try:
         notebook.save()
-    except Exception, e:
+    except Exception as e:
         raise NoteBookError("Could not save notebook before archiving", e)
 
     # perform archiving
@@ -534,5 +531,5 @@ def archive_notebook_zip(notebook, filename, task=None):
             task.finish()
             
         
-    except Exception, e:
+    except Exception as e:
         raise NoteBookError("Error while archiving notebook", e)

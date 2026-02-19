@@ -29,7 +29,7 @@
 
 # python imports
 try:
-    import xml.etree.cElementTree as ET
+    import xml.etree.ElementTree as ET
 except ImportError:
     import xml.etree.elementtree.ElementTree as ET
 from StringIO import StringIO
@@ -45,7 +45,7 @@ except (ImportError, ValueError):
     OrderDict = dict
 
 
-class Data (object):
+class Data :
     def __init__(self, text):
         self.text = text
 
@@ -60,12 +60,12 @@ _unmarshallers = {
     "array": lambda x: [v.text for v in x],
     "dict": lambda x: OrderDict(
         (x[i].text, x[i+1].text) for i in range(0, len(x), 2)),
-    "key": lambda x: x.text or u"",
+    "key": lambda x: x.text or "",
 
     # simple types
-    "string": lambda x: x.text or u"",
-    "data": lambda x: Data(base64.decodestring(x.text or u"")),
-    "date": lambda x: datetime.datetime(*map(int, re.findall("\d+", x.text))),
+    "string": lambda x: x.text or "",
+    "data": lambda x: Data(base64.decodestring(x.text or "")),
+    "date": lambda x: datetime.datetime(*map(int, re.findall(r"\d+", x.text))),
     "true": lambda x: True,
     "false": lambda x: False,
     "real": lambda x: float(x.text),
@@ -85,7 +85,7 @@ def load(infile=sys.stdin):
             elem.clear()
             elem.text = data
         elif elem.tag != "plist":
-            raise IOError("unknown plist type: %r" % elem.tag)
+            raise OSError(f"unknown plist type: {elem.tag!r}")
 
     return parser.root.text
 
@@ -104,7 +104,7 @@ def load_etree(elm):
         elm.clear()
         elm.text = data
     elif elm.tag != "plist":
-        raise IOError("unknown plist type: %r" % elm.tag)
+        raise OSError(f"unknown plist type: {elm.tag!r}")
 
     return elm.text
 
@@ -115,60 +115,59 @@ def dump(elm, out=sys.stdout, indent=0, depth=0, suppress=False):
         out.write(" " * depth)
 
     if isinstance(elm, dict):
-        out.write(u"<dict>")
+        out.write("<dict>")
         if indent:
-            out.write(u"\n")
+            out.write("\n")
         for key, val in elm.iteritems():
             if indent:
                 out.write(" " * (depth + indent))
-            out.write(u"<key>%s</key>" % key)
+            out.write(f"<key>{key}</key>")
             dump(val, out, indent, depth+indent, suppress=True)
         if indent:
             out.write(" " * depth)
-        out.write(u"</dict>")
+        out.write("</dict>")
 
     elif isinstance(elm, (list, tuple)):
-        out.write(u"<array>")
+        out.write("<array>")
         if indent:
-            out.write(u"\n")
+            out.write("\n")
         for item in elm:
             dump(item, out, indent, depth+indent)
         if indent:
             out.write(" " * depth)
-        out.write(u"</array>")
+        out.write("</array>")
 
     elif isinstance(elm, basestring):
-        out.write(u"<string>%s</string>" % escape(elm))
+        out.write(f"<string>{escape(elm)}</string>")
 
     elif isinstance(elm, bool):
         if elm:
-            out.write(u"<true/>")
+            out.write("<true/>")
         else:
-            out.write(u"<false/>")
+            out.write("<false/>")
 
     elif isinstance(elm, (int, long)):
-        out.write(u"<integer>%d</integer>" % elm)
+        out.write(f"<integer>{elm:d}</integer>")
 
     elif isinstance(elm, float):
-        out.write(u"<real>%f</real>" % elm)
+        out.write(f"<real>{elm:f}</real>")
 
     elif elm is None:
-        out.write(u"<null/>")
+        out.write("<null/>")
 
     elif isinstance(elm, Data):
-        out.write(u"<data>")
+        out.write("<data>")
         base64.encode(StringIO(elm), out)
-        out.write(u"</data>")
+        out.write("</data>")
 
     elif isinstance(elm, datetime.datetime):
         raise Exception("not implemented")
 
     else:
-        raise Exception("unknown data type '%s' for value '%s'" %
-                        (str(type(elm)), str(elm)))
+        raise Exception(f"unknown data type '{str(type(elm))}' for value '{str(elm)}'")
 
     if indent:
-        out.write(u"\n")
+        out.write("\n")
 
 
 def dumps(elm, indent=0):
@@ -220,7 +219,6 @@ def dump_etree(elm):
         raise Exception("not implemented")
 
     else:
-        raise Exception("unknown data type '%s' for value '%s'" %
-                        (str(type(elm)), str(elm)))
+        raise Exception(f"unknown data type '{str(type(elm))}' for value '{str(elm)}'")
 
     return elm2

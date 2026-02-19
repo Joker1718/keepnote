@@ -36,7 +36,7 @@ from keepnote import get_resource
 # TODO: separate out error callback
 
 
-class ImageResizeDialog (object):
+class ImageResizeDialog :
     """Image Resize dialog """
 
     def __init__(self, main_window, app_pref):

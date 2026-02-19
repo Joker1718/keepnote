@@ -82,7 +82,7 @@ def get_path_from_node(model, node, node_col):
     return tuple(path)
 
 
-class TreeModelColumn (object):
+class TreeModelColumn :
 
     def __init__(self, name, datatype, attr=None, get=lambda node: ""):
         self.pos = None
@@ -343,7 +343,7 @@ class BaseTreeModel (gtk.GenericTreeModel):
 
         for i in path[1:]:
             if i >= len(node.get_children()):
-                print path
+                sys.stdout.write(str(path) + "\n")
                 raise ValueError()
             node = node.get_children()[i]
 
@@ -426,7 +426,7 @@ class BaseTreeModel (gtk.GenericTreeModel):
         else:
             children = parent.get_children()
             if n >= len(children):
-                print "out of bounds", parent.get_title(), n
+                sys.stdout.write(f"out of bounds {parent.get_title()} {n:d}\n")
                 return None
             else:
                 return children[n]

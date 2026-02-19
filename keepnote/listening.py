@@ -25,7 +25,7 @@
 #
 
 
-class Listeners (object):
+class Listeners :
     """Maintains a list of listeners (functions) that are called when the
        notify function is called.
     """

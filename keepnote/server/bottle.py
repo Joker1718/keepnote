@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """
 Bottle is a fast and simple micro-framework for small web applications. It
 offers request dispatching (Routes) with url parameter support, templates,
@@ -13,7 +12,6 @@ Copyright (c) 2014, Marcel Hellkamp.
 License: MIT (see LICENSE for details)
 """
 
-from __future__ import with_statement
 
 __author__ = 'Marcel Hellkamp'
 __version__ = '0.13-dev'
@@ -76,7 +74,7 @@ def _e(): return sys.exc_info()[1]
 # and a fallback for mod_wsgi (resticts stdout/err attribute access)
 try:
     _stdout, _stderr = sys.stdout.write, sys.stderr.write
-except IOError:
+except OSError:
     _stdout = lambda x: sys.stdout.write(x)
     _stderr = lambda x: sys.stderr.write(x)
 
@@ -88,7 +86,7 @@ if py3k:
     from urllib.parse import urlencode, quote as urlquote, unquote as urlunquote
     urlunquote = functools.partial(urlunquote, encoding='latin1')
     from http.cookies import SimpleCookie
-    from collections import MutableMapping as DictMixin
+    from collections.abc import MutableMapping as DictMixin
     import pickle
     from io import BytesIO
     from configparser import ConfigParser
@@ -115,7 +113,7 @@ else: # 2.x
         def next(it): return it.next()
         bytes = str
     else: # 2.6, 2.7
-        from collections import MutableMapping as DictMixin
+        from collections.abc import MutableMapping as DictMixin
     unicode = unicode
     json_loads = json_lds
     eval(compile('def _raise(*a): raise a[0], a[1], a[2]', '<py3fix>', 'exec'))
@@ -166,7 +164,7 @@ def makelist(data): # This is just to handy
         return []
 
 
-class DictProperty(object):
+class DictProperty:
     """ Property that maps to a key in a local dict-like attribute. """
     def __init__(self, attr, key=None, read_only=False):
         self.attr, self.key, self.read_only = attr, key, read_only
@@ -191,7 +189,7 @@ class DictProperty(object):
         del getattr(obj, self.attr)[self.key]
 
 
-class cached_property(object):
+class cached_property:
     """ A property that is only computed once per instance and then replaces
         itself with an ordinary attribute. Deleting the attribute resets the
         property. """
@@ -206,7 +204,7 @@ class cached_property(object):
         return value
 
 
-class lazy_attribute(object):
+class lazy_attribute:
     """ A property that caches itself to the class object. """
     def __init__(self, func):
         functools.update_wrapper(self, func, updated=[])
@@ -269,7 +267,7 @@ def _re_flatten(p):
         lambda m: m.group(0) if len(m.group(1)) % 2 else m.group(1) + '(?:', p)
 
 
-class Router(object):
+class Router:
     """ A Router is an ordered collection of route->target pairs. It is used to
         efficiently match WSGI requests against a number of routes and return
         the first target that satisfies the request. The target may be anything,
@@ -351,7 +349,7 @@ class Router(object):
                     key = 'anon%d' % anons
                     anons += 1
                 else:
-                    pattern += '(?P<%s>%s)' % (key, mask)
+                    pattern += f'(?P<{key}>{mask})'
                     keys.append(key)
                 if in_filter: filters.append((key, in_filter))
                 builder.append((key, out_filter or str))
@@ -371,7 +369,7 @@ class Router(object):
             re_pattern = re.compile('^(%s)$' % pattern)
             re_match = re_pattern.match
         except re.error:
-            raise RouteSyntaxError("Could not add Route: %s (%s)" % (rule, _e()))
+            raise RouteSyntaxError(f"Could not add Route: {rule} ({_e()})")
 
         if filters:
             def getargs(path):
@@ -447,7 +445,7 @@ class Router(object):
                         return target, getargs(path) if getargs else {}
 
         # No matching route found. Collect alternative methods for 405 response
-        allowed = set([])
+        allowed = set()
         nocheck = set(methods)
         for method in set(self.static) - nocheck:
             if path in self.static[method]:
@@ -469,7 +467,7 @@ class Router(object):
 
 
 
-class Route(object):
+class Route:
     """ This class wraps a route callback along with route specific metadata and
         configuration and applies Plugins on demand. It is also responsible for
         turing an URL path rule into a regular expression usable by the Router.
@@ -561,7 +559,7 @@ class Route(object):
 
     def __repr__(self):
         cb = self.get_undecorated_callback()
-        return '<%s %r %r>' % (self.method, self.rule, cb)
+        return f'<{self.method} {self.rule!r} {cb!r}>'
 
 
 
@@ -573,7 +571,7 @@ class Route(object):
 ###############################################################################
 
 
-class Bottle(object):
+class Bottle:
     """ Each Bottle object represents a single, distinct web application and
         consists of routes, callbacks, plugins, resources and configuration.
         Instances are callable WSGI applications.
@@ -613,7 +611,7 @@ class Bottle(object):
 
     @cached_property
     def _hooks(self):
-        return dict((name, []) for name in self.__hook_names)
+        return {name: [] for name in self.__hook_names}
 
     def add_hook(self, name, func):
         """ Attach a callback to a hook. Three hooks are currently implemented:
@@ -992,7 +990,7 @@ class Bottle(object):
 # HTTP and WSGI Tools ##########################################################
 ###############################################################################
 
-class BaseRequest(object):
+class BaseRequest:
     """ A wrapper for WSGI environment dictionaries that adds a lot of
         convenient access methods and properties. Most of them are read-only.
 
@@ -1389,7 +1387,7 @@ class BaseRequest(object):
             self.environ.pop('bottle.request.'+key, None)
 
     def __repr__(self):
-        return '<%s: %s %s>' % (self.__class__.__name__, self.method, self.url)
+        return f'<{self.__class__.__name__}: {self.method} {self.url}>'
 
     def __getattr__(self, name):
         """ Search in self.environ for additional user defined attributes. """
@@ -1410,7 +1408,7 @@ def _hkey(s):
     return s.title().replace('_','-')
 
 
-class HeaderProperty(object):
+class HeaderProperty:
     def __init__(self, name, reader=None, writer=str, default=''):
         self.name, self.default = name, default
         self.reader, self.writer = reader, writer
@@ -1428,7 +1426,7 @@ class HeaderProperty(object):
         del obj.headers[self.name]
 
 
-class BaseResponse(object):
+class BaseResponse:
     """ Storage class for a response body as well as headers and cookies.
 
         This class does support dict-like case-insensitive item-access to
@@ -1450,10 +1448,10 @@ class BaseResponse(object):
     # Header blacklist for specific response codes
     # (rfc2616 section 10.2.3 and 10.3.5)
     bad_headers = {
-        204: set(('Content-Type',)),
-        304: set(('Allow', 'Content-Encoding', 'Content-Language',
+        204: {'Content-Type'},
+        304: {'Allow', 'Content-Encoding', 'Content-Language',
                   'Content-Length', 'Content-Range', 'Content-Type',
-                  'Content-Md5', 'Last-Modified'))}
+                  'Content-Md5', 'Last-Modified'}}
 
     def __init__(self, body='', status=None, headers=None, **more_headers):
         self._cookies = None
@@ -1475,7 +1473,7 @@ class BaseResponse(object):
         assert issubclass(cls, BaseResponse)
         copy = cls()
         copy.status = self.status
-        copy._headers = dict((k, v[:]) for (k, v) in self._headers.items())
+        copy._headers = {k: v[:] for (k, v) in self._headers.items()}
         if self._cookies:
             copy._cookies = SimpleCookie()
             copy._cookies.load(self._cookies.output())
@@ -1648,7 +1646,7 @@ class BaseResponse(object):
     def __repr__(self):
         out = ''
         for name, value in self.headerlist:
-            out += '%s: %s\n' % (name.title(), value.strip())
+            out += f'{name.title()}: {value.strip()}\n'
         return out
 
 
@@ -1693,7 +1691,7 @@ Response = BaseResponse
 
 class HTTPResponse(Response, BottleException):
     def __init__(self, body='', status=None, headers=None, **more_headers):
-        super(HTTPResponse, self).__init__(body, status, headers, **more_headers)
+        super().__init__(body, status, headers, **more_headers)
 
     def apply(self, other):
         other._status_code = self._status_code
@@ -1709,7 +1707,7 @@ class HTTPError(HTTPResponse):
                  **options):
         self.exception = exception
         self.traceback = traceback
-        super(HTTPError, self).__init__(body, status, **options)
+        super().__init__(body, status, **options)
 
 
 
@@ -1722,7 +1720,7 @@ class HTTPError(HTTPResponse):
 class PluginError(BottleException): pass
 
 
-class JSONPlugin(object):
+class JSONPlugin:
     name = 'json'
     api  = 2
 
@@ -1752,7 +1750,7 @@ class JSONPlugin(object):
         return wrapper
 
 
-class TemplatePlugin(object):
+class TemplatePlugin:
     """ This plugin applies the :func:`view` decorator to all routes with a
         `template` config parameter. If the parameter is a tuple, the second
         element must be a dict with additional options (e.g. `template_engine`)
@@ -1771,7 +1769,7 @@ class TemplatePlugin(object):
 
 
 #: Not a plugin, but part of the plugin API. TODO: Find a better place.
-class _ImportRedirect(object):
+class _ImportRedirect:
     def __init__(self, name, impmask):
         """ Create a virtual package that redirects imports (see PEP 302). """
         self.name = name
@@ -1814,7 +1812,7 @@ class MultiDict(DictMixin):
     """
 
     def __init__(self, *a, **k):
-        self.dict = dict((k, [v]) for (k, v) in dict(*a, **k).items())
+        self.dict = {k: [v] for (k, v) in dict(*a, **k).items()}
 
     def __len__(self): return len(self.dict)
     def __iter__(self): return iter(self.dict)
@@ -1923,7 +1921,7 @@ class FormsDict(MultiDict):
     def __getattr__(self, name, default=unicode()):
         # Without this guard, pickle generates a cryptic TypeError:
         if name.startswith('__') and name.endswith('__'):
-            return super(FormsDict, self).__getattr__(name)
+            return super().__getattr__(name)
         return self.getunicode(name, default=default)
 
 
@@ -2106,7 +2104,7 @@ class AppStack(list):
         return value
 
 
-class WSGIFileWrapper(object):
+class WSGIFileWrapper:
 
     def __init__(self, fp, buffer_size=1024*64):
         self.fp, self.buffer_size = fp, buffer_size
@@ -2121,7 +2119,7 @@ class WSGIFileWrapper(object):
             yield part
 
 
-class _closeiter(object):
+class _closeiter:
     """ This only exists to be able to attach a .close method to iterators that
         do not support attribute assignment (most of itertools). """
 
@@ -2137,7 +2135,7 @@ class _closeiter(object):
             func()
 
 
-class ResourceManager(object):
+class ResourceManager:
     """ This class manages a list of search paths and helps to find and open
         application-bound resources (files).
 
@@ -2219,11 +2217,11 @@ class ResourceManager(object):
     def open(self, name, mode='r', *args, **kwargs):
         """ Find a resource and return a file object, or raise IOError. """
         fname = self.lookup(name)
-        if not fname: raise IOError("Resource %r not found." % name)
+        if not fname: raise OSError("Resource %r not found." % name)
         return self.opener(fname, mode=mode, *args, **kwargs)
 
 
-class FileUpload(object):
+class FileUpload:
 
     def __init__(self, fileobj, name, filename, headers=None):
         """ Wrapper for file uploads. """
@@ -2279,7 +2277,7 @@ class FileUpload(object):
             if os.path.isdir(destination):
                 destination = os.path.join(destination, self.filename)
             if not overwrite and os.path.exists(destination):
-                raise IOError('File exists.')
+                raise OSError('File exists.')
             with open(destination, 'wb') as fp:
                 self._copy_file(fp, chunk_size)
         else:
@@ -2607,7 +2605,7 @@ url       = make_default_app_wrapper('get_url')
 ###############################################################################
 
 
-class ServerAdapter(object):
+class ServerAdapter:
     quiet = False
     def __init__(self, host='127.0.0.1', port=8080, **options):
         self.options = options
@@ -2619,7 +2617,7 @@ class ServerAdapter(object):
 
     def __repr__(self):
         args = ', '.join(['%s=%s'%(k,repr(v)) for k, v in self.options.items()])
-        return "%s(%s)" % (self.__class__.__name__, args)
+        return f"{self.__class__.__name__}({args})"
 
 
 class CGIServer(ServerAdapter):
@@ -2931,7 +2929,7 @@ def load(target, **namespace):
     if target.isalnum(): return getattr(sys.modules[module], target)
     package_name = module.split('.')[0]
     namespace[package_name] = sys.modules[package_name]
-    return eval('%s.%s' % (module, target), namespace)
+    return eval(f'{module}.{target}', namespace)
 
 
 def load_app(target):
@@ -3016,7 +3014,7 @@ def run(app=None, server='wsgiref', host='127.0.0.1', port=8080,
 
         server.quiet = server.quiet or quiet
         if not server.quiet:
-            _stderr("Bottle v%s server starting up (using %s)...\n" % (__version__, repr(server)))
+            _stderr(f"Bottle v{__version__} server starting up (using {repr(server)})...\n")
             _stderr("Listening on http://%s:%d/\n" % (server.host, server.port))
             _stderr("Hit Ctrl-C to quit.\n\n")
 
@@ -3097,7 +3095,7 @@ class TemplateError(HTTPError):
         HTTPError.__init__(self, 500, message)
 
 
-class BaseTemplate(object):
+class BaseTemplate:
     """ Base class and minimal API for template adapters """
     extensions = ['tpl','html','thtml','stpl']
     settings = {} #used in prepare()
@@ -3147,8 +3145,8 @@ class BaseTemplate(object):
             if not fname.startswith(spath): continue
             if os.path.isfile(fname): return fname
             for ext in cls.extensions:
-                if os.path.isfile('%s.%s' % (fname, ext)):
-                    return '%s.%s' % (fname, ext)
+                if os.path.isfile(f'{fname}.{ext}'):
+                    return f'{fname}.{ext}'
 
     @classmethod
     def global_config(cls, key, *args):
@@ -3309,7 +3307,7 @@ class SimpleTemplate(BaseTemplate):
 class StplSyntaxError(TemplateError): pass
 
 
-class StplParser(object):
+class StplParser:
     """ Parser for stpl templates. """
     _re_cache = {} #: Cache for compiled re patterns
     # This huge pile of voodoo magic splits python code into 8 different tokens.
@@ -3533,7 +3531,7 @@ HTTP_CODES[428] = "Precondition Required"
 HTTP_CODES[429] = "Too Many Requests"
 HTTP_CODES[431] = "Request Header Fields Too Large"
 HTTP_CODES[511] = "Network Authentication Required"
-_HTTP_STATUS_LINES = dict((k, '%d %s'%(k,v)) for (k,v) in HTTP_CODES.items())
+_HTTP_STATUS_LINES = {k: '%d %s'%(k,v) for (k,v) in HTTP_CODES.items()}
 
 #: The default template used for error pages. Override with @error()
 ERROR_PAGE_TEMPLATE = """

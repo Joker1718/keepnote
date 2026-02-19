@@ -56,8 +56,8 @@ _ = keepnote.translate
 # constants
 
 MAX_RECENT_NOTEBOOKS = 20
-ACCEL_FILE = u"accel.txt"
-IMAGE_DIR = u"images"
+ACCEL_FILE = "accel.txt"
+IMAGE_DIR = "images"
 CONTEXT_MENU_ACCEL_PATH = "<main>/context_menu"
 
 DEFAULT_AUTOSAVE_TIME = 10 * 1000  # 10 sec (in msec)
@@ -65,7 +65,7 @@ DEFAULT_AUTOSAVE_TIME = 10 * 1000  # 10 sec (in msec)
 # font constants
 DEFAULT_FONT_FAMILY = "Sans"
 DEFAULT_FONT_SIZE = 10
-DEFAULT_FONT = "%s %d" % (DEFAULT_FONT_FAMILY, DEFAULT_FONT_SIZE)
+DEFAULT_FONT = f"{DEFAULT_FONT_FAMILY} {DEFAULT_FONT_SIZE:d}"
 
 if keepnote.get_platform() == "darwin":
     CLIPBOARD_NAME = gdk.SELECTION_PRIMARY
@@ -116,7 +116,7 @@ def color_float_to_int8(color):
 
 
 def color_int8_to_str(color):
-    return "#%02x%02x%02x" % (color[0], color[1], color[2])
+    return f"#{color[0]:02x}{color[1]:02x}{color[2]:02x}"
 
 DEFAULT_COLORS = [color_int8_to_str(color_float_to_int8(color))
                   for color in DEFAULT_COLORS_FLOAT]
@@ -125,7 +125,7 @@ DEFAULT_COLORS = [color_int8_to_str(color_float_to_int8(color))
 #=============================================================================
 # resources
 
-class PixbufCache (object):
+class PixbufCache :
     """A cache for loading pixbufs from the filesystem"""
 
     def __init__(self):
@@ -220,18 +220,17 @@ def set_gtk_style(font_size=10, vsep=0):
     """
     Set basic GTK style settings
     """
-    gtk.rc_parse_string("""
-      style "keepnote-treeview" {
-        font_name = "%(font_size)d"
-        GtkTreeView::vertical-separator = %(vsep)d
+    gtk.rc_parse_string(f"""
+      style "keepnote-treeview" {{
+        font_name = "{font_size:d}"
+        GtkTreeView::vertical-separator = {vsep:d}
         GtkTreeView::expander-size = 10
-      }
+      }}
 
       class "GtkTreeView" style "keepnote-treeview"
       class "GtkEntry" style "keepnote-treeview"
 
-      """ % {"font_size": font_size,
-             "vsep": vsep})
+      """)
 
 
 def update_file_preview(file_chooser, preview):
@@ -508,8 +507,8 @@ class KeepNote (keepnote.KeepNote):
 
             try:
                 version = notebooklib.get_notebook_version(filename)
-            except Exception, e:
-                self.error(_("Could not load notebook '%s'.") % filename,
+            except Exception as e:
+                self.error(_(f"Could not load notebook '{filename}'."),
                            e, sys.exc_info()[2])
                 return None
 
@@ -565,24 +564,20 @@ class KeepNote (keepnote.KeepNote):
                 if notebook is None:
                     return None
 
-        except notebooklib.NoteBookVersionError, e:
-            self.error(_("This version of %s cannot read this notebook.\n"
-                         "The notebook has version %d.  %s can only read %d.")
-                       % (keepnote.PROGRAM_NAME,
-                          e.notebook_version,
-                          keepnote.PROGRAM_NAME,
-                          e.readable_version),
+        except notebooklib.NoteBookVersionError as e:
+            self.error(_(f"This version of {keepnote.PROGRAM_NAME} cannot read this notebook.\n"
+                         f"The notebook has version {e.notebook_version:d}.  {keepnote.PROGRAM_NAME} can only read {e.readable_version:d}."),
                        e, task.exc_info()[2])
             return None
 
-        except NoteBookError, e:
-            self.error(_("Could not load notebook '%s'.") % filename,
+        except NoteBookError as e:
+            self.error(_(f"Could not load notebook '{filename}'."),
                        e, task.exc_info()[2])
             return None
 
-        except Exception, e:
+        except Exception as e:
             # give up opening notebook
-            self.error(_("Could not load notebook '%s'.") % filename,
+            self.error(_(f"Could not load notebook '{filename}'."),
                        e, task.exc_info()[2])
             return None
 
@@ -719,12 +714,12 @@ class KeepNote (keepnote.KeepNote):
         # TODO: maybe this belongs inside the node_icon_dialog?
 
         for node in nodes:
-            if icon_file == u"":
+            if icon_file == "":
                 node.del_attr("icon")
             elif icon_file is not None:
                 node.set_attr("icon", icon_file)
 
-            if icon_open_file == u"":
+            if icon_open_file == "":
                 node.del_attr("icon_open")
             elif icon_open_file is not None:
                 node.set_attr("icon_open", icon_open_file)
@@ -846,14 +841,14 @@ class KeepNote (keepnote.KeepNote):
             #if task.aborted():
             #    raise task.exc_info()[1]
 
-        except Exception, e:
+        except Exception as e:
             if len(filenames) > 1:
-                self.error(_("Error while attaching files %s." %
-                             ", ".join(["'%s'" % f for f in filenames])),
+                self.error(_("Error while attaching files {0}.".format(
+                             ", ".join([f"'{f}'" for f in filenames]))),
                            e, sys.exc_info()[2])
             else:
                 self.error(
-                    _("Error while attaching file '%s'." % filenames[0]),
+                    _(f"Error while attaching file '{filenames[0]}'."),
                     e, sys.exc_info()[2])
 
     #==================================
@@ -937,7 +932,7 @@ class KeepNote (keepnote.KeepNote):
                 try:
                     if isinstance(ext, keepnote.gui.extension.Extension):
                         ext.on_close_window(window)
-                except Exception, e:
+                except Exception as e:
                     log_error(e, sys.exc_info()[2])
 
             # remove window from window list
@@ -971,13 +966,13 @@ class KeepNote (keepnote.KeepNote):
                 try:
                     if isinstance(ext, keepnote.gui.extension.Extension):
                         ext.on_new_window(window)
-                except Exception, e:
+                except Exception as e:
                     log_error(e, sys.exc_info()[2])
 
     def install_extension(self, filename):
         """Install a new extension"""
-        if self.ask_yes_no(_("Do you want to install the extension \"%s\"?") %
-                           filename, "Extension Install"):
+        if self.ask_yes_no(_("Do you want to install the extension \"{0}\"?").format(
+                           filename), "Extension Install"):
             # install extension
             new_exts = keepnote.KeepNote.install_extension(self, filename)
 
@@ -985,8 +980,8 @@ class KeepNote (keepnote.KeepNote):
             self.init_extensions_windows(exts=new_exts)
 
             if len(new_exts) > 0:
-                self.message(_("Extension \"%s\" is now installed.") %
-                             filename, _("Install Successful"))
+                self.message(_("Extension \"{0}\" is now installed.").format(
+                             filename), _("Install Successful"))
                 return True
 
         return False
@@ -994,11 +989,11 @@ class KeepNote (keepnote.KeepNote):
     def uninstall_extension(self, ext_key):
         """Install a new extension"""
         if self.ask_yes_no(
-                _("Do you want to uninstall the extension \"%s\"?") %
-                ext_key, _("Extension Uninstall")):
+                _("Do you want to uninstall the extension \"{0}\"?").format(
+                ext_key), _("Extension Uninstall")):
             if keepnote.KeepNote.uninstall_extension(self, ext_key):
-                self.message(_("Extension \"%s\" is now uninstalled.") %
-                             ext_key,
+                self.message(_("Extension \"{0}\" is now uninstalled.").format(
+                             ext_key),
                              _("Uninstall Successful"))
                 return True
 

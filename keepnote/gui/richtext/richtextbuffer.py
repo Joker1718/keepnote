@@ -71,13 +71,13 @@ from .richtext_tags import \
 
 
 # these tags will not be enumerated by iter_buffer_contents
-IGNORE_TAGS = set(["gtkspell-misspelled"])
+IGNORE_TAGS = {"gtkspell-misspelled"}
 
 # default maximum undo levels
 MAX_UNDOS = 100
 
 # string for bullet points
-BULLET_STR = u"\u2022 "
+BULLET_STR = "\u2022 "
 
 # NOTE: use a blank user agent for downloading images
 # many websites refuse the python user agent
@@ -242,7 +242,7 @@ class BaseImage (BaseWidget):
 def get_image_format(filename):
     """Returns the image format for a filename"""
     f, ext = os.path.splitext(filename)
-    ext = ext.replace(u".", "").lower()
+    ext = ext.replace(".", "").lower()
     if ext == "jpg":
         ext = "jpeg"
     return ext
@@ -981,8 +981,8 @@ class RichTextBuffer (RichTextBaseBuffer):
         sel = self.get_selection_bounds()
 
         if len(sel) > 0:
-            highlight = set(x[2][0] for x in
-                            iter_buffer_anchors(self, sel[0], sel[1]))
+            highlight = {x[2][0] for x in
+                            iter_buffer_anchors(self, sel[0], sel[1])}
             for child in self._anchors_highlighted:
                 if child not in highlight:
                     child.unhighlight()

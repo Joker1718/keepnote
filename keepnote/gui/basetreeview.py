@@ -88,11 +88,10 @@ def compute_new_path(model, target, drop_position):
     elif drop_position == gtk.TREE_VIEW_DROP_AFTER:
         return path[:-1] + (path[-1] + 1,)
     else:
-        raise Exception("unknown drop position %s" %
-                        str(drop_position))
+        raise Exception(f"unknown drop position {str(drop_position)}")
 
 
-class TextRendererValidator (object):
+class TextRendererValidator :
     def __init__(self, format=lambda x: x, parse=lambda x: x,
                  validate=lambda x: True):
 
@@ -468,7 +467,7 @@ class KeepNoteBaseTreeView (gtk.TreeView):
 
     def format_timestamp(self, timestamp):
         return (get_str_timestamp(timestamp, formats=self._date_formats)
-                if timestamp is not None else u"")
+                if timestamp is not None else "")
 
     #=========================================
     # model change callbacks
@@ -714,7 +713,7 @@ class KeepNoteBaseTreeView (gtk.TreeView):
         # set new attr and catch errors
         try:
             node.set_attr(attr, new_val)
-        except NoteBookError, e:
+        except NoteBookError as e:
             self.emit("error", e.msg, e)
 
         # reselect node
@@ -824,9 +823,7 @@ class KeepNoteBaseTreeView (gtk.TreeView):
         elif "text/html" in selection_data.target:
             # set html
             selection_data.set("text/html", 8,
-                               " ".join(["<a href='%s'>%s</a>" %
-                                         (node.get_url(),
-                                          node.get_title())
+                               " ".join([f"<a href='{node.get_url()}'>{node.get_title()}</a>"
                                          for node in nodes]))
 
         else:
@@ -1192,7 +1189,7 @@ class KeepNoteBaseTreeView (gtk.TreeView):
                 index = new_parent.get_children().index(source_node)
                 # NOTE: we update index in case moving source_node changes
                 # the drop path
-            except NoteBookError, e:
+            except NoteBookError as e:
                 # TODO: think about whether finish should always be false
                 drag_context.finish(False, False, eventtime)
                 self.emit("error", e.msg, e)

@@ -30,7 +30,7 @@ from keepnote.util import PushIter
 
 
 # TextBuffer uses this char for anchors and pixbufs
-ANCHOR_CHAR = u'\ufffc'
+ANCHOR_CHAR = '\ufffc'
 
 
 def iter_buffer_contents(textbuffer, start=None, end=None,
@@ -422,7 +422,7 @@ def get_paragraph(it):
     return start, end
 
 
-class paragraph_iter (object):
+class paragraph_iter :
     """Iterate through the paragraphs of a TextBuffer"""
 
     def __init__(self, buf, start, end):
@@ -483,7 +483,7 @@ class Dom (LinkedTreeNode):
         LinkedTreeNode.__init__(self)
 
     def display_indent(self, indent, *text):
-        print "  " * indent + " ".join(text)
+        sys.stdout.write("  " * indent + " ".join(text) + "\n")
 
     def display(self, indent=0):
         self.display_indent(indent, "Dom")

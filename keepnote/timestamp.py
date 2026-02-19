@@ -97,10 +97,10 @@ if ENCODING is None:
 
 
 DEFAULT_TIMESTAMP_FORMATS = {
-    "same_day": u"%I:%M %p",
-    "same_month": u"%a, %d %I:%M %p",
-    "same_year": u"%a, %b %d %I:%M %p",
-    "diff_year": u"%a, %b %d, %Y"
+    "same_day": "%I:%M %p",
+    "same_month": "%a, %d %I:%M %p",
+    "same_year": "%a, %b %d %I:%M %p",
+    "diff_year": "%a, %b %d, %Y"
 }
 
 
@@ -152,7 +152,7 @@ def get_str_timestamp(timestamp, current=None,
             return time.strftime(formats["diff_year"].encode(ENCODING),
                                  local).decode(ENCODING)
     except:
-        return u"[formatting error]"
+        return "[formatting error]"
 
 
 def format_timestamp(timestamp, format):

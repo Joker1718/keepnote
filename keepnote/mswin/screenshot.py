@@ -33,7 +33,7 @@ try:
     import win32gui
     import win32con
     import win32ui
-except ImportError, e:
+except ImportError as e:
     pass
 
 _g_class_num = 0
@@ -62,7 +62,7 @@ def capture_screen(filename, x, y, x2, y2):
     shot_bitmap.SaveBitmapFile(shot_dc, filename)
 
 
-class Window (object):
+class Window :
     """Class for basic MS Windows window"""
 
     def __init__(self, title="Untitled",
@@ -90,7 +90,7 @@ class Window (object):
         self.message_map.update(message_map)
 
         _g_class_num += 1
-        class_name = "class_name%d" % _g_class_num
+        class_name = f"class_name{_g_class_num:d}"
         wc = win32gui.WNDCLASS()
         wc.hInstance = self._instance
         wc.lpfnWndProc = self.message_map  # could also specify a wndproc
@@ -140,7 +140,7 @@ class Window (object):
         win32gui.DestroyWindow(self._handle)
 
 
-class WinLoop (object):
+class WinLoop :
     def __init__(self):
         self._running = True
 

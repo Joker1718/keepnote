@@ -400,7 +400,7 @@ class ThreePaneViewer (Viewer):
             try:
                 for node in nodes:
                     node.trash()
-            except NoteBookError, e:
+            except NoteBookError as e:
                 self.emit("error", e.msg, e)
 
     def _on_editor_view_node(self, editor, node):
@@ -446,9 +446,9 @@ class ThreePaneViewer (Viewer):
 
         try:
             self.editor.view_nodes(nodes)
-        except RichTextError, e:
+        except RichTextError as e:
             self.emit("error",
-                      "Could not load page '%s'." % nodes[0].get_title(), e)
+                      f"Could not load page '{nodes[0].get_title()}'.", e)
 
         self.emit("current-node", self._current_page)
 
@@ -796,7 +796,7 @@ class ThreePaneViewer (Viewer):
         iconmenu.connect(
             "set-icon",
             lambda w, i: self._app.on_set_icon(
-                i, u"", self.get_selected_nodes()))
+                i, "", self.get_selected_nodes()))
         iconmenu.new_icon.connect(
             "activate",
             lambda w: self._app.on_new_icon(
@@ -1080,7 +1080,7 @@ class ThreePaneViewer (Viewer):
 
             ("Change Note Icon", None, _("_Change Note Icon"),
              "", None, lambda w: None,
-             lookup_icon_filename(None, u"folder-red.png")),
+             lookup_icon_filename(None, "folder-red.png")),
 
             ("Change Fg Color", None, _("Change _Fg Color")),
 

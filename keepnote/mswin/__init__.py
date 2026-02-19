@@ -1,4 +1,3 @@
-
 # make sure py2exe finds win32com
 try:
     import sys
@@ -51,7 +50,7 @@ def get_my_documents():
         df = shell.SHGetDesktopFolder()
         pidl = df.ParseDisplayName(
             0, None, "::{450d8fba-ad25-11d0-98a8-0800361b1103}")[1]
-    except pywintypes.com_error, e:
+    except pywintypes.com_error as e:
         if e.hresult == winerror.E_INVALIDARG:
             # This error occurs when the My Documents virtual folder
             # is not available below the Desktop virtual folder in the

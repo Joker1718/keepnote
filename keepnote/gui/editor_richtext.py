@@ -319,10 +319,10 @@ class RichTextEditor (KeepNoteEditor):
                         self._page.get_page_file(), "r", "utf-8"))
                 self._load_cursor()
 
-            except RichTextError, e:
+            except RichTextError as e:
                 self.clear_view()
                 self.emit("error", e.msg, e)
-            except Exception, e:
+            except Exception as e:
                 self.clear_view()
                 self.emit("error", "Unknown error", e)
 
@@ -377,10 +377,10 @@ class RichTextEditor (KeepNoteEditor):
                 self._page.set_attr_timestamp("modified_time")
                 self._page.save()
 
-            except RichTextError, e:
+            except RichTextError as e:
                 self.emit("error", e.msg, e)
 
-            except NoteBookError, e:
+            except NoteBookError as e:
                 self.emit("error", e.msg, e)
 
     def save_needed(self):
@@ -447,7 +447,7 @@ class RichTextEditor (KeepNoteEditor):
         else:
             try:
                 self._app.open_webpage(url)
-            except KeepNoteError, e:
+            except KeepNoteError as e:
                 self.emit("error", e.msg, e)
 
     def _on_make_link(self, editor):
@@ -496,8 +496,8 @@ class RichTextEditor (KeepNoteEditor):
             # offer url match
             if is_url(text):
                 results = [(text, text,
-                            get_resource_pixbuf(u"node_icons",
-                                                u"web.png"))] + results
+                            get_resource_pixbuf("node_icons",
+                                                "web.png"))] + results
 
             # ensure link picker is initialized
             if self._link_picker is None:
@@ -571,21 +571,21 @@ class RichTextEditor (KeepNoteEditor):
             # insert image
             self.insert_image(imgfile, "screenshot.png")
 
-        except Exception, e:
+        except Exception as e:
             # catch exceptions for screenshot program
             self.emit("window-request", "restore")
             self.emit("error",
-                      _("The screenshot program encountered an error:\n %s")
-                      % str(e), e)
+                      _("The screenshot program encountered an error:\n {0}").format(
+                      str(e)), e)
 
         # remove temp file
         try:
             if os.path.exists(imgfile):
                 os.remove(imgfile)
-        except OSError, e:
+        except OSError as e:
             self.emit("error",
-                      _("%s was unable to remove temp file for screenshot") %
-                      keepnote.PROGRAM_NAME)
+                      _("{0} was unable to remove temp file for screenshot").format(
+                      keepnote.PROGRAM_NAME))
 
     def on_insert_hr(self):
         """Insert horizontal rule into editor"""
@@ -640,23 +640,23 @@ class RichTextEditor (KeepNoteEditor):
 
             # TODO: do I need this?
             imgname, ext = os.path.splitext(os.path.basename(filename))
-            if ext.lower() in (u".jpg", u".jpeg"):
-                ext = u".jpg"
+            if ext.lower() in (".jpg", ".jpeg"):
+                ext = ".jpg"
             else:
-                ext = u".png"
+                ext = ".png"
 
             imgname2 = self._page.new_filename(imgname, ext=ext)
 
             try:
                 self.insert_image(filename, imgname2)
-            except Exception, e:
+            except Exception as e:
                 # TODO: make exception more specific
                 self.emit("error",
-                          _("Could not insert image '%s'") % filename, e)
+                          _("Could not insert image '{0}'").format(filename), e)
         else:
             dialog.destroy()
 
-    def insert_image(self, filename, savename=u"image.png"):
+    def insert_image(self, filename, savename="image.png"):
         """Inserts an image into the text editor"""
         if self._page is None:
             return
@@ -783,7 +783,7 @@ class RichTextEditor (KeepNoteEditor):
         menu.append(item)
 
 
-class FontUI (object):
+class FontUI :
 
     def __init__(self, widget, signal, update_func=lambda ui, font: None,
                  block=None, unblock=None):
@@ -909,7 +909,7 @@ class EditorMenus (gobject.GObject):
         elif kind == "bg":
             self._editor.get_textview().set_font_bg_color(color)
         else:
-            raise Exception("unknown color type '%s'" % str(kind))
+            raise Exception(f"unknown color type '{str(kind)}'")
 
     def _on_colors_set(self, colors):
         """Set color pallete"""
@@ -926,7 +926,7 @@ class EditorMenus (gobject.GObject):
         font = self._editor.get_textview().get_font()
 
         dialog = gtk.FontSelectionDialog(_("Choose Font"))
-        dialog.set_font_name("%s %d" % (font.family, font.size))
+        dialog.set_font_name(f"{font.family} {font.size:d}")
         response = dialog.run()
 
         if response == gtk.RESPONSE_OK:

@@ -26,7 +26,7 @@
 import imp
 import os
 try:
-    import xml.etree.cElementTree as ET
+    import xml.etree.ElementTree as ET
 except ImportError:
     import xml.etree.elementtree.ElementTree as ET
 
@@ -36,8 +36,8 @@ from keepnote import plist
 
 
 # globals
-EXTENSION_EXT = u".kne"  # filename extension for KeepNote Extensions
-INFO_FILE = u"info.xml"
+EXTENSION_EXT = ".kne"  # filename extension for KeepNote Extensions
+INFO_FILE = "info.xml"
 
 
 class DependencyError (StandardError):
@@ -66,12 +66,12 @@ def init_user_extensions(pref_dir=None, home=None):
     extensions_dir = keepnote.get_user_extensions_dir(pref_dir)
     if not os.path.exists(extensions_dir):
         # make user extensions directory
-        os.makedirs(extensions_dir, 0700)
+        os.makedirs(extensions_dir, 0o700)
 
     extensions_data_dir = keepnote.get_user_extensions_data_dir(pref_dir)
     if not os.path.exists(extensions_data_dir):
         # make user extensions data directory
-        os.makedirs(extensions_data_dir, 0700)
+        os.makedirs(extensions_data_dir, 0o700)
 
 
 def scan_extensions_dir(extensions_dir):
@@ -84,13 +84,12 @@ def scan_extensions_dir(extensions_dir):
 
 def import_extension(app, name, filename):
     """Import an Extension"""
-    filename2 = os.path.join(filename, u"__init__.py")
+    filename2 = os.path.join(filename, "__init__.py")
 
     try:
         infile = open(filename2)
-    except Exception, e:
-        raise keepnote.KeepNotePreferenceError("cannot load extension '%s'" %
-                                               filename, e)
+    except Exception as e:
+        raise keepnote.KeepNotePreferenceError(f"cannot load extension '{filename}'", e)
 
     try:
         mod = imp.load_module(name, infile, filename2,
@@ -101,10 +100,9 @@ def import_extension(app, name, filename):
         infile.close()
         return ext
 
-    except Exception, e:
+    except Exception as e:
         infile.close()
-        raise keepnote.KeepNotePreferenceError("cannot load extension '%s'" %
-                                               filename, e)
+        raise keepnote.KeepNotePreferenceError(f"cannot load extension '{filename}'", e)
 
 
 def get_extension_info_file(filename):
@@ -177,7 +175,7 @@ def is_extension_install_file(filename):
     return filename.endswith(EXTENSION_EXT)
 
 
-class Extension (object):
+class Extension :
     """KeepNote Extension"""
 
     version = (1, 0)

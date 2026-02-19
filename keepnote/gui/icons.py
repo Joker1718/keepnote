@@ -44,43 +44,43 @@ import keepnote.notebook as notebooklib
 #=============================================================================
 # globals/constants
 
-NODE_ICON_DIR = os.path.join(u"images", u"node_icons")
+NODE_ICON_DIR = os.path.join("images", "node_icons")
 
 _g_default_node_icon_filenames = {
-    notebooklib.CONTENT_TYPE_TRASH: (u"trash.png", u"trash.png"),
-    notebooklib.CONTENT_TYPE_DIR: (u"folder.png", u"folder-open.png"),
-    notebooklib.CONTENT_TYPE_PAGE: (u"note.png", u"note.png")
+    notebooklib.CONTENT_TYPE_TRASH: ("trash.png", "trash.png"),
+    notebooklib.CONTENT_TYPE_DIR: ("folder.png", "folder-open.png"),
+    notebooklib.CONTENT_TYPE_PAGE: ("note.png", "note.png")
 }
 _g_unknown_icons = ("note-unknown.png", "note-unknown.png")
 
 
-_colors = [u"", u"-red", u"-orange", u"-yellow",
-           u"-green", u"-blue", u"-violet", u"-grey"]
+_colors = ["", "-red", "-orange", "-yellow",
+           "-green", "-blue", "-violet", "-grey"]
 
-builtin_icons = [u"folder" + c + u".png" for c in _colors] + \
-                [u"folder" + c + u"-open.png" for c in _colors] + \
-                [u"note" + c + u".png" for c in _colors] + \
-                [u"star.png",
-                 u"heart.png",
-                 u"check.png",
-                 u"x.png",
+builtin_icons = ["folder" + c + ".png" for c in _colors] + \
+                ["folder" + c + "-open.png" for c in _colors] + \
+                ["note" + c + ".png" for c in _colors] + \
+                ["star.png",
+                 "heart.png",
+                 "check.png",
+                 "x.png",
 
-                 u"important.png",
-                 u"question.png",
-                 u"web.png",
-                 u"note-unknown.png"]
+                 "important.png",
+                 "question.png",
+                 "web.png",
+                 "note-unknown.png"]
 
-DEFAULT_QUICK_PICK_ICONS = [u"folder" + c + u".png" for c in _colors] + \
-                           [u"note" + c + u".png" for c in _colors] + \
-                           [u"star.png",
-                            u"heart.png",
-                            u"check.png",
-                            u"x.png",
+DEFAULT_QUICK_PICK_ICONS = ["folder" + c + ".png" for c in _colors] + \
+                           ["note" + c + ".png" for c in _colors] + \
+                           ["star.png",
+                            "heart.png",
+                            "check.png",
+                            "x.png",
 
-                            u"important.png",
-                            u"question.png",
-                            u"web.png",
-                            u"note-unknown.png"]
+                            "important.png",
+                            "question.png",
+                            "web.png",
+                            "note-unknown.png"]
 
 
 #=============================================================================
@@ -115,14 +115,14 @@ class MimeIcons:
         # try gnome mime
         items = mime_type.split('/')
         for i in xrange(len(items), 0, -1):
-            icon_name = u"gnome-mime-" + '-'.join(items[:i])
+            icon_name = "gnome-mime-" + '-'.join(items[:i])
             if icon_name in self._icons:
                 self._cache[mime_type] = icon_name
                 return unicode(icon_name)
 
         # try simple mime
         for i in xrange(len(items), 0, -1):
-            icon_name = u'-'.join(items[:i])
+            icon_name = '-'.join(items[:i])
             if icon_name in self._icons:
                 self._cache[mime_type] = icon_name
                 return icon_name
@@ -191,7 +191,7 @@ def get_default_icon_basenames(node):
     """Returns basesnames for default icons for a node"""
     content_type = node.get_attr("content_type")
     default = _g_mime_icons.get_icon_mimetype(
-        content_type, u"note-unknown.png")
+        content_type, "note-unknown.png")
     basenames = _g_default_node_icon_filenames.get(content_type,
                                                    (default, default))
     return basenames
@@ -223,7 +223,7 @@ def guess_open_icon_filename(icon_file):
     Accepts basenames and full filenames
     """
     path, ext = os.path.splitext(icon_file)
-    return path + u"-open" + ext
+    return path + "-open" + ext
 
 
 def get_node_icon_filenames_basenames(node):
@@ -284,7 +284,7 @@ def get_node_icon_filenames(node):
 
 # TODO: continue to clean up class
 
-class NoteBookIconManager (object):
+class NoteBookIconManager :
     def __init__(self):
         self.pixbufs = None
         self._node_icon_cache = {}

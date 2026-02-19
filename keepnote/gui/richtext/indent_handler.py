@@ -34,12 +34,12 @@ from textbuffer_tools import get_paragraphs_selected
 
 
 # string for bullet points
-BULLET_STR = u"\u2022 "
+BULLET_STR = "\u2022 "
 
 
 #=============================================================================
 
-class IndentHandler (object):
+class IndentHandler :
     """This object will manage the indentation of paragraphs in a
        TextBuffer with RichTextTags
     """
@@ -331,7 +331,7 @@ class IndentHandler (object):
                 pos = self._remove_bullet(pos)
 
             else:
-                raise Exception("unknown par_type '%s'" % par_type)
+                raise Exception(f"unknown par_type '{par_type}'")
 
         #self._updating = False
         self._buf.end_noninteractive()

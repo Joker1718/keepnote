@@ -58,7 +58,7 @@ DEFAULT_PAGE_NAME = "New Page"
 DEFAULT_DIR_NAME = "New Folder"
 DEFAULT_FONT_FAMILY = "Sans"
 DEFAULT_FONT_SIZE = 10
-DEFAULT_FONT = "%s %d" % (DEFAULT_FONT_FAMILY, DEFAULT_FONT_SIZE)
+DEFAULT_FONT = f"{DEFAULT_FONT_FAMILY} {DEFAULT_FONT_SIZE:d}"
 
 
 # information sort constants
@@ -266,16 +266,14 @@ class NoteBookVersionError (NoteBookError):
 
     def __init__(self, notebook_version, readable_version,  error=None):
         NoteBookError.__init__(self,
-            "Notebook version '%d' is higher than what is readable '%d'" %
-                               (notebook_version,
-                                readable_version),
+            f"Notebook version '{notebook_version:d}' is higher than what is readable '{readable_version:d}'",
                                error)
         self.notebook_version = notebook_version
         self.readable_version = readable_version
 
 # TODO: finish
 
-class NoteBookAttr (object):
+class NoteBookAttr :
 
     def __init__(self, name, datatype, key=None, write=None, read=None):
         if key == None:
@@ -305,7 +303,7 @@ class NoteBookAttr (object):
             self.read = read
         
 
-class NoteBookTable (object):
+class NoteBookTable :
     def __init__(self, name):
         self.name = name
         self.cols = []
@@ -335,7 +333,7 @@ g_default_attrs = [
 
 
 
-class NoteBookNode (object):
+class NoteBookNode :
     """A general base class for all nodes in a NoteBook"""
 
     def __init__(self, path, title="", parent=None, notebook=None, kind="dir"):
@@ -370,7 +368,7 @@ class NoteBookNode (object):
         
         try:
             os.mkdir(path)
-        except OSError, e:
+        except OSError as e:
             raise NoteBookError("Cannot create node", e)
             
         self._attr["created_time"] = get_timestamp()
@@ -483,7 +481,7 @@ class NoteBookNode (object):
             
             try:
                 os.rename(path, path2)
-            except OSError, e:
+            except OSError as e:
                 raise NoteBookError("Do not have permission for move", e)
         
             self._set_basename(path2)
@@ -515,7 +513,7 @@ class NoteBookNode (object):
         path = self.get_path()
         try:      
             shutil.rmtree(path)
-        except OSError, e:
+        except OSError as e:
             raise NoteBookError("Do not have permission to delete", e)
         
         self._parent._remove_child(self)
@@ -590,8 +588,8 @@ class NoteBookNode (object):
             self._attr["title"] = title
             self._set_basename(path2)
             self.save(True)
-        except (OSError, NoteBookError), e:
-            raise NoteBookError("Cannot rename '%s' to '%s'" % (path, path2), e)
+        except (OSError, NoteBookError) as e:
+            raise NoteBookError(f"Cannot rename '{path}' to '{path2}'", e)
         
         self.notify_change(False)
 
@@ -631,7 +629,7 @@ class NoteBookNode (object):
         
         try:
             files = os.listdir(path)
-        except OSError, e:
+        except OSError as e:
             raise NoteBookError("Do not have permission to read folder contents", e)
         
         for filename in files:
@@ -661,7 +659,7 @@ class NoteBookNode (object):
                 self._children.append(node)
 
                 
-            except NoteBookError, e:
+            except NoteBookError as e:
                 continue                
                 # TODO: raise warning, not all children read
             
@@ -774,8 +772,7 @@ class NoteBookNode (object):
         filename = self.get_data_file()
         infile = open(filename)
 
-        for line in read_data_as_plain_text(infile):
-            yield line
+        yield from read_data_as_plain_text(infile)
             
     
     def write_empty_data_file(self):
@@ -786,8 +783,8 @@ class NoteBookNode (object):
             out = safefile.open(datafile, "w")
             out.write(BLANK_NOTE)
             out.close()
-        except IOError, e:
-            raise NoteBookError("Cannot initialize richtext file '%s'" % datafile, e)
+        except OSError as e:
+            raise NoteBookError(f"Cannot initialize richtext file '{datafile}'", e)
         
         
     def get_meta_file(self):
@@ -807,11 +804,10 @@ class NoteBookNode (object):
 
         try:
             self._meta_parser.read(self, self.get_meta_file())
-        except IOError, e:
+        except OSError as e:
             raise NoteBookError("Cannot read meta data", e)
-        except xmlo.XmlError, e:
-            raise NoteBookError("Node meta data is corrupt for note '%s'" %
-                                self.get_path(),  e)
+        except xmlo.XmlError as e:
+            raise NoteBookError(f"Node meta data is corrupt for note '{self.get_path()}'",  e)
 
         #if self.get_parent() == None:
         #    print "HERE", self._attr
@@ -829,9 +825,9 @@ class NoteBookNode (object):
         """Write meta data to file-system"""
         try:
             self._meta_parser.write(self, self.get_meta_file())
-        except IOError, e:
+        except OSError as e:
             raise NoteBookError("Cannot write meta data", e)
-        except xmlo.XmlError, e:
+        except xmlo.XmlError as e:
             raise NoteBookError("File format error", e)
 
 
@@ -846,12 +842,11 @@ class NoteBookNode (object):
                 attr = self._notebook.notebook_attrs.get(key, None)
 
                 if attr is not None:
-                    out.write('<attr key="%s">%s</attr>\n' %
-                              (key, attr.write(val)))
+                    out.write(f'<attr key="{key}">{attr.write(val)}</attr>\n')
 
             out.write("</node>\n")
             out.close()
-        except Exception, e:
+        except Exception as e:
             raise NoteBookError("Cannot write meta data", e)
 
 
@@ -870,16 +865,16 @@ class NoteBookNode (object):
             parser.EndElementHandler = self.__meta_end_element
             parser.CharacterDataHandler = self.__meta_char_data
 
-            infile = open(self.get_meta_file(), "r")
+            infile = open(self.get_meta_file())
 
             self.__meta_body = False
             parser.ParseFile(infile)
             infile.close()
             
-        except xml.parsers.expat.ExpatError, e:
+        except xml.parsers.expat.ExpatError as e:
             raise NoteBookError("Cannot read meta data", e)
         
-        except Exception, e:
+        except Exception as e:
             raise NoteBookError("Cannot read meta data", e)
 
         # set defaults
@@ -1024,7 +1019,7 @@ class NoteBookTrash (NoteBookDir):
         raise NoteBookError("The Trash folder cannot be deleted.")
 
 
-class NoteBookPreferences (object):
+class NoteBookPreferences :
     """Preference data structure for a NoteBook"""
     def __init__(self):
         
@@ -1118,7 +1113,7 @@ class NoteBook (NoteBookDir):
                 filename = os.path.dirname(filename)
                 self._set_basename(filename)
             else:
-                raise NoteBookError("Cannot find notebook '%s'" % filename)
+                raise NoteBookError(f"Cannot find notebook '{filename}'")
             
             self._trash_path = get_trash_dir(self.get_path())
         self.read_meta_data()
@@ -1168,7 +1163,7 @@ class NoteBook (NoteBookDir):
                 self._trash = NoteBookTrash(TRASH_NAME, self)
                 self._trash.create()
                 self._add_child(self._trash)
-            except NoteBookError, e:
+            except NoteBookError as e:
                 raise NoteBookError("Cannot create Trash folder", e)
 
 
@@ -1210,9 +1205,9 @@ class NoteBook (NoteBookDir):
                 os.mkdir(self.get_pref_dir())
 
             g_notebook_pref_parser.write(self.pref, self.get_pref_file())
-        except (IOError, OSError), e:
+        except OSError as e:
             raise NoteBookError("Cannot save notebook preferences", e)
-        except xmlo.XmlError, e:
+        except xmlo.XmlError as e:
             raise NoteBookError("File format error", e)
 
     
@@ -1220,9 +1215,9 @@ class NoteBook (NoteBookDir):
         """Reads the NoteBook's preferneces from the file-system"""
         try:
             g_notebook_pref_parser.read(self.pref, self.get_pref_file())
-        except IOError, e:
+        except OSError as e:
             raise NoteBookError("Cannot read notebook preferences", e)
-        except xmlo.XmlError, e:
+        except xmlo.XmlError as e:
             raise NoteBookError("Notebook preference data is corrupt", e)
 
         

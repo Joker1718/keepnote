@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 import os
 import unittest
 from StringIO import StringIO
@@ -245,7 +243,7 @@ class Index (unittest.TestCase):
         """Create a node with a unicode title."""
         book = notebook.NoteBook()
         book.load(_notebook_file)
-        notebook.new_page(book, u'Déjà vu')
+        notebook.new_page(book, 'Déjà vu')
         book.close()
 
     def test_notebook_move_deja_vu(self):
@@ -253,7 +251,7 @@ class Index (unittest.TestCase):
         book = notebook.NoteBook()
         book.load(_notebook_file)
 
-        deja = notebook.new_page(book, u'Déjà vu again')
+        deja = notebook.new_page(book, 'Déjà vu again')
         nodex = book.get_node_by_id(self._pagex_nodeid)
         deja.move(nodex)
 

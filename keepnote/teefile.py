@@ -27,7 +27,7 @@
 #
 
 
-class TeeFileStream (object):
+class TeeFileStream :
     """Create a file stream that forwards writes to multiple streams"""
 
     def __init__(self, streams, autoflush=False):

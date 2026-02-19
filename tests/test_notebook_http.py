@@ -22,7 +22,7 @@ class TestHttp(TestConnBase):
             try:
                 conn.get_rootid()
                 break
-            except socket.error:
+            except OSError:
                 # Try again.
                 pass
 

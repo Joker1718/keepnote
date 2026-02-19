@@ -39,7 +39,7 @@ except:
 
 # global translation object
 GETTEXT_DOMAIN = 'keepnote'
-_locale_dir = u"."
+_locale_dir = "."
 _translation = None
 _lang = None
 
@@ -63,7 +63,7 @@ def set_env(key, val):
         if os.environ.get(key, "") == val:
             return
 
-        setstr = u"%s=%s" % (key, val)
+        setstr = f"{key}={val}"
         #setstr = x.encode(locale.getpreferredencoding())
         msvcrt._putenv(setstr)
 

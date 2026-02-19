@@ -107,7 +107,7 @@ def write_node_tree(out, conn, nodeid=None):
     out.write("</ul>")
 
 
-class BaseNoteBookHttpServer(object):
+class BaseNoteBookHttpServer:
 
     def __init__(self, conn, host="", port=8000):
         self.conn = conn

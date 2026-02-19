@@ -116,7 +116,7 @@ class RichTextBaseTagTable (gtk.TextTagTable):
 
                 return tag
 
-        raise Exception("unknown tag '%s'" % name)
+        raise Exception(f"unknown tag '{name}'")
 
     def gc(self):
         """Garbage collect"""
@@ -160,7 +160,7 @@ class RichTextBaseTagTable (gtk.TextTagTable):
             #print "after", self.get_size()
 
 
-class RichTextTagClass (object):
+class RichTextTagClass :
     """
     A class of tags that specify the same attribute
 

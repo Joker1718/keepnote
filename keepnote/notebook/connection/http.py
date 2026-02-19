@@ -39,7 +39,7 @@ import keepnote.notebook.connection as connlib
 from keepnote.notebook.connection import NoteBookConnection
 
 
-XML_HEADER = u"""\
+XML_HEADER = """\
 <?xml version="1.0" encoding="UTF-8"?>
 """
 
@@ -85,15 +85,14 @@ def format_node_path(prefix, nodeid="", filename=None):
     """
     nodeid = nodeid.replace("/", "%2F")
     if filename is not None:
-        return urllib.quote("%s%s/%s" % (prefix, nodeid, filename))
+        return urllib.quote(f"{prefix}{nodeid}/{filename}")
     else:
         return urllib.quote(prefix + nodeid)
 
 
 def format_node_url(host, prefix, nodeid, filename=None, port=80):
     portstr = ":" + str(port) if port != 80 else ""
-    return "http://%s%s/%s" % (host, portstr,
-                               format_node_path(prefix, nodeid, filename))
+    return f"http://{host}{portstr}/{format_node_path(prefix, nodeid, filename)}"
 
 
 #=============================================================================
@@ -179,9 +178,9 @@ class NoteBookConnectionHttp (NoteBookConnection):
                 attr = self.load_data(result)
                 self._title_cache.update_attr(attr)
                 return attr
-            except Exception, e:
+            except Exception as e:
                 raise connlib.ConnectionError(
-                    "unexpected error '%s'" % str(e), e)
+                    f"unexpected error '{str(e)}'", e)
         else:
             raise connlib.UnknownNode(nodeid)
 
@@ -241,7 +240,7 @@ class NoteBookConnectionHttp (NoteBookConnection):
         # write: POST nodeid/file
         # append: POST nodeid/file?mode=a
 
-        class HttpFile (object):
+        class HttpFile :
             def __init__(self, codec=None):
                 self.data = []
                 self.codec = codec
@@ -301,7 +300,7 @@ class NoteBookConnectionHttp (NoteBookConnection):
             return stream
 
         else:
-            raise connlib.FileError("unknown mode '%s'" % mode)
+            raise connlib.FileError(f"unknown mode '{mode}'")
 
     def delete_file(self, nodeid, filename):
         """Open a file contained within a node"""
@@ -345,9 +344,9 @@ class NoteBookConnectionHttp (NoteBookConnection):
                 else:
                     data = self.load_data(result)
                     return data['files']
-            except Exception, e:
+            except Exception as e:
                 raise connlib.ConnectionError(
-                    "unexpected response '%s'" % str(e), e)
+                    f"unexpected response '{str(e)}'", e)
         else:
             raise connlib.FileError("cannot list node")
 
@@ -373,9 +372,9 @@ class NoteBookConnectionHttp (NoteBookConnection):
         if result.status == httplib.OK:
             try:
                 return self.load_data(result)
-            except Exception, e:
+            except Exception as e:
                 raise connlib.ConnectionError(
-                    "unexpected response '%s'" % str(e), e)
+                    f"unexpected response '{str(e)}'", e)
 
     def index(self, query):
 
@@ -402,7 +401,7 @@ class NoteBookConnectionHttp (NoteBookConnection):
         return format_node_url(self._netloc, self._prefix, nodeid, filename)
 
 
-class NodeTitleCache (object):
+class NodeTitleCache :
     def __init__(self):
         self._titles = defaultdict(lambda: set())
         self._nodeids = {}

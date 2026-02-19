@@ -1,4 +1,3 @@
-
 from test.testing import *
 import os, shutil, unittest, traceback, sys
 
@@ -30,7 +29,7 @@ class Update (unittest.TestCase):
         shutil.copytree(old_notebook_filename,
                         new_notebook_filename)
 
-        self.assertEquals(
+        self.assertEqual(
             os.system("bin/keepnote --newproc %s" % new_notebook_filename), 0)
 
 

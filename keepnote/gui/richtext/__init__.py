@@ -94,7 +94,7 @@ else:
     CLIPBOARD_NAME = "CLIPBOARD"
 RICHTEXT_ID = -3    # application defined integer for the clipboard
 CONTEXT_MENU_ACCEL_PATH = "<main>/richtext_context_menu"
-QUOTE_FORMAT = u'from <a href="%u">%t</a>:<br/>%s'
+QUOTE_FORMAT = 'from <a href="%u">%t</a>:<br/>%s'
 
 # mime types
 # richtext mime type is process specific
@@ -253,7 +253,7 @@ class RichTextMenu (gtk.Menu):
         return self._child
 
 
-class RichTextIO (object):
+class RichTextIO :
     """Read/Writes the contents of a RichTextBuffer to disk"""
 
     def __init__(self):
@@ -283,8 +283,8 @@ class RichTextIO (object):
                                     textbuffer.tag_table,
                                     title=title)
             out.close()
-        except IOError, e:
-            raise RichTextError("Could not save '%s'." % filename, e)
+        except OSError as e:
+            raise RichTextError(f"Could not save '{filename}'.", e)
 
         textbuffer.set_modified(False)
 
@@ -320,7 +320,7 @@ class RichTextIO (object):
             # put cursor at begining
             textbuffer.place_cursor(textbuffer.get_start_iter())
 
-        except (HtmlError, IOError, Exception), e:
+        except (OSError, HtmlError, Exception) as e:
             err = e
             textbuffer.clear()
             if textview:
@@ -344,7 +344,7 @@ class RichTextIO (object):
 
         # reraise error
         if not ret:
-            raise RichTextError("Error loading '%s'." % filename, err)
+            raise RichTextError(f"Error loading '{filename}'.", err)
 
     def _load_images(self, textbuffer, html_filename):
         """Load images present in textbuffer"""
@@ -377,7 +377,7 @@ class RichTextIO (object):
         return filename
 
 
-class RichTextDragDrop (object):
+class RichTextDragDrop :
     """Manages drag and drop events for a richtext editor"""
 
     def __init__(self, targets=[]):
@@ -672,7 +672,7 @@ class RichTextView (gtk.TextView):
                                   for uri in uris.split("\n"))
                     if len(xx) > 0 and xx[0] != "#"]
 
-            links = ['<a href="%s">%s</a> ' % (uri, uri) for uri in uris]
+            links = [f'<a href="{uri}">{uri}</a> ' for uri in uris]
 
             # insert links
             self.insert_html("<br />".join(links))
@@ -896,10 +896,10 @@ class RichTextView (gtk.TextView):
             if parts.hostname:
                 host = parts.hostname
             else:
-                host = u"unknown source"
+                host = "unknown source"
         else:
-            url = u""
-            host = u"unknown source"
+            url = ""
+            host = "unknown source"
         unique = str(uuid.uuid4())
 
         if title is None:

@@ -97,7 +97,7 @@ def path_basename(filename):
 
 #=============================================================================
 
-class NoteBookConnection (object):
+class NoteBookConnection :
     def __init__(self):
         pass
 
@@ -208,7 +208,7 @@ class NoteBookConnection (object):
 
 
     # Is this needed inside the connection?  Can it be support outside?
-    def new_filename(self, nodeid, new_filename, ext=u"", sep=u" ", number=2, 
+    def new_filename(self, nodeid, new_filename, ext="", sep=" ", number=2, 
                      return_number=False, use_number=False, ensure_valid=True):
         pass
 

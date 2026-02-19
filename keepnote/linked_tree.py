@@ -25,7 +25,7 @@
 #
 
 
-class LinkedTreeNode (object):
+class LinkedTreeNode :
     """A node in a linked list tree"""
 
     def __init__(self):

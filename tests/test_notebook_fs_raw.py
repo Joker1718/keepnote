@@ -1,4 +1,3 @@
-
 # python imports
 import os
 import uuid
@@ -98,9 +97,9 @@ class FSRaw (TestConnBase):
 
         self.assertEqual(
             set(nodedirs.iter_nodeids()),
-            set(['abcdefg', u'abcdefghij', u'1234567',
+            {'abcdefg', 'abcdefghij', '1234567',
                  'ab', 'ac', 'a',
-                 '...', '....', 'ab.', 'ab..']))
+                 '...', '....', 'ab.', 'ab..'})
 
         nodedirs.close()
 
@@ -169,18 +168,18 @@ class FSRaw (TestConnBase):
 
         self.assertEqual(
             set(nodedirs.iter_nodeids()),
-            set(['abcdefg', u'abcdefghij', u'1234567',
+            {'abcdefg', 'abcdefghij', '1234567',
                  'ab', 'ac', 'a',
                  '...', '....', 'ab.', 'ab..',
-                 'x' * 256, '.', '..', 'ABC', 'abc+', 'abc/aaa']))
+                 'x' * 256, '.', '..', 'ABC', 'abc+', 'abc/aaa'})
 
         nodedirs.delete_nodedir('ABC')
         self.assertEqual(
             set(nodedirs.iter_nodeids()),
-            set(['abcdefg', u'abcdefghij', u'1234567',
+            {'abcdefg', 'abcdefghij', '1234567',
                  'ab', 'ac', 'a',
                  '...', '....', 'ab.', 'ab..',
-                 'x' * 256, '.', '..', 'abc+', 'abc/aaa']))
+                 'x' * 256, '.', '..', 'abc+', 'abc/aaa'})
 
         nodedirs.close()
 
@@ -197,7 +196,7 @@ class FSRaw (TestConnBase):
 
         self.assertEqual(
             set(nodedirs.iter_nodeids()),
-            set(['abcdefg', u'abcdefghij', u'1234567']))
+            {'abcdefg', 'abcdefghij', '1234567'})
 
         nodedirs.close()
 

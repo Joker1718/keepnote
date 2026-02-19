@@ -1,4 +1,3 @@
-
 # python imports
 from StringIO import StringIO
 import sys
@@ -228,7 +227,7 @@ class TestConnBase (unittest.TestCase):
         conn.open_file('node3', 'dir2/dir3/file1', 'w').close()
         self.assertEqual(
             set(conn.list_dir('node3', 'dir2/')),
-            set(['dir2/file1', 'dir2/file2', 'dir2/dir3/']))
+            {'dir2/file1', 'dir2/file2', 'dir2/dir3/'})
 
     def _test_notebook(self, conn, filename):
 

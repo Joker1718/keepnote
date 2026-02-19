@@ -38,7 +38,7 @@ import uuid
 
 # xml imports
 from xml.sax.saxutils import escape
-import xml.etree.cElementTree as ET
+import xml.etree.ElementTree as ET
 
 
 # keepnote imports
@@ -64,7 +64,7 @@ _ = trans.translate
 # NOTE: the <?xml ?> header is left off to keep it compatiable with IE,
 # for the time being.
 # constants
-BLANK_NOTE = u"""\
+BLANK_NOTE = """\
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><body></body></html>
 """
@@ -72,36 +72,36 @@ BLANK_NOTE = u"""\
 
 NOTEBOOK_FORMAT_VERSION = 5
 ELEMENT_NODE = 1
-PAGE_DATA_FILE = u"page.html"
-PREF_FILE = u"notebook.nbk"
-NOTEBOOK_META_DIR = u"__NOTEBOOK__"
-NOTEBOOK_ICON_DIR = u"icons"
-TRASH_DIR = u"__TRASH__"
-TRASH_NAME = u"Trash"
-DEFAULT_PAGE_NAME = u"New Page"
-DEFAULT_DIR_NAME = u"New Folder"
+PAGE_DATA_FILE = "page.html"
+PREF_FILE = "notebook.nbk"
+NOTEBOOK_META_DIR = "__NOTEBOOK__"
+NOTEBOOK_ICON_DIR = "icons"
+TRASH_DIR = "__TRASH__"
+TRASH_NAME = "Trash"
+DEFAULT_PAGE_NAME = "New Page"
+DEFAULT_DIR_NAME = "New Folder"
 
 # content types
-CONTENT_TYPE_PAGE = u"text/xhtml+xml"
+CONTENT_TYPE_PAGE = "text/xhtml+xml"
 #CONTENT_TYPE_PLAIN_TEXT = "text/plain"
-CONTENT_TYPE_TRASH = u"application/x-notebook-trash"
-CONTENT_TYPE_DIR = u"application/x-notebook-dir"
-CONTENT_TYPE_UNKNOWN = u"application/x-notebook-unknown"
+CONTENT_TYPE_TRASH = "application/x-notebook-trash"
+CONTENT_TYPE_DIR = "application/x-notebook-dir"
+CONTENT_TYPE_UNKNOWN = "application/x-notebook-unknown"
 
 NULL = object()
 
 # the node id of the implied root of all nodes everywhere
-UNIVERSAL_ROOT = u"b810760f-f246-4e42-aebb-50ce51c3d1ed"
+UNIVERSAL_ROOT = "b810760f-f246-4e42-aebb-50ce51c3d1ed"
 
 
 #=============================================================================
 # common filesystem functions
 
-def get_unique_filename(path, filename, ext=u"", sep=u" ", number=2,
+def get_unique_filename(path, filename, ext="", sep=" ", number=2,
                         return_number=False, use_number=False):
     """Returns a unique version of a filename for a given directory"""
 
-    if path != u"":
+    if path != "":
         assert os.path.exists(path), path
     
     # try the given filename
@@ -125,7 +125,7 @@ def get_unique_filename(path, filename, ext=u"", sep=u" ", number=2,
         i += 1
 
 
-def get_unique_filename_list(filenames, filename, ext=u"", sep=u" ", number=2):
+def get_unique_filename_list(filenames, filename, ext="", sep=" ", number=2):
     """Returns a unique filename for a given list of existing files"""
     filenames = set(filenames)
     
@@ -196,15 +196,15 @@ def normalize_notebook_dirname(filename, longpath=None):
         # filename may be 'path/to/the-notebook/notebook.nbk'
         return os.path.dirname(filename)
     else:
-        raise NoteBookError(_("Cannot find notebook '%s'" % filename))
+        raise NoteBookError(_(f"Cannot find notebook '{filename}'"))
 
 
 #=============================================================================
 # HTML functions
 
-TAG_PATTERN = re.compile(u"<[^>]*>")
+TAG_PATTERN = re.compile("<[^>]*>")
 def strip_tags(line):
-    return re.sub(TAG_PATTERN, u"", line)
+    return re.sub(TAG_PATTERN, "", line)
 
 def read_data_as_plain_text(infile):
     """Read a Note data file as plain text"""
@@ -244,9 +244,9 @@ def get_notebook_version(filename):
 
     try:
         tree = ET.ElementTree(file=filename)
-    except IOError, e:
+    except OSError as e:
         raise NoteBookError(_("Cannot read notebook preferences"), e)
-    except Exception, e:
+    except Exception as e:
         raise NoteBookError(_("Notebook preference data is corrupt"), e)
 
     return get_notebook_version_etree(tree)
@@ -276,14 +276,14 @@ def new_nodeid():
     return unicode(uuid.uuid4())
 
 
-def get_node_url(nodeid, host=u""):
+def get_node_url(nodeid, host=""):
     """Get URL for a nodeid"""
-    return u"nbk://%s/%s" % (host, nodeid)
+    return f"nbk://{host}/{nodeid}"
 
 
 def is_node_url(url):
     """Returns True if URL is a node"""
-    return re.match(u"nbk://[^/]*/.*", url) != None
+    return re.match("nbk://[^/]*/.*", url) != None
 
 def parse_node_url(url):
     """
@@ -292,7 +292,7 @@ def parse_node_url(url):
     nbk:///abcd              => ("", "abcd")
     nbk://example.com/abcd   => ("example.com", "abcd")
     """
-    match = re.match(u"nbk://([^/]*)/(.*)", url)
+    match = re.match("nbk://([^/]*)/(.*)", url)
     if match:
         return match.groups()
     else:
@@ -335,7 +335,7 @@ def attach_file(filename, node, index=None):
         child.save(True)
         return child
 
-    except Exception, e:
+    except Exception as e:
         # remove child
         keepnote.log_error(e)
         if child:
@@ -379,9 +379,7 @@ class NoteBookVersionError (NoteBookError):
 
     def __init__(self, notebook_version, readable_version,  error=None):
         NoteBookError.__init__(self,
-            "Notebook version '%d' is higher than what is readable '%d'" %
-                               (notebook_version,
-                                readable_version),
+            f"Notebook version '{notebook_version:d}' is higher than what is readable '{readable_version:d}'",
                                error)
         self.notebook_version = notebook_version
         self.readable_version = readable_version
@@ -391,7 +389,7 @@ class NoteBookVersionError (NoteBookError):
 # notebook attributes
 
 
-class AttrDef (object):
+class AttrDef :
     """
     A AttrDef is a metadata attribute that can be associated to
     nodes in a NoteBook.
@@ -423,7 +421,7 @@ class AttrDef (object):
 
         
 
-class UnknownAttr (object):
+class UnknownAttr :
     """A value that belongs to an unknown AttrDef"""
 
     def __init__(self, value):
@@ -477,10 +475,10 @@ default_notebook_table = NoteBookTable("default", attrs=[title_attr,
 #=============================================================================
 # Notebook nodes
 
-class NoteBookNode (object):
+class NoteBookNode :
     """A general base class for all nodes in a NoteBook"""
 
-    def __init__(self, title=u"", parent=None, notebook=None,
+    def __init__(self, title="", parent=None, notebook=None,
                  content_type=CONTENT_TYPE_DIR, conn=None,
                  init_attr=True):
         self._notebook = notebook
@@ -638,8 +636,8 @@ class NoteBookNode (object):
                     out.write(data)
                 infile.close()
                 out.close()
-        except IOError, e:
-            raise NoteBookError(_("Cannot copy file '%s'" % filename), e)
+        except OSError as e:
+            raise NoteBookError(_(f"Cannot copy file '{filename}'"), e)
         
         # set attr
         self._attr["payload_filename"] = new_filename
@@ -834,7 +832,7 @@ class NoteBookNode (object):
             try:
                 self._attr["title"] = title
                 self.save(True)
-            except NoteBookError, e:
+            except NoteBookError as e:
                 self._attr["title"] = oldtitle
                 raise
         
@@ -1040,7 +1038,7 @@ class NoteBookNode (object):
     def delete_file(self, filename):
         return self._conn.delete_file(self._attr["nodeid"], filename)
 
-    def new_filename(self, new_filename, ext=u"", sep=u" ", number=2, 
+    def new_filename(self, new_filename, ext="", sep=" ", number=2, 
                      return_number=False, use_number=False, ensure_valid=True):
         return self._conn.new_filename(
             self._attr["nodeid"], new_filename, ext, sep, number, 
@@ -1125,7 +1123,7 @@ class NoteBookNode (object):
     '''
 
 
-class NodeAction (object):
+class NodeAction :
     pass
 
 
@@ -1295,7 +1293,7 @@ class NoteBook (NoteBookNode):
                                       recover=False)
 
                 # TODO: temp solution. remove soon.
-                index_dir = self.pref.get("index_dir", default=u"")
+                index_dir = self.pref.get("index_dir", default="")
                 if index_dir and os.path.exists(index_dir):
                     self._conn._set_index_file(
                         os.path.join(index_dir, notebook_index.INDEX_FILE))
@@ -1459,7 +1457,7 @@ class NoteBook (NoteBookNode):
                                             {"title": TRASH_NAME})
                 self._add_child(self._trash)
 
-            except NoteBookError, e:
+            except NoteBookError as e:
                 raise NoteBookError(_("Cannot create Trash folder"), e)
 
     
@@ -1516,7 +1514,7 @@ class NoteBook (NoteBookNode):
                                            basename)
 
         newfilename = self._conn.new_filename(self._attr["nodeid"], 
-                                              newfilename, ext, u"-",
+                                              newfilename, ext, "-",
                                               ensure_valid=False)
 
         self._conn.copy_node_file(None, filename, 
@@ -1541,7 +1539,7 @@ class NoteBook (NoteBookNode):
         use_number = False
         while True:
             newfilename, number = self._conn.new_filename(
-                self._attr["nodeid"], startname, ext, u"-",
+                self._attr["nodeid"], startname, ext, "-",
                 number=number, return_number=True, use_number=use_number,
                 ensure_valid=False,
                 path=nodepath)
@@ -1549,10 +1547,10 @@ class NoteBook (NoteBookNode):
             # determine open icon filename
             newfilename_open = startname
             if number:
-                newfilename_open += u"-" + unicode(number)
+                newfilename_open += "-" + unicode(number)
             else:
                 number = 2
-            newfilename_open += u"-open" + ext
+            newfilename_open += "-open" + ext
 
             # see if it already exists
             if self._conn.file_exists(self._attr["nodeid"], newfilename_open):
@@ -1590,7 +1588,7 @@ class NoteBook (NoteBookNode):
 
         path = self._conn.get_node_path_by_id(nodeid)
         if path is None:
-            keepnote.log_message("node %s not found" % nodeid)
+            keepnote.log_message(f"node {nodeid} not found")
             return None
         
         def walk(node, path, i):
@@ -1604,7 +1602,7 @@ class NoteBook (NoteBookNode):
                     return walk(child, path, i+1)
             
             # node not found
-            keepnote.log_message("node %s not found" % str(path))
+            keepnote.log_message(f"node {str(path)} not found")
             return None
         return walk(self._notebook, path[1:], 0)
     
@@ -1639,8 +1637,7 @@ class NoteBook (NoteBookNode):
         return self._conn.clear_index()
 
     def index_all(self):
-        for node in self._conn.index_all():
-            yield node
+        yield from self._conn.index_all()
 
 
     #===============================================
@@ -1682,18 +1679,18 @@ class NoteBook (NoteBookNode):
             data = self.pref.get_data()
 
             out = self.open_file(PREF_FILE, "w", codec="utf-8")
-            out.write(u'<?xml version="1.0" encoding="UTF-8"?>\n'
-                      u'<notebook>\n'
-                      u'<version>%d</version>\n'
-                      u'<pref>\n' % data["version"])
+            out.write('<?xml version="1.0" encoding="UTF-8"?>\n'
+                      '<notebook>\n'
+                      '<version>{0:d}</version>\n'
+                      '<pref>\n'.format(data["version"]))
             plist.dump(data, out, indent=4, depth=4)
-            out.write(u'</pref>\n'
-                      u'</notebook>\n')
+            out.write('</pref>\n'
+                      '</notebook>\n')
             out.close()
 
-        except (IOError, OSError), e:
+        except OSError as e:
             raise NoteBookError(_("Cannot save notebook preferences"), e)
-        except Exception, e:
+        except Exception as e:
             raise NoteBookError(_("File format error"), e)
 
     
@@ -1705,10 +1702,10 @@ class NoteBook (NoteBookNode):
                 infile = self.open_file(PREF_FILE, "r", codec="utf-8")
             root = ET.fromstring(infile.read())
             tree = ET.ElementTree(root)
-        except IOError, e:
-            raise NoteBookError(_("Cannot read notebook preferences %s")
-                                % self.get_file(PREF_FILE) , e)
-        except Exception, e:
+        except OSError as e:
+            raise NoteBookError(_("Cannot read notebook preferences {0}").format(
+                                self.get_file(PREF_FILE)) , e)
+        except Exception as e:
             if recover:
                 if infile:
                     infile.close()

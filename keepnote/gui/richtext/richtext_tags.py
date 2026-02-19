@@ -59,7 +59,7 @@ def color_to_string(color):
     while len(bluestr) < 4:
         bluestr = "0" + bluestr
 
-    return "#%s%s%s" % (redstr, greenstr, bluestr)
+    return f"#{redstr}{greenstr}{bluestr}"
 
 
 def color_tuple_to_string(color):
@@ -77,7 +77,7 @@ def color_tuple_to_string(color):
     while len(bluestr) < 4:
         bluestr = "0" + bluestr
 
-    return "#%s%s%s" % (redstr, greenstr, bluestr)
+    return f"#{redstr}{greenstr}{bluestr}"
 
 
 _text_scale = 1.0
@@ -191,7 +191,7 @@ class RichTextJustifyTag (RichTextTag):
         gtk.JUSTIFY_FILL: "fill"
     }
 
-    justify_names = set(["left", "right", "center", "fill"])
+    justify_names = {"left", "right", "center", "fill"}
 
     def __init__(self, name, **kargs):
         RichTextTag.__init__(self, name, **kargs)
@@ -239,7 +239,7 @@ class RichTextSizeTag (RichTextTag):
 
     def __init__(self, size, scale=1.0):
         #scale = size / 10.0
-        RichTextTag.__init__(self, "size %d" % size,
+        RichTextTag.__init__(self, f"size {size:d}",
                              size_points=int(size * get_text_scale()))
 
     def get_size(self):
@@ -248,7 +248,7 @@ class RichTextSizeTag (RichTextTag):
 
     @classmethod
     def tag_name(cls, size):
-        return "size %d" % size
+        return f"size {size:d}"
 
     @classmethod
     def get_value(cls, tag_name):
@@ -263,7 +263,7 @@ class RichTextFGColorTag (RichTextTag):
     """A tag that represents a font foreground color"""
 
     def __init__(self, color):
-        RichTextTag.__init__(self, "fg_color %s" % color,
+        RichTextTag.__init__(self, f"fg_color {color}",
                              foreground=color)
 
     def get_color(self):
@@ -286,7 +286,7 @@ class RichTextBGColorTag (RichTextTag):
     """A tag that represents a font background color"""
 
     def __init__(self, color):
-        RichTextTag.__init__(self, "bg_color %s" % color,
+        RichTextTag.__init__(self, f"bg_color {color}",
                              background=color)
 
     def get_color(self):
@@ -322,7 +322,7 @@ class RichTextIndentTag (RichTextTag):
             extra_margin = BULLET_PAR_INDENT
 
         RichTextTag.__init__(
-            self, "indent %d %s" % (indent, par_type),
+            self, f"indent {indent:d} {par_type}",
             left_margin=MIN_INDENT + INDENT_SIZE * (indent-1) + extra_margin,
             indent=-par_indent_size)
 
@@ -331,7 +331,7 @@ class RichTextIndentTag (RichTextTag):
 
     @classmethod
     def tag_name(cls, indent, par_type="none"):
-        return "indent %d %s" % (indent, par_type)
+        return f"indent {indent:d} {par_type}"
 
     @classmethod
     def get_value(cls, tag_name):
@@ -342,7 +342,7 @@ class RichTextIndentTag (RichTextTag):
         elif len(tokens) == 3:
             return int(tokens[1]), tokens[2]
         else:
-            raise Exception("bad tag name '%s'" % tag_name)
+            raise Exception(f"bad tag name '{tag_name}'")
 
     @classmethod
     def is_name(cls, tag_name):
@@ -404,7 +404,7 @@ class RichTextLinkTag (RichTextTag):
     LINK_COLOR = "#00000000ffff"
 
     def __init__(self, href):
-        RichTextTag.__init__(self, "link %s" % href,
+        RichTextTag.__init__(self, f"link {href}",
                              foreground=self.LINK_COLOR,
                              underline=pango.UNDERLINE_SINGLE)
         self._href = href

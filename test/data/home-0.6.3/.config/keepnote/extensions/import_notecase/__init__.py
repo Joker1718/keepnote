@@ -85,7 +85,7 @@ def unescape(text):
             print "keyerror"
             pass
       return text # leave as is
-   return re.sub("&#?\w+;", fixup, text)
+   return re.sub(r"&#?\w+;", fixup, text)
 
 # http://diveintopython.org/html_processing/index.html
 class Extension (keepnote.gui.extension.Extension):
@@ -322,7 +322,7 @@ class MyParser(sgmllib.SGMLParser):
         if self.last_xtag == "start_dd" and self.xtag == "start_dl" and len(self.pieces) != 0:
             write_node(self.node,self.pieces)
         xnode = self.node.new_child(notebooklib.CONTENT_TYPE_PAGE,notebooklib.DEFAULT_PAGE_NAME)
-        xnode.rename(u"anonymous")
+        xnode.rename("anonymous")
 
     def end_dl(self):
         self.last_xtag = self.xtag

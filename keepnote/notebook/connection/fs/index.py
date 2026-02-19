@@ -33,7 +33,7 @@ import time
 # import sqlite
 try:
     import pysqlite2.dbapi2 as sqlite
-except Exception, e:
+except Exception as e:
     import sqlite3 as sqlite
 #sqlite.enable_shared_cache(True)
 #sqlite.threadsafety = 0
@@ -46,7 +46,7 @@ from keepnote.notebook.connection.index import NodeIndex
 
 
 # index filename
-INDEX_FILE = u"index.sqlite"
+INDEX_FILE = "index.sqlite"
 INDEX_VERSION = 3
 
 #=============================================================================
@@ -87,7 +87,7 @@ class NoteBookIndex (NodeIndex):
             #self.con.execute(u"PRAGMA read_uncommitted = true;")
 
             self.init_index(auto_clear=auto_clear)
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             self._on_corrupt(e, sys.exc_info()[2])
             raise
 
@@ -114,7 +114,7 @@ class NoteBookIndex (NodeIndex):
                 self.con.commit()
             except:
                 self.open()
-        except Exception, e:
+        except Exception as e:
             self._on_corrupt(e, sys.exc_info()[2])
 
     def clear(self):
@@ -131,17 +131,17 @@ class NoteBookIndex (NodeIndex):
 
     def _get_version(self):
         """Get version from database"""
-        self.con.execute(u"""CREATE TABLE IF NOT EXISTS Version
+        self.con.execute("""CREATE TABLE IF NOT EXISTS Version
                             (version INTEGER, update_date DATE);""")
         version = self.con.execute(
-            u"SELECT MAX(version) FROM Version").fetchone()
+            "SELECT MAX(version) FROM Version").fetchone()
         if version is not None:
             version = version[0]
         return version
 
     def _set_version(self, version=INDEX_VERSION):
         """Set the version of the database"""
-        self.con.execute(u"INSERT INTO Version VALUES (?, datetime('now'));",
+        self.con.execute("INSERT INTO Version VALUES (?, datetime('now'));",
                          (version,))
 
     def init_index(self, auto_clear=True):
@@ -159,7 +159,7 @@ class NoteBookIndex (NodeIndex):
                 self._need_index = True
 
             # init NodeGraph table
-            con.execute(u"""CREATE TABLE IF NOT EXISTS NodeGraph
+            con.execute("""CREATE TABLE IF NOT EXISTS NodeGraph
                            (nodeid TEXT,
                             parentid TEXT,
                             basename TEXT,
@@ -167,9 +167,9 @@ class NoteBookIndex (NodeIndex):
                             symlink BOOLEAN,
                             UNIQUE(nodeid) ON CONFLICT REPLACE);
                         """)
-            con.execute(u"""CREATE INDEX IF NOT EXISTS IdxNodeGraphNodeid
+            con.execute("""CREATE INDEX IF NOT EXISTS IdxNodeGraphNodeid
                            ON NodeGraph (nodeid);""")
-            con.execute(u"""CREATE INDEX IF NOT EXISTS IdxNodeGraphParentid
+            con.execute("""CREATE INDEX IF NOT EXISTS IdxNodeGraphParentid
                            ON NodeGraph (parentid);""")
 
             # init attribute indexes
@@ -181,11 +181,11 @@ class NoteBookIndex (NodeIndex):
             #if not self._need_index:
             #    self._need_index = self.check_index()
 
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             self._on_corrupt(e, sys.exc_info()[2])
 
-            keepnote.log_message("reinitializing index '%s'\n" %
-                                 self._index_file)
+            keepnote.log_message("reinitializing index '{0}'\n".format(
+                                 self._index_file))
             self.clear()
 
     def is_corrupt(self):
@@ -217,9 +217,9 @@ class NoteBookIndex (NodeIndex):
 
     def _drop_tables(self):
         """drop NodeGraph tables"""
-        self.con.execute(u"DROP TABLE IF EXISTS NodeGraph")
-        self.con.execute(u"DROP INDEX IF EXISTS IdxNodeGraphNodeid")
-        self.con.execute(u"DROP INDEX IF EXISTS IdxNodeGraphParentid")
+        self.con.execute("DROP TABLE IF EXISTS NodeGraph")
+        self.con.execute("DROP INDEX IF EXISTS IdxNodeGraphNodeid")
+        self.con.execute("DROP INDEX IF EXISTS IdxNodeGraphParentid")
         self.drop_attrs(self.cur)
 
     def index_needed(self):
@@ -257,8 +257,7 @@ class NoteBookIndex (NodeIndex):
 
         # perform indexing
         # simply by walking through the tree, all nodes will index themselves
-        for nodeid in preorder(conn, rootid):
-            yield nodeid
+        yield from preorder(conn, rootid)
 
         # record index complete
         self._need_index = False
@@ -267,14 +266,14 @@ class NoteBookIndex (NodeIndex):
         """
         Try to compact the index by reclaiming space
         """
-        keepnote.log_message("compacting index '%s'\n" % self._index_file)
+        keepnote.log_message("compacting index '{0}'\n".format(self._index_file))
         self.con.execute("VACUUM;")
         self.con.comment()
 
     def get_node_mtime(self, nodeid):
         """Get the last indexed mtime for a node"""
 
-        self.cur.execute(u"""SELECT mtime FROM NodeGraph
+        self.cur.execute("""SELECT mtime FROM NodeGraph
                              WHERE nodeid=?""", (nodeid,))
         row = self.cur.fetchone()
         if row:
@@ -308,12 +307,12 @@ class NoteBookIndex (NodeIndex):
             # get info
             if parentid is None:
                 parentid = self._uniroot
-                basename = u""
+                basename = ""
             symlink = False
 
             # update nodegraph
             self.cur.execute(
-                u"""INSERT INTO NodeGraph VALUES (?, ?, ?, ?, ?)""",
+                """INSERT INTO NodeGraph VALUES (?, ?, ?, ?, ?)""",
                 (nodeid, parentid, basename, mtime, symlink))
 
             self.add_node_attr(self.cur, nodeid, attr)
@@ -321,9 +320,9 @@ class NoteBookIndex (NodeIndex):
             if commit:
                 self.con.commit()
 
-        except Exception, e:
-            keepnote.log_error("error index node %s '%s'" %
-                               (nodeid, attr.get("title", "")))
+        except Exception as e:
+            keepnote.log_error("error index node {0} '{1}'".format(
+                               nodeid, attr.get("title", "")))
             self._on_corrupt(e, sys.exc_info()[2])
 
     def remove_node(self, nodeid, commit=False):
@@ -335,14 +334,14 @@ class NoteBookIndex (NodeIndex):
         try:
             # delete node
             self.cur.execute(
-                u"DELETE FROM NodeGraph WHERE nodeid=?", (nodeid,))
+                "DELETE FROM NodeGraph WHERE nodeid=?", (nodeid,))
 
             self.remove_node_attr(self.cur, nodeid)
 
             if commit:
                 self.con.commit()
 
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             self._on_corrupt(e, sys.exc_info()[2])
 
     #-------------------------
@@ -362,7 +361,7 @@ class NoteBookIndex (NodeIndex):
                 # continue to walk up parent
                 path.append(nodeid)
 
-                self.cur.execute(u"""SELECT nodeid, parentid, basename
+                self.cur.execute("""SELECT nodeid, parentid, basename
                                 FROM NodeGraph
                                 WHERE nodeid=?""", (nodeid,))
                 row = self.cur.fetchone()
@@ -381,14 +380,15 @@ class NoteBookIndex (NodeIndex):
                 # walk up
                 nodeid = parentid
 
-            path.reverse()
-            return path
-
-        except sqlite.DatabaseError, e:
-            self._on_corrupt(e, sys.exc_info()[2])
-            raise
-
-    def get_node_filepath(self, nodeid):
+                        path.reverse()
+                        return path
+            
+                    except sqlite.DatabaseError as e:
+                        self._on_corrupt(e, sys.exc_info()[2])
+                        raise
+            
+            
+                def get_node_filepath(self, nodeid):
         """Get node path for a nodeid"""
 
         # TODO: handle multiple parents
@@ -401,7 +401,7 @@ class NoteBookIndex (NodeIndex):
             while parentid != self._uniroot:
                 # continue to walk up parent
 
-                self.cur.execute(u"""SELECT nodeid, parentid, basename
+                self.cur.execute("""SELECT nodeid, parentid, basename
                                 FROM NodeGraph
                                 WHERE nodeid=?""", (nodeid,))
                 row = self.cur.fetchone()
@@ -422,20 +422,21 @@ class NoteBookIndex (NodeIndex):
                 # walk up
                 nodeid = parentid
 
-            path.reverse()
-            return path
-
-        except sqlite.DatabaseError, e:
-            self._on_corrupt(e, sys.exc_info()[2])
-            raise
-
-    def get_node(self, nodeid):
+                        path.reverse()
+                        return path
+            
+                    except sqlite.DatabaseError as e:
+                        self._on_corrupt(e, sys.exc_info()[2])
+                        raise
+            
+            
+                def get_node(self, nodeid):
         """Get node data for a nodeid"""
 
         # TODO: handle multiple parents
 
         try:
-            self.cur.execute(u"""SELECT nodeid, parentid, basename, mtime
+            self.cur.execute("""SELECT nodeid, parentid, basename, mtime
                                 FROM NodeGraph
                                 WHERE nodeid=?""", (nodeid,))
             row = self.cur.fetchone()
@@ -449,7 +450,7 @@ class NoteBookIndex (NodeIndex):
                     "basename": row[2],
                     "mtime": row[3]}
 
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             self._on_corrupt(e, sys.exc_info()[2])
             raise
 
@@ -459,7 +460,7 @@ class NoteBookIndex (NodeIndex):
 
     def has_node(self, nodeid):
         """Returns True if index has node"""
-        self.cur.execute(u"""SELECT nodeid, parentid, basename, mtime
+        self.cur.execute("""SELECT nodeid, parentid, basename, mtime
                              FROM NodeGraph
                              WHERE nodeid=?""", (nodeid,))
         return self.cur.fetchone() is not None
@@ -468,12 +469,12 @@ class NoteBookIndex (NodeIndex):
         """List children indexed for node"""
 
         try:
-            self.cur.execute(u"""SELECT nodeid, basename
+            self.cur.execute("""SELECT nodeid, basename
                                 FROM NodeGraph
                                 WHERE parentid=?""", (nodeid,))
             return list(self.cur.fetchall())
 
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             self._on_corrupt(e, sys.exc_info()[2])
             raise
 
@@ -481,12 +482,12 @@ class NoteBookIndex (NodeIndex):
         """Returns True if node has children"""
 
         try:
-            self.cur.execute(u"""SELECT nodeid
+            self.cur.execute("""SELECT nodeid
                                 FROM NodeGraph
                                 WHERE parentid=?""", (nodeid,))
             return self.cur.fetchone() is not None
 
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             self._on_corrupt(e, sys.exc_info()[2])
             raise
 
@@ -495,7 +496,7 @@ class NoteBookIndex (NodeIndex):
 
         try:
             return self.search_node_titles(self.cur, title)
-        except sqlite.DatabaseError, e:
+        except sqlite.DatabaseError as e:
             self._on_corrupt(e, sys.exc_info()[2])
             raise
 
@@ -504,8 +505,7 @@ class NoteBookIndex (NodeIndex):
 
         cur = self.con.cursor()
         try:
-            for res in self.search_node_contents(cur, text):
-                yield res
+            yield from self.search_node_contents(cur, text)
         except:
             keepnote.log_error("SQLITE error while performing search")
         finally:

@@ -145,7 +145,7 @@ class KeepNoteListView (basetreeview.KeepNoteBaseTreeView):
         if table.attrs != current_attrs:
             if set(current_attrs) == set(table.attrs):
                 # only order changed
-                lookup = dict((col.attr, col) for col in self.get_columns())
+                lookup = {col.attr: col for col in self.get_columns()}
                 prev = None
                 for attr in table.attrs:
                     col = lookup[attr]

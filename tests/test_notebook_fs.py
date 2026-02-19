@@ -1,4 +1,3 @@
-
 # python imports
 import os
 
@@ -71,8 +70,8 @@ class TestConnFS (TestConnBase):
             self.assertIn(key, attr)
 
         # New root node should have no parents or children.
-        self.assertEquals(attr['parentids'], [])
-        self.assertEquals(attr['childrenids'], [])
+        self.assertEqual(attr['parentids'], [])
+        self.assertEqual(attr['childrenids'], [])
 
         # Updating a node should enforce schema required keys.
         conn.update_node(nodeid, {})

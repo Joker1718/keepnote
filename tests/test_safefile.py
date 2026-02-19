@@ -22,13 +22,13 @@ class TestCaseSafeFile (unittest.TestCase):
         out = safefile.open(filename, "w", codec="utf-8")
         tmp = out.get_tempfile()
 
-        out.write(u"\u2022 hello\n")
-        out.write(u"there")
+        out.write("\u2022 hello\n")
+        out.write("there")
         out.close()
 
-        self.assertEquals(safefile.open(filename, codec="utf-8").read(),
-                          u"\u2022 hello\nthere")
-        self.assertEquals(os.path.exists(tmp), False)
+        self.assertEqual(safefile.open(filename, codec="utf-8").read(),
+                          "\u2022 hello\nthere")
+        self.assertEqual(os.path.exists(tmp), False)
 
     def test2(self):
         """test unsuccessful write"""
@@ -48,29 +48,29 @@ class TestCaseSafeFile (unittest.TestCase):
         except:
             pass
 
-        self.assertEquals(safefile.open(filename, codec="utf-8").read(),
-                          u"\u2022 hello\nthere")
-        self.assertEquals(os.path.exists(out.get_tempfile()), True)
+        self.assertEqual(safefile.open(filename, codec="utf-8").read(),
+                          "\u2022 hello\nthere")
+        self.assertEqual(os.path.exists(out.get_tempfile()), True)
 
     def test3(self):
 
         filename = _tmpdir + "/safefile"
 
         out = safefile.open(filename, "w", codec="utf-8")
-        out.write(u"\u2022 hello\nthere\nagain\n")
+        out.write("\u2022 hello\nthere\nagain\n")
         out.close()
 
         lines = safefile.open(filename, codec="utf-8").readlines()
 
-        self.assertEquals(lines, [u"\u2022 hello\n",
-                                  u"there\n",
-                                  u"again\n"])
+        self.assertEqual(lines, ["\u2022 hello\n",
+                                  "there\n",
+                                  "again\n"])
 
         lines = list(safefile.open(filename, codec="utf-8"))
 
-        self.assertEquals(lines, [u"\u2022 hello\n",
-                                  u"there\n",
-                                  u"again\n"])
+        self.assertEqual(lines, ["\u2022 hello\n",
+                                  "there\n",
+                                  "again\n"])
 
     def test4(self):
 
@@ -78,13 +78,13 @@ class TestCaseSafeFile (unittest.TestCase):
 
         out = safefile.open(filename, "w", codec="utf-8")
 
-        out.writelines([u"\u2022 hello\n",
-                        u"there\n",
-                        u"again\n"])
+        out.writelines(["\u2022 hello\n",
+                        "there\n",
+                        "again\n"])
         out.close()
 
         lines = safefile.open(filename, codec="utf-8").readlines()
 
-        self.assertEquals(lines, [u"\u2022 hello\n",
-                                  u"there\n",
-                                  u"again\n"])
+        self.assertEqual(lines, ["\u2022 hello\n",
+                                  "there\n",
+                                  "again\n"])

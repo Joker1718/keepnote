@@ -1,4 +1,3 @@
-
 # keepnote imports
 from keepnote.notebook.connection import mem
 

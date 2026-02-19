@@ -69,8 +69,7 @@ def read_data_as_plain_text(conn, nodeid):
     try:
         infile = conn.open_file(
             nodeid, keepnote.notebook.PAGE_DATA_FILE, "r", codec="utf-8")
-        for line in keepnote.notebook.read_data_as_plain_text(infile):
-            yield line
+        yield from keepnote.notebook.read_data_as_plain_text(infile)
         infile.close()
     except:
         pass
@@ -84,10 +83,10 @@ def test_fts3(cur, tmpname="fts3test"):
     # full text table
     try:
         # test for fts3 availability
-        cur.execute(u"DROP TABLE IF EXISTS %s;" % tmpname)
+        cur.execute(f"DROP TABLE IF EXISTS {tmpname};")
         cur.execute(
-            "CREATE VIRTUAL TABLE %s USING fts3(col TEXT);" % tmpname)
-        cur.execute("DROP TABLE %s;" % tmpname)
+            f"CREATE VIRTUAL TABLE {tmpname} USING fts3(col TEXT);")
+        cur.execute(f"DROP TABLE {tmpname};")
         return True
     except Exception:
         return False
@@ -95,7 +94,7 @@ def test_fts3(cur, tmpname="fts3test"):
 
 #=============================================================================
 
-class AttrIndex (object):
+class AttrIndex :
     """Indexing information for an attribute"""
 
     def __init__(self, name, type, index_value=False):
@@ -115,22 +114,20 @@ class AttrIndex (object):
     def init(self, cur):
         """Initialize attribute index for database"""
 
-        cur.execute(u"""CREATE TABLE IF NOT EXISTS %s
+        cur.execute(f"""CREATE TABLE IF NOT EXISTS {self._table_name}
                            (nodeid TEXT,
-                            value %s,
+                            value {self._type},
                             UNIQUE(nodeid) ON CONFLICT REPLACE);
-                        """ % (self._table_name, self._type))
-        cur.execute(u"""CREATE INDEX IF NOT EXISTS %s
-                           ON %s (nodeid);""" % (self._index_name,
-                                                 self._table_name))
+                        """)
+        cur.execute(f"""CREATE INDEX IF NOT EXISTS {self._index_name}
+                           ON {self._table_name} (nodeid);""")
 
         if self._index_value:
-            cur.execute(u"""CREATE INDEX IF NOT EXISTS %s
-                           ON %s (value);""" % (self._index_value_name,
-                                                self._table_name))
+            cur.execute(f"""CREATE INDEX IF NOT EXISTS {self._index_value_name}
+                           ON {self._table_name} (value);""")
 
     def drop(self, cur):
-        cur.execute(u"DROP TABLE IF EXISTS %s" % self._table_name)
+        cur.execute(f"DROP TABLE IF EXISTS {self._table_name}")
 
     def add_node(self, cur, nodeid, attr):
         val = attr.get(self._name, NULL)
@@ -139,13 +136,12 @@ class AttrIndex (object):
 
     def remove_node(self, cur, nodeid):
         """Remove node from index"""
-        cur.execute(u"DELETE FROM %s WHERE nodeid=?" % self._table_name,
+        cur.execute(f"DELETE FROM {self._table_name} WHERE nodeid=?",
                     (nodeid,))
 
     def get(self, cur, nodeid):
         """Get information for a node from the index"""
-        cur.execute(u"""SELECT value FROM %s WHERE nodeid = ?""" %
-                    self._table_name, (nodeid,))
+        cur.execute(f"""SELECT value FROM {self._table_name} WHERE nodeid = ?""", (nodeid,))
         values = [row[0] for row in cur.fetchall()]
 
         # return value
@@ -158,11 +154,11 @@ class AttrIndex (object):
         """Set the information for a node in the index"""
 
         # insert new row
-        cur.execute(u"""INSERT INTO %s VALUES (?, ?)""" % self._table_name,
+        cur.execute(f"""INSERT INTO {self._table_name} VALUES (?, ?)""",
                     (nodeid, value))
 
 
-class NodeIndex (object):
+class NodeIndex :
     """
     General index for nodes and their attributes
     """
@@ -217,9 +213,9 @@ class NodeIndex (object):
         # full text table
         if test_fts3(cur):
             # create fulltext table if it does not already exist
-            if not list(cur.execute(u"""SELECT 1 FROM sqlite_master
+            if not list(cur.execute("""SELECT 1 FROM sqlite_master
                                WHERE name == 'fulltext';""")):
-                cur.execute(u"""CREATE VIRTUAL TABLE
+                cur.execute("""CREATE VIRTUAL TABLE
                             fulltext USING
                             fts3(nodeid TEXT, content TEXT,
                                  tokenize=porter);""")
@@ -241,14 +237,14 @@ class NodeIndex (object):
 
     def drop_attrs(self, cur):
 
-        cur.execute(u"DROP TABLE IF EXISTS fulltext;")
+        cur.execute("DROP TABLE IF EXISTS fulltext;")
 
         # drop attribute tables
         table_names = [x for (x,) in cur.execute(
-            u"""SELECT name FROM sqlite_master WHERE name LIKE 'Attr_%'""")]
+            """SELECT name FROM sqlite_master WHERE name LIKE 'Attr_%'""")]
 
         for table_name in table_names:
-            cur.execute(u"""DROP TABLE %s;""" % table_name)
+            cur.execute(f"DROP TABLE {table_name};")
 
     #===============================
     # add/remove/get nodes from index
@@ -334,10 +330,10 @@ class NodeIndex (object):
 
         # order titles by exact matches and then alphabetically
         cur.execute(
-            u"""SELECT nodeid, value FROM %s WHERE value LIKE ?
-                           ORDER BY value != ?, value """ %
-            self.get_attr_index("title").get_table_name(),
-            (u"%" + query + u"%", query))
+            """SELECT nodeid, value FROM {0} WHERE value LIKE ?
+                           ORDER BY value != ?, value """.format(
+            self.get_attr_index("title").get_table_name()),
+            ("%" + query + "%", query))
 
         return list(cur.fetchall())
 
@@ -354,12 +350,12 @@ class NodeIndex (object):
         if not self._has_fulltext:
             return
 
-        if list(cur.execute(u"SELECT 1 FROM fulltext WHERE nodeid = ?",
+        if list(cur.execute("SELECT 1 FROM fulltext WHERE nodeid = ?",
                             (nodeid,))):
-            cur.execute(u"UPDATE fulltext SET content = ? WHERE nodeid = ?;",
+            cur.execute("UPDATE fulltext SET content = ? WHERE nodeid = ?;",
                         (text, nodeid))
         else:
-            cur.execute(u"INSERT INTO fulltext VALUES (?, ?);",
+            cur.execute("INSERT INTO fulltext VALUES (?, ?);",
                         (nodeid, text))
 
     def _remove_text(self, cur, nodeid):
@@ -367,4 +363,4 @@ class NodeIndex (object):
         if not self._has_fulltext:
             return
 
-        cur.execute(u"DELETE FROM fulltext WHERE nodeid = ?", (nodeid,))
+        cur.execute("DELETE FROM fulltext WHERE nodeid = ?", (nodeid,))

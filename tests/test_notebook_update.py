@@ -1,4 +1,3 @@
-
 # python imports
 import shutil
 import unittest

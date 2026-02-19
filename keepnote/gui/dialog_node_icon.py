@@ -74,7 +74,7 @@ def browse_file(parent, title, filename=None):
     return filename
 
 
-class NodeIconDialog (object):
+class NodeIconDialog :
     """Updates a notebook"""
 
     def __init__(self, app):
@@ -147,10 +147,10 @@ class NodeIconDialog (object):
             icon_file = unicode_gtk(self.icon_entry.get_text())
             icon_open_file = unicode_gtk(self.icon_open_entry.get_text())
 
-            if icon_file.strip() == u"":
-                icon_file = u""
-            if icon_open_file.strip() == u"":
-                icon_open_file = u""
+            if icon_file.strip() == "":
+                icon_file = ""
+            if icon_open_file.strip() == "":
+                icon_open_file = ""
 
         self.dialog.destroy()
 

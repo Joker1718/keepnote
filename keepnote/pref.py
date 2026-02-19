@@ -76,7 +76,7 @@ def get_pref(pref, *args, **kargs):
         return d
 
     except KeyError:
-        raise Exception("unknown config value '%s'" % ".".join(args))
+        raise Exception("unknown config value '{0}'".format(".".join(args)))
 
 
 def set_pref(pref, *args):
@@ -94,7 +94,7 @@ def set_pref(pref, *args):
         return val
 
 
-class Pref (object):
+class Pref :
     """A general preference object"""
 
     def __init__(self, data=None):

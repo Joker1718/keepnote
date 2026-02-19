@@ -67,7 +67,7 @@ class LRUDict (dict):
         return val
 
 
-class DictCache (object):
+class DictCache :
 
     def __init__(self, func, cache_dict):
         self._func = func
