@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Base class for a viewer
+KeepNote
+Base class for a viewer
 
 """
 
@@ -29,7 +29,8 @@ import uuid
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gtk
 import gobject
 
@@ -41,8 +42,7 @@ from keepnote import notebook as notebooklib
 _ = keepnote.translate
 
 
-class Viewer (gtk.VBox):
-
+class Viewer(gtk.VBox):
     def __init__(self, app, parent, viewerid=None, viewer_name="viewer"):
         gtk.VBox.__init__(self, False, 0)
         self._app = app
@@ -95,7 +95,7 @@ class Viewer (gtk.VBox):
     def get_editor(self):
         return None
 
-    #========================
+    # ========================
     # node interaction
 
     def get_current_node(self):
@@ -116,12 +116,13 @@ class Viewer (gtk.VBox):
             index = None
 
         if kind == notebooklib.CONTENT_TYPE_DIR:
-            node = parent.new_child(notebooklib.CONTENT_TYPE_DIR,
-                                    notebooklib.DEFAULT_DIR_NAME,
-                                    index)
+            node = parent.new_child(
+                notebooklib.CONTENT_TYPE_DIR, notebooklib.DEFAULT_DIR_NAME, index
+            )
         else:
             node = notebooklib.new_page(
-                parent, title=notebooklib.DEFAULT_PAGE_NAME, index=index)
+                parent, title=notebooklib.DEFAULT_PAGE_NAME, index=index
+            )
 
         return node
 
@@ -139,7 +140,7 @@ class Viewer (gtk.VBox):
             self.goto_node(node, False)
             self._history.end_suspend()
 
-    #===============================================
+    # ===============================================
     # search
 
     def start_search_result(self):
@@ -151,7 +152,7 @@ class Viewer (gtk.VBox):
     def end_search_result(self):
         pass
 
-    #================================================
+    # ================================================
     # UI management
 
     def add_ui(self, window):
@@ -162,15 +163,21 @@ class Viewer (gtk.VBox):
 
 
 gobject.type_register(Viewer)
-gobject.signal_new("error", Viewer, gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, (str, object))
-gobject.signal_new("status", Viewer, gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, (str, str))
-gobject.signal_new("history-changed", Viewer, gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, (object,))
-gobject.signal_new("window-request", Viewer, gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, (str,))
-gobject.signal_new("modified", Viewer, gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, (bool,))
-gobject.signal_new("current-node", Viewer, gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, (object,))
+gobject.signal_new(
+    "error", Viewer, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, object)
+)
+gobject.signal_new(
+    "status", Viewer, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, str)
+)
+gobject.signal_new(
+    "history-changed", Viewer, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (object,)
+)
+gobject.signal_new(
+    "window-request", Viewer, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)
+)
+gobject.signal_new(
+    "modified", Viewer, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (bool,)
+)
+gobject.signal_new(
+    "current-node", Viewer, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (object,)
+)

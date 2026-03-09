@@ -1,8 +1,8 @@
 """
-    KeepNote Extension 
-    backup_tar
+KeepNote Extension
+backup_tar
 
-    Tar file notebook backup
+Tar file notebook backup
 """
 
 #
@@ -31,7 +31,7 @@ import shutil
 import sys
 import time
 
-#_ = gettext.gettext
+# _ = gettext.gettext
 
 import keepnote
 from keepnote import unicode_gtk
@@ -44,7 +44,8 @@ from keepnote.gui import extension, FileChooserDialog
 # pygtk imports
 try:
     import pygtk
-    pygtk.require('2.0')
+
+    pygtk.require("2.0")
     from gtk import gdk
     import gtk.glade
     import gobject
@@ -54,32 +55,36 @@ except ImportError:
     pass
 
 
-
-class Extension (extension.Extension):
-
+class Extension(extension.Extension):
     def __init__(self, app):
         """Initialize extension"""
-        
+
         extension.Extension.__init__(self, app)
         self.app = app
 
-
     def get_depends(self):
         return [("keepnote", ">=", (0, 7, 1))]
-
 
     def on_add_ui(self, window):
         """Initialize extension for a particular window"""
 
         # add menu options
-        self.add_action(window, "Backup Notebook", "_Backup Notebook...",
-                        lambda w: self.on_archive_notebook(
-                window, window.get_notebook()))
-        self.add_action(window, "Restore Notebook", "R_estore Notebook...",
-                        lambda w: self.on_restore_notebook(window))
-        
+        self.add_action(
+            window,
+            "Backup Notebook",
+            "_Backup Notebook...",
+            lambda w: self.on_archive_notebook(window, window.get_notebook()),
+        )
+        self.add_action(
+            window,
+            "Restore Notebook",
+            "R_estore Notebook...",
+            lambda w: self.on_restore_notebook(window),
+        )
+
         # add menu items
-        self.add_ui(window,
+        self.add_ui(
+            window,
             """
             <ui>
             <menubar name="main_menu_bar">
@@ -91,8 +96,8 @@ class Extension (extension.Extension):
                </menu>
             </menubar>
             </ui>
-            """)
-
+            """,
+        )
 
     def on_archive_notebook(self, window, notebook):
         """Callback from gui for archiving a notebook"""
@@ -101,25 +106,30 @@ class Extension (extension.Extension):
             return
 
         dialog = FileChooserDialog(
-            "Backup Notebook", window, 
+            "Backup Notebook",
+            window,
             action=gtk.FILE_CHOOSER_ACTION_SAVE,
-            buttons=("Cancel", gtk.RESPONSE_CANCEL,
-                     "Backup", gtk.RESPONSE_OK),
+            buttons=("Cancel", gtk.RESPONSE_CANCEL, "Backup", gtk.RESPONSE_OK),
             app=self.app,
-            persistent_path="archive_notebook_path")
+            persistent_path="archive_notebook_path",
+        )
 
         path = self.app.get_default_path("archive_notebook_path")
         if os.path.exists(path):
             filename = notebooklib.get_unique_filename(
                 path,
-                os.path.basename(notebook.get_path()) +
-                time.strftime("-%Y-%m-%d"), ".tar.gz", ".")
-        else: 
-            filename = os.path.basename(notebook.get_path()) + \
-                time.strftime("-%Y-%m-%d") + ".tar.gz"
-        
-        dialog.set_current_name(os.path.basename(filename))
+                os.path.basename(notebook.get_path()) + time.strftime("-%Y-%m-%d"),
+                ".tar.gz",
+                ".",
+            )
+        else:
+            filename = (
+                os.path.basename(notebook.get_path())
+                + time.strftime("-%Y-%m-%d")
+                + ".tar.gz"
+            )
 
+        dialog.set_current_name(os.path.basename(filename))
 
         file_filter = gtk.FileFilter()
         file_filter.add_pattern("*.tar.gz")
@@ -142,24 +152,22 @@ class Extension (extension.Extension):
 
             window.set_status("Archiving...")
             return self.archive_notebook(notebook, filename, window)
-            
 
         elif response == gtk.RESPONSE_CANCEL:
             dialog.destroy()
             return False
-            
-
 
     def on_restore_notebook(self, window):
         """Callback from gui for restoring a notebook from an archive"""
 
         dialog = FileChooserDialog(
-            "Chose Archive To Restore", window, 
+            "Chose Archive To Restore",
+            window,
             action=gtk.FILE_CHOOSER_ACTION_OPEN,
-            buttons=("Cancel", gtk.RESPONSE_CANCEL,
-                     "Restore", gtk.RESPONSE_OK),
+            buttons=("Cancel", gtk.RESPONSE_CANCEL, "Restore", gtk.RESPONSE_OK),
             app=self.app,
-            persistent_path="archive_notebook_path")
+            persistent_path="archive_notebook_path",
+        )
 
         file_filter = gtk.FileFilter()
         file_filter.add_pattern("*.tar.gz")
@@ -172,7 +180,6 @@ class Extension (extension.Extension):
         dialog.add_filter(file_filter)
 
         response = dialog.run()
-        
 
         if response == gtk.RESPONSE_OK and dialog.get_filename():
             archive_filename = unicode_gtk(dialog.get_filename())
@@ -182,15 +189,15 @@ class Extension (extension.Extension):
             dialog.destroy()
             return
 
-
         # choose new notebook name
         dialog = FileChooserDialog(
-            "Choose New Notebook Name", window, 
+            "Choose New Notebook Name",
+            window,
             action=gtk.FILE_CHOOSER_ACTION_SAVE,
-            buttons=("Cancel", gtk.RESPONSE_CANCEL,
-                     "New", gtk.RESPONSE_OK),
+            buttons=("Cancel", gtk.RESPONSE_CANCEL, "New", gtk.RESPONSE_OK),
             app=self.app,
-            persistent_path="new_notebook_path")
+            persistent_path="new_notebook_path",
+        )
 
         file_filter = gtk.FileFilter()
         file_filter.add_pattern("*.nbk")
@@ -214,13 +221,10 @@ class Extension (extension.Extension):
             dialog.destroy()
 
             window.set_status("Restoring...")
-            self.restore_notebook(archive_filename,
-                                  notebook_filename, window)
+            self.restore_notebook(archive_filename, notebook_filename, window)
 
         elif response == gtk.RESPONSE_CANCEL:
             dialog.destroy()
-
-
 
     def archive_notebook(self, notebook, filename, window=None):
         """Archive a notebook"""
@@ -228,16 +232,14 @@ class Extension (extension.Extension):
         if notebook is None:
             return
 
-
-        task = tasklib.Task(lambda task:
-            archive_notebook(notebook, filename, task))
-
+        task = tasklib.Task(lambda task: archive_notebook(notebook, filename, task))
 
         if window:
-
-            window.wait_dialog(f"Creating archive '{os.path.basename(filename)}'...",
-                               "Beginning archive...",
-                               task)
+            window.wait_dialog(
+                f"Creating archive '{os.path.basename(filename)}'...",
+                "Beginning archive...",
+                task,
+            )
 
             # check exceptions
             try:
@@ -249,8 +251,7 @@ class Extension (extension.Extension):
 
             except NoteBookError as e:
                 window.set_status("")
-                window.error(f"Error while archiving notebook:\n{e.msg}", e,
-                             tracebk)
+                window.error(f"Error while archiving notebook:\n{e.msg}", e, tracebk)
                 return False
 
             except Exception as e:
@@ -259,25 +260,26 @@ class Extension (extension.Extension):
                 return False
 
         else:
-            
             archive_notebook(notebook, filename, None)
 
-        
-    def restore_notebook(self, archive_filename, notebook_filename,
-                         window=None):
+    def restore_notebook(self, archive_filename, notebook_filename, window=None):
         """Restore notebook"""
 
         if window:
-
             # make sure current notebook is closed
             window.close_notebook()
 
-            task = tasklib.Task(lambda task:
-                restore_notebook(archive_filename, notebook_filename, True, task))
+            task = tasklib.Task(
+                lambda task: restore_notebook(
+                    archive_filename, notebook_filename, True, task
+                )
+            )
 
-            window.wait_dialog(f"Restoring notebook from '{os.path.basename(archive_filename)}'...",
-                               "Opening archive...",
-                               task)
+            window.wait_dialog(
+                f"Restoring notebook from '{os.path.basename(archive_filename)}'...",
+                "Opening archive...",
+                task,
+            )
 
             # check exceptions
             try:
@@ -305,20 +307,19 @@ class Extension (extension.Extension):
 
 def truncate_filename(filename, maxsize=100):
     if len(filename) > maxsize:
-        filename = "..." + filename[-(maxsize-3):]
+        filename = "..." + filename[-(maxsize - 3) :]
     return filename
 
 
 def archive_notebook(notebook, filename, task=None):
     """Archive notebook as *.tar.gz
 
-       filename -- filename of archive to create
+    filename -- filename of archive to create
     """
 
     if task is None:
         # create dummy task if needed
         task = tasklib.Task()
-
 
     if os.path.exists(filename):
         raise NoteBookError(f"File '{filename}' already exists")
@@ -328,7 +329,6 @@ def archive_notebook(notebook, filename, task=None):
         notebook.save()
     except Exception as e:
         raise NoteBookError("Could not save notebook before archiving", e)
-
 
     # perform archiving
     archive = tarfile.open(filename, "w:gz", format=tarfile.PAX_FORMAT)
@@ -342,6 +342,7 @@ def archive_notebook(notebook, filename, task=None):
     task.set_message(("text", f"Archiving {nfiles:d} files..."))
 
     nfiles2 = [0]
+
     def walk(path, arcname):
         # add to archive
         archive.add(path, arcname, False)
@@ -353,11 +354,9 @@ def archive_notebook(notebook, filename, task=None):
                 task.set_message(("detail", truncate_filename(path)))
                 task.set_percent(nfiles2[0] / float(nfiles))
 
-
         # recurse
         if os.path.isdir(path):
             for f in os.listdir(path):
-
                 # abort archive
                 if task.aborted():
                     archive.close()
@@ -365,8 +364,7 @@ def archive_notebook(notebook, filename, task=None):
                     raise NoteBookError("Backup canceled")
 
                 if not os.path.islink(f):
-                    walk(os.path.join(path, f),
-                         os.path.join(arcname, f))
+                    walk(os.path.join(path, f), os.path.join(arcname, f))
 
     walk(path, os.path.basename(path))
 
@@ -377,8 +375,6 @@ def archive_notebook(notebook, filename, task=None):
 
     if task:
         task.finish()
-
-
 
 
 def restore_notebook(filename, path, rename, task=None):
@@ -395,7 +391,6 @@ def restore_notebook(filename, path, rename, task=None):
         # create dummy task if needed
         task = tasklib.Task()
 
-
     if path == "":
         raise NoteBookError("Must specify a path for restoring notebook")
 
@@ -404,12 +399,12 @@ def restore_notebook(filename, path, rename, task=None):
 
     tar = tarfile.open(filename, "r:gz", format=tarfile.PAX_FORMAT)
 
-
     # create new dirctory, if needed
     if rename:
         if not os.path.exists(path):
-            tmppath = get_unique_filename(os.path.dirname(path),
-                                          os.path.basename(path+"-tmp"))
+            tmppath = get_unique_filename(
+                os.path.dirname(path), os.path.basename(path + "-tmp")
+            )
         else:
             raise NoteBookError("Notebook path already exists")
 
@@ -423,8 +418,8 @@ def restore_notebook(filename, path, rename, task=None):
             for i, member in enumerate(members):
                 # FIX: tarfile does not seem to keep unicode and str straight
                 # make sure member.name is unicode
-                if 'path' in member.pax_headers:
-                    member.name = member.pax_headers['path']
+                if "path" in member.pax_headers:
+                    member.name = member.pax_headers["path"]
 
                 if task:
                     if task.aborted():
@@ -436,17 +431,16 @@ def restore_notebook(filename, path, rename, task=None):
             files = os.listdir(tmppath)
             # assert len(files) = 1
             extracted_path = os.path.join(tmppath, files[0])
-            
+
             # move extracted files to proper place
             if task:
                 task.set_message(("text", "Finishing restore..."))
                 shutil.move(extracted_path, path)
                 os.rmdir(tmppath)
 
-
         except NoteBookError as e:
             raise e
-        
+
         except Exception as e:
             raise NoteBookError("File writing error while extracting notebook", e)
 
@@ -461,15 +455,15 @@ def restore_notebook(filename, path, rename, task=None):
     task.finish()
 
 
-#=============================================================================
+# =============================================================================
 
 
 def archive_notebook_zip(notebook, filename, task=None):
     """Archive notebook as *.tar.gz
 
-       filename -- filename of archive to create
-       progress -- callback function that takes arguments
-                   (percent, filename)
+    filename -- filename of archive to create
+    progress -- callback function that takes arguments
+                (percent, filename)
     """
 
     if os.path.exists(filename):
@@ -483,7 +477,7 @@ def archive_notebook_zip(notebook, filename, task=None):
 
     # perform archiving
     try:
-        #archive = tarfile.open(filename, "w:gz")
+        # archive = tarfile.open(filename, "w:gz")
         archive = zipfile.ZipFile(filename, "w", zipfile.ZIP_DEFLATED, True)
         path = notebook.get_path()
 
@@ -494,9 +488,10 @@ def archive_notebook_zip(notebook, filename, task=None):
 
         nfiles2 = [0]
         abort = [False]
+
         def walk(path, arcname):
             # add to archive
-            #archive.add(path, arcname, False)
+            # archive.add(path, arcname, False)
             if os.path.isfile(path):
                 archive.write(path, arcname)
 
@@ -507,20 +502,17 @@ def archive_notebook_zip(notebook, filename, task=None):
                     task.set_message(path)
                     task.set_percent(nfiles2[0] / float(nfiles))
 
-
             # recurse
             if os.path.isdir(path):
                 for f in os.listdir(path):
-
                     # abort archive
                     if not task.is_running():
                         abort[0] = True
                         return
-                    
+
                     if not os.path.islink(f):
-                        walk(os.path.join(path, f),
-                             os.path.join(arcname, f))
-                        
+                        walk(os.path.join(path, f), os.path.join(arcname, f))
+
         walk(path, os.path.basename(path))
 
         archive.close()
@@ -529,7 +521,6 @@ def archive_notebook_zip(notebook, filename, task=None):
             os.remove(filename)
         elif task:
             task.finish()
-            
-        
+
     except Exception as e:
         raise NoteBookError("Error while archiving notebook", e)

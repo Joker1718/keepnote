@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Module for managing node icons in KeepNote
+KeepNote
+Module for managing node icons in KeepNote
 
 """
 
@@ -30,7 +30,8 @@ import os
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gtk
 
 # keepnote imports
@@ -41,7 +42,7 @@ from keepnote import get_resource
 import keepnote.notebook as notebooklib
 
 
-#=============================================================================
+# =============================================================================
 # globals/constants
 
 NODE_ICON_DIR = os.path.join("images", "node_icons")
@@ -49,46 +50,50 @@ NODE_ICON_DIR = os.path.join("images", "node_icons")
 _g_default_node_icon_filenames = {
     notebooklib.CONTENT_TYPE_TRASH: ("trash.png", "trash.png"),
     notebooklib.CONTENT_TYPE_DIR: ("folder.png", "folder-open.png"),
-    notebooklib.CONTENT_TYPE_PAGE: ("note.png", "note.png")
+    notebooklib.CONTENT_TYPE_PAGE: ("note.png", "note.png"),
 }
 _g_unknown_icons = ("note-unknown.png", "note-unknown.png")
 
 
-_colors = ["", "-red", "-orange", "-yellow",
-           "-green", "-blue", "-violet", "-grey"]
+_colors = ["", "-red", "-orange", "-yellow", "-green", "-blue", "-violet", "-grey"]
 
-builtin_icons = ["folder" + c + ".png" for c in _colors] + \
-                ["folder" + c + "-open.png" for c in _colors] + \
-                ["note" + c + ".png" for c in _colors] + \
-                ["star.png",
-                 "heart.png",
-                 "check.png",
-                 "x.png",
+builtin_icons = (
+    ["folder" + c + ".png" for c in _colors]
+    + ["folder" + c + "-open.png" for c in _colors]
+    + ["note" + c + ".png" for c in _colors]
+    + [
+        "star.png",
+        "heart.png",
+        "check.png",
+        "x.png",
+        "important.png",
+        "question.png",
+        "web.png",
+        "note-unknown.png",
+    ]
+)
 
-                 "important.png",
-                 "question.png",
-                 "web.png",
-                 "note-unknown.png"]
-
-DEFAULT_QUICK_PICK_ICONS = ["folder" + c + ".png" for c in _colors] + \
-                           ["note" + c + ".png" for c in _colors] + \
-                           ["star.png",
-                            "heart.png",
-                            "check.png",
-                            "x.png",
-
-                            "important.png",
-                            "question.png",
-                            "web.png",
-                            "note-unknown.png"]
+DEFAULT_QUICK_PICK_ICONS = (
+    ["folder" + c + ".png" for c in _colors]
+    + ["note" + c + ".png" for c in _colors]
+    + [
+        "star.png",
+        "heart.png",
+        "check.png",
+        "x.png",
+        "important.png",
+        "question.png",
+        "web.png",
+        "note-unknown.png",
+    ]
+)
 
 
-#=============================================================================
+# =============================================================================
 # node icons
 
 
 class MimeIcons:
-
     def __init__(self):
         self.theme = gtk.icon_theme_get_default()
         if self.theme is None:
@@ -113,16 +118,16 @@ class MimeIcons:
             return self._cache[mime_type]
 
         # try gnome mime
-        items = mime_type.split('/')
+        items = mime_type.split("/")
         for i in xrange(len(items), 0, -1):
-            icon_name = "gnome-mime-" + '-'.join(items[:i])
+            icon_name = "gnome-mime-" + "-".join(items[:i])
             if icon_name in self._icons:
                 self._cache[mime_type] = icon_name
                 return unicode(icon_name)
 
         # try simple mime
         for i in xrange(len(items), 0, -1):
-            icon_name = '-'.join(items[:i])
+            icon_name = "-".join(items[:i])
             if icon_name in self._icons:
                 self._cache[mime_type] = icon_name
                 return icon_name
@@ -185,18 +190,17 @@ def lookup_icon_filename(notebook, basename):
     return filename
 
 
-#=============================================================================
+# =============================================================================
+
 
 def get_default_icon_basenames(node):
     """Returns basesnames for default icons for a node"""
     content_type = node.get_attr("content_type")
-    default = _g_mime_icons.get_icon_mimetype(
-        content_type, "note-unknown.png")
-    basenames = _g_default_node_icon_filenames.get(content_type,
-                                                   (default, default))
+    default = _g_mime_icons.get_icon_mimetype(content_type, "note-unknown.png")
+    basenames = _g_default_node_icon_filenames.get(content_type, (default, default))
     return basenames
 
-    #if basenames is None:
+    # if basenames is None:
     #    return _g_unknown_icons
 
 
@@ -205,8 +209,10 @@ def get_default_icon_filenames(node):
     filenames = get_default_icon_basenames(node)
 
     # lookup filenames
-    return [lookup_icon_filename(node.get_notebook(), filenames[0]),
-            lookup_icon_filename(node.get_notebook(), filenames[1])]
+    return [
+        lookup_icon_filename(node.get_notebook(), filenames[0]),
+        lookup_icon_filename(node.get_notebook(), filenames[1]),
+    ]
 
 
 def get_all_icon_basenames(notebook):
@@ -255,7 +261,6 @@ def get_node_icon_filenames_basenames(node):
             basenames[1] = basename
     else:
         if node.has_attr("icon"):
-
             # use icon to guess open icon
             basename = guess_open_icon_filename(node.get_attr("icon"))
             filename = lookup_icon_filename(notebook, basename)
@@ -284,7 +289,8 @@ def get_node_icon_filenames(node):
 
 # TODO: continue to clean up class
 
-class NoteBookIconManager :
+
+class NoteBookIconManager:
     def __init__(self):
         self.pixbufs = None
         self._node_icon_cache = {}
@@ -298,8 +304,7 @@ class NoteBookIconManager :
 
         icon_size = (15, 15)
 
-        icon_cache, icon_open_cache = self._node_icon_cache.get(
-            node, (None, None))
+        icon_cache, icon_open_cache = self._node_icon_cache.get(node, (None, None))
 
         if not expand and icon_cache:
             # return loaded icon
@@ -320,11 +325,9 @@ class NoteBookIconManager :
             filenames = get_node_icon_filenames(node)
             self._node_icon_cache[node] = filenames
             if not fade:
-                return self.pixbufs.get_pixbuf(
-                    filenames[int(expand)], icon_size)
+                return self.pixbufs.get_pixbuf(filenames[int(expand)], icon_size)
             else:
-                return self.get_node_icon_fade(
-                    filenames[int(expand)], icon_size)
+                return self.get_node_icon_fade(filenames[int(expand)], icon_size)
 
     def get_node_icon_fade(self, filename, icon_size, fade_alpha=128):
 

@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    updating notebooks
+KeepNote
+updating notebooks
 
 """
 
@@ -32,10 +32,7 @@ from keepnote.compat import notebook_v2 as notebooklib
 from keepnote import safefile
 
 
-
-
-def update_notebook(filename, desired_version, warn=lambda w: False,
-                    verify=True):
+def update_notebook(filename, desired_version, warn=lambda w: False, verify=True):
     """Updates a notebook to the desired version (downgrading not implemented)"""
 
     # try to open notebook (may raise exceptions)
@@ -49,7 +46,6 @@ def update_notebook(filename, desired_version, warn=lambda w: False,
         # e.g. try old notebook version load()
         raise
 
-
     # NOTE: for now, this code only works for version 1 to 2
 
     assert desired_version == 2
@@ -60,14 +56,14 @@ def update_notebook(filename, desired_version, warn=lambda w: False,
         # try to load old notebook (may raise exceptions)
         notebook = old_notebooklib.NoteBook()
         notebook.load(filename)
-        
+
         # write new notebook preference file
         notebook.pref.version = 2
         notebook.write_preferences()
 
         # recursively upgrade notes
-        def walk(node):            
-            
+        def walk(node):
+
             try:
                 if isinstance(node, old_notebooklib.NoteBookTrash):
                     # create new content-type: trash
@@ -87,11 +83,10 @@ def update_notebook(filename, desired_version, warn=lambda w: False,
 
                 # remove old kind attribute
                 del node._attr["kind"]
-                
+
                 # write to "node.xml" meta file
                 write_meta_data(node)
-                
-                    
+
             except Exception as e:
                 if not warn(e):
                     raise notebooklib.NoteBookError("Could not update notebook", e)
@@ -99,6 +94,7 @@ def update_notebook(filename, desired_version, warn=lambda w: False,
             # recurse
             for child in node.get_children():
                 walk(child)
+
         walk(notebook)
 
     # verify notebook updated successfully
@@ -109,25 +105,24 @@ def update_notebook(filename, desired_version, warn=lambda w: False,
         def walk(node):
             for child in node.get_children():
                 walk(child)
+
         walk(notebook)
-    
 
 
 def write_meta_data(node):
-    
+
     try:
         filename = notebooklib.get_node_meta_file(node.get_path())
         out = safefile.open(filename, "w")
         out.write(notebooklib.XML_HEADER)
-        out.write("<node>\n"
-                  "<version>2</version>\n")
+        out.write("<node>\n<version>2</version>\n")
 
         for key, val in node._attr.iteritems():
             attr = node._notebook.notebook_attrs.get(key, None)
 
             if attr is not None:
                 out.write(f'<attr key="{key}">{escape(attr.write(val))}</attr>\n')
-                
+
             elif key == "content_type":
                 out.write(f'<attr key="content_type">{escape(val)}</attr>\n')
 
@@ -135,4 +130,3 @@ def write_meta_data(node):
         out.close()
     except Exception as e:
         raise notebooklib.NoteBookError("Cannot write meta data", e)
-

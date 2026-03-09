@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Undo handler for richtext buffer
+KeepNote
+Undo handler for richtext buffer
 
 """
 
@@ -29,11 +29,12 @@ from keepnote.undo import UndoStack
 from keepnote.listening import Listeners
 
 # import textbuffer tools
-from .textbuffer_tools import \
-    iter_buffer_contents, \
-    buffer_contents_iter_to_offset, \
-    insert_buffer_contents, \
-    buffer_contents_apply_tags
+from .textbuffer_tools import (
+    iter_buffer_contents,
+    buffer_contents_iter_to_offset,
+    insert_buffer_contents,
+    buffer_contents_apply_tags,
+)
 
 # richtext imports
 from .richtextbase_tags import RichTextTag
@@ -47,10 +48,11 @@ def add_child_to_buffer(textbuffer, it, anchor):
     textbuffer.add_child(it, anchor)
 
 
-#=============================================================================
+# =============================================================================
 # RichTextBaseBuffer undoable actions
 
-class Action :
+
+class Action:
     """A base class for undoable actions in RichTextBuffer"""
 
     def __init__(self):
@@ -63,7 +65,7 @@ class Action :
         pass
 
 
-class InsertAction (Action):
+class InsertAction(Action):
     """Represents the act of inserting text"""
 
     def __init__(self, textbuffer, pos, text, length, cursor_insert=False):
@@ -74,7 +76,7 @@ class InsertAction (Action):
         self.text = text
         self.length = length
         self.cursor_insert = cursor_insert
-        #assert len(self.text) == self.length
+        # assert len(self.text) == self.length
 
     def do(self):
         start = self.textbuffer.get_iter_at_offset(self.pos)
@@ -89,16 +91,15 @@ class InsertAction (Action):
         end = self.textbuffer.get_iter_at_offset(self.pos + self.length)
         self.textbuffer.place_cursor(start)
 
-        #assert start.get_slice(end) == self.text, \
+        # assert start.get_slice(end) == self.text, \
         #       (start.get_slice(end), self.text)
         self.textbuffer.delete(start, end)
 
 
-class DeleteAction (Action):
+class DeleteAction(Action):
     """Represents the act of deleting a region in a RichTextBuffer"""
 
-    def __init__(self, textbuffer, start_offset, end_offset, text,
-                 cursor_offset):
+    def __init__(self, textbuffer, start_offset, end_offset, text, cursor_offset):
         Action.__init__(self)
         self.textbuffer = textbuffer
         self.start_offset = start_offset
@@ -119,8 +120,9 @@ class DeleteAction (Action):
         start = self.textbuffer.get_iter_at_offset(self.start_offset)
 
         self.textbuffer.begin_user_action()
-        insert_buffer_contents(self.textbuffer, start, self.contents,
-                               add_child=add_child_to_buffer)
+        insert_buffer_contents(
+            self.textbuffer, start, self.contents, add_child=add_child_to_buffer
+        )
         cursor = self.textbuffer.get_iter_at_offset(self.cursor_offset)
         self.textbuffer.place_cursor(cursor)
         self.textbuffer.end_user_action()
@@ -128,11 +130,14 @@ class DeleteAction (Action):
     def _record_range(self):
         start = self.textbuffer.get_iter_at_offset(self.start_offset)
         end = self.textbuffer.get_iter_at_offset(self.end_offset)
-        self.contents = list(buffer_contents_iter_to_offset(
-            iter_buffer_contents(self.textbuffer, start, end)))
+        self.contents = list(
+            buffer_contents_iter_to_offset(
+                iter_buffer_contents(self.textbuffer, start, end)
+            )
+        )
 
 
-class InsertChildAction (Action):
+class InsertChildAction(Action):
     """Represents the act of inserting a child object into a RichTextBuffer"""
 
     def __init__(self, textbuffer, pos, child):
@@ -156,7 +161,7 @@ class InsertChildAction (Action):
         self.textbuffer.delete(it, it2)
 
 
-class TagAction (Action):
+class TagAction(Action):
     """Represents the act of applying a tag to a region in a RichTextBuffer"""
 
     def __init__(self, textbuffer, tag, start_offset, end_offset, applied):
@@ -194,17 +199,18 @@ class TagAction (Action):
         # TODO: I can probably discard iter's.  Maybe make argument to
         # iter_buffer_contents
         self.contents = filter(
-            lambda kip:
-            kip[0] in ("begin", "end") and kip[2] == self.tag,
+            lambda kip: kip[0] in ("begin", "end") and kip[2] == self.tag,
             buffer_contents_iter_to_offset(
-                iter_buffer_contents(self.textbuffer, start, end)))
+                iter_buffer_contents(self.textbuffer, start, end)
+            ),
+        )
 
 
-#=============================================================================
+# =============================================================================
 # handler class
 
 
-class UndoHandler :
+class UndoHandler:
     """TextBuffer Handler that provides undo/redo functionality"""
 
     def __init__(self, textbuffer):
@@ -223,20 +229,26 @@ class UndoHandler :
         # setup next action
         offset = it.get_offset()
         self._next_action = InsertAction(
-            textbuffer, offset, text, length,
-            cursor_insert=(offset ==
-                           textbuffer.get_iter_at_mark(
-                               textbuffer.get_insert()).get_offset()))
+            textbuffer,
+            offset,
+            text,
+            length,
+            cursor_insert=(
+                offset
+                == textbuffer.get_iter_at_mark(textbuffer.get_insert()).get_offset()
+            ),
+        )
 
     def on_delete_range(self, textbuffer, start, end):
         """Callback for delete range"""
         # setup next action
         self._next_action = DeleteAction(
-            textbuffer, start.get_offset(),
+            textbuffer,
+            start.get_offset(),
             end.get_offset(),
             start.get_slice(end),
-            textbuffer.get_iter_at_mark(
-                textbuffer.get_insert()).get_offset())
+            textbuffer.get_iter_at_mark(textbuffer.get_insert()).get_offset(),
+        )
 
     def on_insert_pixbuf(self, textbuffer, it, pixbuf):
         """Callback for inserting a pixbuf"""
@@ -245,8 +257,7 @@ class UndoHandler :
     def on_insert_child_anchor(self, textbuffer, it, anchor):
         """Callback for inserting a child anchor"""
         # setup next action
-        self._next_action = InsertChildAction(textbuffer, it.get_offset(),
-                                              anchor)
+        self._next_action = InsertChildAction(textbuffer, it.get_offset(), anchor)
 
     def on_apply_tag(self, textbuffer, tag, start, end):
         """Callback for tag apply"""
@@ -255,8 +266,7 @@ class UndoHandler :
             # i.e. gtkspell tags (ignored by undo/redo)
             return
 
-        action = TagAction(textbuffer, tag, start.get_offset(),
-                           end.get_offset(), True)
+        action = TagAction(textbuffer, tag, start.get_offset(), end.get_offset(), True)
         self.undo_stack.do(action.do, action.undo, False)
         textbuffer.set_modified(True)
 
@@ -267,8 +277,7 @@ class UndoHandler :
             # i.e. gtkspell tags (ignored by undo/redo)
             return
 
-        action = TagAction(textbuffer, tag, start.get_offset(),
-                           end.get_offset(), False)
+        action = TagAction(textbuffer, tag, start.get_offset(), end.get_offset(), False)
         self.undo_stack.do(action.do, action.undo, False)
         textbuffer.set_modified(True)
 

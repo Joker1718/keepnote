@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    base class for treeview
+KeepNote
+base class for treeview
 
 """
 
@@ -29,7 +29,8 @@ import urllib
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gtk
 import gobject
 from gtk import gdk
@@ -39,8 +40,7 @@ import keepnote
 from keepnote import unicode_gtk
 from keepnote.notebook import NoteBookError
 from keepnote.gui.icons import get_node_icon
-from keepnote.gui.treemodel import \
-    get_path_from_node, iter_children
+from keepnote.gui.treemodel import get_path_from_node, iter_children
 from keepnote.gui import treemodel, CLIPBOARD_NAME
 from keepnote.timestamp import get_str_timestamp
 
@@ -54,7 +54,7 @@ MIME_NODE_CUT = "application/x-keepnote-node-cut"
 # treeview drag and drop config
 DROP_URI = ("text/uri-list", 0, 1)
 DROP_TREE_MOVE = ("drop_node", gtk.TARGET_SAME_APP, 0)
-#DROP_NO = ("drop_no", gtk.TARGET_SAME_WIDGET, 0)
+# DROP_NO = ("drop_no", gtk.TARGET_SAME_WIDGET, 0)
 
 
 # treeview reorder rules
@@ -67,9 +67,11 @@ def parse_utf(text):
 
     # TODO: lookup the standard way to do this
 
-    if (text[:2] in ('\xff\xfe', '\xfe\xff') or
-            (len(text) > 1 and text[1] == '\x00') or
-            (len(text) > 3 and text[3] == '\x00')):
+    if (
+        text[:2] in ("\xff\xfe", "\xfe\xff")
+        or (len(text) > 1 and text[1] == "\x00")
+        or (len(text) > 3 and text[3] == "\x00")
+    ):
         return text.decode("utf16")
     else:
         text = text.replace("\x00", "")
@@ -80,8 +82,10 @@ def compute_new_path(model, target, drop_position):
     """Compute the new path of a tagret rowiter in a treemodel"""
     path = model.get_path(target)
 
-    if drop_position == gtk.TREE_VIEW_DROP_INTO_OR_BEFORE or \
-       drop_position == gtk.TREE_VIEW_DROP_INTO_OR_AFTER:
+    if (
+        drop_position == gtk.TREE_VIEW_DROP_INTO_OR_BEFORE
+        or drop_position == gtk.TREE_VIEW_DROP_INTO_OR_AFTER
+    ):
         return path + (0,)
     elif drop_position == gtk.TREE_VIEW_DROP_BEFORE:
         return path
@@ -91,9 +95,8 @@ def compute_new_path(model, target, drop_position):
         raise Exception(f"unknown drop position {str(drop_position)}")
 
 
-class TextRendererValidator :
-    def __init__(self, format=lambda x: x, parse=lambda x: x,
-                 validate=lambda x: True):
+class TextRendererValidator:
+    def __init__(self, format=lambda x: x, parse=lambda x: x, validate=lambda x: True):
 
         def parse2(x):
             if not validate(x):
@@ -104,7 +107,7 @@ class TextRendererValidator :
         self.parse = parse2
 
 
-class KeepNoteBaseTreeView (gtk.TreeView):
+class KeepNoteBaseTreeView(gtk.TreeView):
     """Base class for treeviews of a NoteBook notes"""
 
     def __init__(self):
@@ -140,11 +143,11 @@ class KeepNoteBaseTreeView (gtk.TreeView):
         self.connect("row-collapsed", self._on_row_collapsed)
 
         # drag and drop state
-        self._is_dragging = False   # whether drag is in progress
+        self._is_dragging = False  # whether drag is in progress
         self._drag_count = 0
-        self._dest_row = None        # current drag destition
+        self._dest_row = None  # current drag destition
         self._reorder = REORDER_ALL  # enum determining the kind of reordering
-                                     # that is possible via drag and drop
+        # that is possible via drag and drop
         # region, defined by number of vertical pixels from top and bottom of
         # the treeview widget, where drag scrolling will occur
         self._drag_scroll_region = 30
@@ -166,25 +169,26 @@ class KeepNoteBaseTreeView (gtk.TreeView):
 
         # configure drag and drop events
         self.enable_model_drag_source(
-            gtk.gdk.BUTTON1_MASK, [DROP_TREE_MOVE], gtk.gdk.ACTION_MOVE)
+            gtk.gdk.BUTTON1_MASK, [DROP_TREE_MOVE], gtk.gdk.ACTION_MOVE
+        )
         self.drag_source_set(
-            gtk.gdk.BUTTON1_MASK,
-            [DROP_TREE_MOVE],
-            gtk.gdk.ACTION_MOVE)
-        self.enable_model_drag_dest([DROP_TREE_MOVE, DROP_URI],
-                                    gtk.gdk.ACTION_MOVE |
-                                    gtk.gdk.ACTION_COPY |
-                                    gtk.gdk.ACTION_LINK)
+            gtk.gdk.BUTTON1_MASK, [DROP_TREE_MOVE], gtk.gdk.ACTION_MOVE
+        )
+        self.enable_model_drag_dest(
+            [DROP_TREE_MOVE, DROP_URI],
+            gtk.gdk.ACTION_MOVE | gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_LINK,
+        )
 
         self.drag_dest_set(
             gtk.DEST_DEFAULT_HIGHLIGHT | gtk.DEST_DEFAULT_MOTION,
             [DROP_TREE_MOVE, DROP_URI],
-            gtk.gdk.ACTION_DEFAULT |
-            gtk.gdk.ACTION_MOVE |
-            gtk.gdk.ACTION_COPY |
-            gtk.gdk.ACTION_LINK |
-            gtk.gdk.ACTION_PRIVATE |
-            gtk.gdk.ACTION_ASK)
+            gtk.gdk.ACTION_DEFAULT
+            | gtk.gdk.ACTION_MOVE
+            | gtk.gdk.ACTION_COPY
+            | gtk.gdk.ACTION_LINK
+            | gtk.gdk.ACTION_PRIVATE
+            | gtk.gdk.ACTION_ASK,
+        )
 
     def set_master_node(self, node):
         self._master_node = node
@@ -249,20 +253,21 @@ class KeepNoteBaseTreeView (gtk.TreeView):
             # init signals for model
             self.rich_model.set_notebook(self._notebook)
             self.changed_start_id = self.rich_model.connect(
-                "node-changed-start", self._on_node_changed_start)
+                "node-changed-start", self._on_node_changed_start
+            )
             self.changed_end_id = self.rich_model.connect(
-                "node-changed-end", self._on_node_changed_end)
+                "node-changed-end", self._on_node_changed_end
+            )
             self._node_col = self.rich_model.get_node_column_pos()
-            self._get_icon = lambda row: \
-                self.model.get_value(
-                    row, self.rich_model.get_column_by_name("icon").pos)
+            self._get_icon = lambda row: self.model.get_value(
+                row, self.rich_model.get_column_by_name("icon").pos
+            )
 
-            self.insert_id = self.model.connect("row-inserted",
-                                                self.on_row_inserted)
-            self.delete_id = self.model.connect("row-deleted",
-                                                self.on_row_deleted)
+            self.insert_id = self.model.connect("row-inserted", self.on_row_inserted)
+            self.delete_id = self.model.connect("row-deleted", self.on_row_deleted)
             self.has_child_id = self.model.connect(
-                "row-has-child-toggled", self.on_row_has_child_toggled)
+                "row-has-child-toggled", self.on_row_has_child_toggled
+            )
 
     def set_popup_menu(self, menu):
         self._menu = menu
@@ -289,7 +294,7 @@ class KeepNoteBaseTreeView (gtk.TreeView):
         self._menu.show()
         return True
 
-    #========================================
+    # ========================================
     # columns
 
     def clear_columns(self):
@@ -310,42 +315,54 @@ class KeepNoteBaseTreeView (gtk.TreeView):
 
         # add renders
         cell_icon = self._add_pixbuf_render(
-            column, self._attr_icon, self._attr_icon_open)
+            column, self._attr_icon, self._attr_icon_open
+        )
         title_text = self._add_text_render(
-            column, attr, editable=True,
-            validator=TextRendererValidator(validate=lambda x: x != ""))
+            column,
+            attr,
+            editable=True,
+            validator=TextRendererValidator(validate=lambda x: x != ""),
+        )
 
         # record reference to title_text renderer
         self.title_text = title_text
 
         return cell_icon, title_text
 
-    def _add_text_render(self, column, attr, editable=False,
-                         validator=TextRendererValidator()):
+    def _add_text_render(
+        self, column, attr, editable=False, validator=TextRendererValidator()
+    ):
         # cell renderer text
         cell = gtk.CellRendererText()
         cell.set_fixed_height_from_font(1)
         column.pack_start(cell, True)
-        column.add_attribute(cell, 'text',
-                             self.rich_model.get_column_by_name(attr).pos)
+        column.add_attribute(cell, "text", self.rich_model.get_column_by_name(attr).pos)
 
         column.add_attribute(
-            cell, 'cell-background',
+            cell,
+            "cell-background",
             self.rich_model.add_column(
-                "title_bgcolor", str,
-                lambda node: node.get_attr("title_bgcolor", None)).pos)
+                "title_bgcolor", str, lambda node: node.get_attr("title_bgcolor", None)
+            ).pos,
+        )
         column.add_attribute(
-            cell, 'foreground',
+            cell,
+            "foreground",
             self.rich_model.add_column(
-                "title_fgcolor", str,
-                lambda node: node.get_attr("title_fgcolor", None)).pos)
+                "title_fgcolor", str, lambda node: node.get_attr("title_fgcolor", None)
+            ).pos,
+        )
 
         # set edit callbacks
         if editable:
-            cell.connect("edited", lambda r, p, t: self.on_edit_attr(
-                r, p, attr, t, validator=validator))
-            cell.connect("editing-started", lambda r, e, p:
-                         self.on_editing_started(r, e, p, attr, validator))
+            cell.connect(
+                "edited",
+                lambda r, p, t: self.on_edit_attr(r, p, attr, t, validator=validator),
+            )
+            cell.connect(
+                "editing-started",
+                lambda r, e, p: self.on_editing_started(r, e, p, attr, validator),
+            )
             cell.connect("editing-canceled", self.on_editing_canceled)
             cell.set_property("editable", True)
 
@@ -355,9 +372,10 @@ class KeepNoteBaseTreeView (gtk.TreeView):
 
         cell = gtk.CellRendererPixbuf()
         column.pack_start(cell, False)
-        column.add_attribute(cell, 'pixbuf',
-                             self.rich_model.get_column_by_name(attr).pos)
-        #column.add_attribute(
+        column.add_attribute(
+            cell, "pixbuf", self.rich_model.get_column_by_name(attr).pos
+        )
+        # column.add_attribute(
         #    cell, 'cell-background',
         #    self.rich_model.add_column(
         #        "title_bgcolor", str,
@@ -365,8 +383,10 @@ class KeepNoteBaseTreeView (gtk.TreeView):
 
         if attr_open:
             column.add_attribute(
-                cell, 'pixbuf-expander-open',
-                self.rich_model.get_column_by_name(attr_open).pos)
+                cell,
+                "pixbuf-expander-open",
+                self.rich_model.get_column_by_name(attr_open).pos,
+            )
 
         return cell
 
@@ -436,13 +456,11 @@ class KeepNoteBaseTreeView (gtk.TreeView):
         if attr == self._attr_icon:
             coltype = gdk.Pixbuf
             coltype_sort = None
-            get = lambda node: get_node_icon(node, False,
-                                             node in self.rich_model.fades)
+            get = lambda node: get_node_icon(node, False, node in self.rich_model.fades)
         elif attr == self._attr_icon_open:
             coltype = gdk.Pixbuf
             coltype_sort = None
-            get = lambda node: get_node_icon(node, True,
-                                             node in self.rich_model.fades)
+            get = lambda node: get_node_icon(node, True, node in self.rich_model.fades)
 
         # get/make model column
         col = self.rich_model.get_column_by_name(attr)
@@ -455,10 +473,10 @@ class KeepNoteBaseTreeView (gtk.TreeView):
             attr_sort = attr + "_sort"
             col = self.rich_model.get_column_by_name(attr_sort)
             if col is None:
-                get_sort = lambda node: mapfunc_sort(
-                    node.get_attr(attr, default))
+                get_sort = lambda node: mapfunc_sort(node.get_attr(attr, default))
                 col = treemodel.TreeModelColumn(
-                    attr_sort, coltype_sort, attr=attr, get=get_sort)
+                    attr_sort, coltype_sort, attr=attr, get=get_sort
+                )
                 self.rich_model.append_column(col)
 
     def set_date_formats(self, formats):
@@ -466,10 +484,13 @@ class KeepNoteBaseTreeView (gtk.TreeView):
         self._date_formats = formats
 
     def format_timestamp(self, timestamp):
-        return (get_str_timestamp(timestamp, formats=self._date_formats)
-                if timestamp is not None else "")
+        return (
+            get_str_timestamp(timestamp, formats=self._date_formats)
+            if timestamp is not None
+            else ""
+        )
 
-    #=========================================
+    # =========================================
     # model change callbacks
 
     def _on_node_changed_start(self, model, nodes):
@@ -489,19 +510,18 @@ class KeepNoteBaseTreeView (gtk.TreeView):
 
         # maintain proper expansion
         for node in nodes:
-
             if node == self._master_node:
                 for child in node.get_children():
                     if self.is_node_expanded(child):
                         path = get_path_from_node(
-                            self.model, child,
-                            self.rich_model.get_node_column_pos())
+                            self.model, child, self.rich_model.get_node_column_pos()
+                        )
                         self.expand_row(path, False)
             else:
                 try:
                     path = get_path_from_node(
-                        self.model, node,
-                        self.rich_model.get_node_column_pos())
+                        self.model, node, self.rich_model.get_node_column_pos()
+                    )
                 except:
                     path = None
                 if path is not None:
@@ -510,8 +530,7 @@ class KeepNoteBaseTreeView (gtk.TreeView):
                     # NOTE: parent may lose expand state if it has one child
                     # therefore, we should expand parent if it exists and is
                     # visible (i.e. len(path)>1) in treeview
-                    if (parent and self.is_node_expanded(parent) and
-                            len(path) > 1):
+                    if parent and self.is_node_expanded(parent) and len(path) > 1:
                         self.expand_row(path[:-1], False)
 
                     if self.is_node_expanded(node):
@@ -524,9 +543,11 @@ class KeepNoteBaseTreeView (gtk.TreeView):
             sel_count += 1
             if node.is_valid():
                 path2 = get_path_from_node(
-                    self.model, node, self.rich_model.get_node_column_pos())
-                if (path2 is not None and
-                        (len(path2) <= 1 or self.row_expanded(path2[:-1]))):
+                    self.model, node, self.rich_model.get_node_column_pos()
+                )
+                if path2 is not None and (
+                    len(path2) <= 1 or self.row_expanded(path2[:-1])
+                ):
                     # reselect and scroll to node
                     selection.select_path(path2)
 
@@ -561,7 +582,7 @@ class KeepNoteBaseTreeView (gtk.TreeView):
     def _on_row_expanded(self, treeview, it, path):
         """Callback for row expand
 
-           Performs smart expansion (remembers children expansion)"""
+        Performs smart expansion (remembers children expansion)"""
 
         # save expansion in node
         self.set_node_expanded(self.model.get_value(it, self._node_col), True)
@@ -576,6 +597,7 @@ class KeepNoteBaseTreeView (gtk.TreeView):
                     self.expand_row(path, False)
                     walk(child)
                 child = self.model.iter_next(child)
+
         walk(it)
 
     def _on_row_collapsed(self, treeview, it, path):
@@ -595,13 +617,14 @@ class KeepNoteBaseTreeView (gtk.TreeView):
         if self.editing_path:
             self.set_cursor_on_cell(self.editing_path, None, None, False)
 
-    #===========================================
+    # ===========================================
     # actions
 
     def expand_node(self, node):
         """Expand a node in TreeView"""
-        path = get_path_from_node(self.model, node,
-                                  self.rich_model.get_node_column_pos())
+        path = get_path_from_node(
+            self.model, node, self.rich_model.get_node_column_pos()
+        )
         if path is not None:
             self.expand_to_path(path)
 
@@ -614,9 +637,10 @@ class KeepNoteBaseTreeView (gtk.TreeView):
                 walk(child)
             path2 = self.model.get_path(it)
             self.collapse_row(path2)
+
         walk(it)
 
-    #===========================================
+    # ===========================================
     # selection
 
     def select_nodes(self, nodes):
@@ -625,8 +649,9 @@ class KeepNoteBaseTreeView (gtk.TreeView):
         # NOTE: for now only select one node
         if len(nodes) > 0:
             node = nodes[0]
-            path = get_path_from_node(self.model, node,
-                                      self.rich_model.get_node_column_pos())
+            path = get_path_from_node(
+                self.model, node, self.rich_model.get_node_column_pos()
+            )
             if path is not None:
                 if len(path) > 1:
                     self.expand_to_path(path[:-1])
@@ -652,24 +677,23 @@ class KeepNoteBaseTreeView (gtk.TreeView):
                     return [node]
             return []
         else:
-            return [self.model.get_value(it, self._node_col)
-                    for it in iters]
+            return [self.model.get_value(it, self._node_col) for it in iters]
 
     def get_selected_iters(self):
         """Return a list of currently selected TreeIter's"""
         iters = []
-        self.get_selection().selected_foreach(lambda model, path, it:
-                                              iters.append(it))
+        self.get_selection().selected_foreach(lambda model, path, it: iters.append(it))
         return iters
 
     # TODO: add a reselect if node is deleted
     # select next sibling or parent
 
-    #============================================
+    # ============================================
     # editing attr
 
-    def on_editing_started(self, cellrenderer, editable, path, attr,
-                           validator=TextRendererValidator()):
+    def on_editing_started(
+        self, cellrenderer, editable, path, attr, validator=TextRendererValidator()
+    ):
         """Callback for start of title editing"""
         # remember editing state
         self.editing_path = path
@@ -690,8 +714,9 @@ class KeepNoteBaseTreeView (gtk.TreeView):
         # remember editing state
         self.editing_path = None
 
-    def on_edit_attr(self, cellrenderertext, path, attr, new_text,
-                     validator=TextRendererValidator()):
+    def on_edit_attr(
+        self, cellrenderertext, path, attr, new_text, validator=TextRendererValidator()
+    ):
         """Callback for completion of title editing"""
 
         # remember editing state
@@ -718,15 +743,16 @@ class KeepNoteBaseTreeView (gtk.TreeView):
 
         # reselect node
         # need to get path again because sorting may have changed
-        path = get_path_from_node(self.model, node,
-                                  self.rich_model.get_node_column_pos())
+        path = get_path_from_node(
+            self.model, node, self.rich_model.get_node_column_pos()
+        )
         if path is not None:
             self.set_cursor(path)
             gobject.idle_add(lambda: self.scroll_to_cell(path))
 
         self.emit("edit-node", node, attr, new_val)
 
-    #=============================================
+    # =============================================
     # copy and paste
 
     def _on_copy_node(self, widget):
@@ -736,13 +762,15 @@ class KeepNoteBaseTreeView (gtk.TreeView):
         if len(nodes) > 0:
             clipboard = self.get_clipboard(selection=CLIPBOARD_NAME)
 
-            targets = [(MIME_NODE_COPY, gtk.TARGET_SAME_APP, -1),
-                       ("text/html", 0, -1),
-                       ("text/plain", 0, -1)]
+            targets = [
+                (MIME_NODE_COPY, gtk.TARGET_SAME_APP, -1),
+                ("text/html", 0, -1),
+                ("text/plain", 0, -1),
+            ]
 
-            clipboard.set_with_data(targets, self._get_selection_data,
-                                    self._clear_selection_data,
-                                    nodes)
+            clipboard.set_with_data(
+                targets, self._get_selection_data, self._clear_selection_data, nodes
+            )
 
     def _on_copy_tree(self, widget):
 
@@ -750,14 +778,16 @@ class KeepNoteBaseTreeView (gtk.TreeView):
         if len(nodes) > 0:
             clipboard = self.get_clipboard(selection=CLIPBOARD_NAME)
 
-            targets = [(MIME_TREE_COPY, gtk.TARGET_SAME_APP, -1),
-                       (MIME_NODE_COPY, gtk.TARGET_SAME_APP, -1),
-                       ("text/html", 0, -1),
-                       ("text/plain", 0, -1)]
+            targets = [
+                (MIME_TREE_COPY, gtk.TARGET_SAME_APP, -1),
+                (MIME_NODE_COPY, gtk.TARGET_SAME_APP, -1),
+                ("text/html", 0, -1),
+                ("text/plain", 0, -1),
+            ]
 
-            clipboard.set_with_data(targets, self._get_selection_data,
-                                    self._clear_selection_data,
-                                    nodes)
+            clipboard.set_with_data(
+                targets, self._get_selection_data, self._clear_selection_data, nodes
+            )
 
     def _on_cut_node(self, widget):
         """Copy a node onto the clipboard"""
@@ -766,13 +796,15 @@ class KeepNoteBaseTreeView (gtk.TreeView):
         if len(nodes) > 0:
             clipboard = self.get_clipboard(selection=CLIPBOARD_NAME)
 
-            targets = [(MIME_NODE_CUT, gtk.TARGET_SAME_APP, -1),
-                       ("text/html", 0, -1),
-                       ("text/plain", 0, -1)]
+            targets = [
+                (MIME_NODE_CUT, gtk.TARGET_SAME_APP, -1),
+                ("text/html", 0, -1),
+                ("text/plain", 0, -1),
+            ]
 
-            clipboard.set_with_data(targets, self._get_selection_data,
-                                    self._clear_selection_data,
-                                    nodes)
+            clipboard.set_with_data(
+                targets, self._get_selection_data, self._clear_selection_data, nodes
+            )
 
             self._fade_nodes(nodes)
 
@@ -804,32 +836,38 @@ class KeepNoteBaseTreeView (gtk.TreeView):
 
         if MIME_NODE_CUT in selection_data.target:
             # set nodes
-            selection_data.set(MIME_NODE_CUT, 8,
-                               ";".join([node.get_attr("nodeid")
-                                         for node in nodes]))
+            selection_data.set(
+                MIME_NODE_CUT, 8, ";".join([node.get_attr("nodeid") for node in nodes])
+            )
 
         elif MIME_TREE_COPY in selection_data.target:
             # set nodes
-            selection_data.set(MIME_TREE_COPY, 8,
-                               ";".join([node.get_attr("nodeid")
-                                         for node in nodes]))
+            selection_data.set(
+                MIME_TREE_COPY, 8, ";".join([node.get_attr("nodeid") for node in nodes])
+            )
 
         elif MIME_NODE_COPY in selection_data.target:
             # set nodes
-            selection_data.set(MIME_NODE_COPY, 8,
-                               ";".join([node.get_attr("nodeid")
-                                         for node in nodes]))
+            selection_data.set(
+                MIME_NODE_COPY, 8, ";".join([node.get_attr("nodeid") for node in nodes])
+            )
 
         elif "text/html" in selection_data.target:
             # set html
-            selection_data.set("text/html", 8,
-                               " ".join([f"<a href='{node.get_url()}'>{node.get_title()}</a>"
-                                         for node in nodes]))
+            selection_data.set(
+                "text/html",
+                8,
+                " ".join(
+                    [
+                        f"<a href='{node.get_url()}'>{node.get_title()}</a>"
+                        for node in nodes
+                    ]
+                ),
+            )
 
         else:
             # set plain text
-            selection_data.set_text(" ".join([node.get_url()
-                                              for node in nodes]))
+            selection_data.set_text(" ".join([node.get_url() for node in nodes]))
 
     def _do_paste_nodes(self, clipboard, selection_data, data):
         """Paste nodes into treeview"""
@@ -847,7 +885,7 @@ class KeepNoteBaseTreeView (gtk.TreeView):
         nodeids = selection_data.data.split(";")
         nodes = [self._get_node(nodeid) for nodeid in nodeids]
 
-        #nodes = [self._notebook.get_node_by_id(nodeid)
+        # nodes = [self._notebook.get_node_by_id(nodeid)
         #         for nodeid in nodeids]
 
         if selection_data.target == MIME_NODE_CUT:
@@ -878,7 +916,7 @@ class KeepNoteBaseTreeView (gtk.TreeView):
         """Callback for when Clipboard contents are reset"""
         self._clear_fading()
 
-    #============================================
+    # ============================================
     # node fading
 
     def _clear_fading(self):
@@ -894,7 +932,7 @@ class KeepNoteBaseTreeView (gtk.TreeView):
             self.rich_model.fades.add(node)
             node.notify_change(False)
 
-    #=============================================
+    # =============================================
     # drag and drop
 
     def set_reorder(self, order):
@@ -910,8 +948,9 @@ class KeepNoteBaseTreeView (gtk.TreeView):
         return self.model.get_value(iters[0], self._node_col)
 
     def get_drag_nodes(self):
-        return [self.model.get_value(it, self._node_col)
-                for it in self.get_selected_iters()]
+        return [
+            self.model.get_value(it, self._node_col) for it in self.get_selected_iters()
+        ]
 
     #  drag and drop callbacks
 
@@ -927,8 +966,9 @@ class KeepNoteBaseTreeView (gtk.TreeView):
         header_height = [0]
 
         if self.get_headers_visible():
-            self.forall(lambda w, d: header_height.__setitem__(
-                0, w.allocation.height), None)
+            self.forall(
+                lambda w, d: header_height.__setitem__(0, w.allocation.height), None
+            )
 
         # get mouse poistion in tree coordinates
         x, y = self.get_pointer()
@@ -990,8 +1030,7 @@ class KeepNoteBaseTreeView (gtk.TreeView):
         self._drag_count = 0
         gobject.timeout_add(200, self._on_drag_timer)
 
-    def _on_drag_motion(self, treeview, drag_context, x, y, eventtime,
-                        stop_emit=True):
+    def _on_drag_motion(self, treeview, drag_context, x, y, eventtime, stop_emit=True):
         """
         Callback for drag motion.
         Indicate which drops are allowed (cannot drop into descendant).
@@ -1024,8 +1063,7 @@ class KeepNoteBaseTreeView (gtk.TreeView):
                 # determine if drag is allowed
                 allow = True
                 for source_node in source_nodes:
-                    if not self._drop_allowed(source_node, target_node,
-                                              drop_position):
+                    if not self._drop_allowed(source_node, target_node, drop_position):
                         allow = False
 
                 if allow:
@@ -1075,8 +1113,7 @@ class KeepNoteBaseTreeView (gtk.TreeView):
 
         # do nothing else, deleting old copy is handled else where
 
-    def _on_drag_data_get(self, widget, drag_context, selection_data,
-                          info, timestamp):
+    def _on_drag_data_get(self, widget, drag_context, selection_data, info, timestamp):
         """
         Callback for when data is requested by drag_get_data
         """
@@ -1092,9 +1129,9 @@ class KeepNoteBaseTreeView (gtk.TreeView):
             source_path = self.model.get_path(source)
             selection_data.tree_set_row_drag_data(self.model, source_path)
 
-    def _on_drag_data_received(self, treeview, drag_context, x, y,
-                               selection_data, info, eventtime):
-
+    def _on_drag_data_received(
+        self, treeview, drag_context, x, y, selection_data, info, eventtime
+    ):
         """
         Callback for when data is received from source widget
         """
@@ -1103,8 +1140,7 @@ class KeepNoteBaseTreeView (gtk.TreeView):
 
         # NOTE: force one more call to motion, since Windows ignores
         # cross app drag calls
-        self._on_drag_motion(treeview, drag_context, x, y, eventtime,
-                             stop_emit=False)
+        self._on_drag_motion(treeview, drag_context, x, y, eventtime, stop_emit=False)
 
         # if no destination, give up.  Occurs when drop is not allowed
         if self._dest_row is None:
@@ -1113,8 +1149,9 @@ class KeepNoteBaseTreeView (gtk.TreeView):
 
         if "drop_node" in drag_context.targets:
             # process node drops
-            self._on_drag_node_received(treeview, drag_context, x, y,
-                                        selection_data, info, eventtime)
+            self._on_drag_node_received(
+                treeview, drag_context, x, y, selection_data, info, eventtime
+            )
 
         elif "text/uri-list" in drag_context.targets:
             target_path, drop_position = self._dest_row
@@ -1126,9 +1163,11 @@ class KeepNoteBaseTreeView (gtk.TreeView):
                 parent = self._get_node_from_path(new_path[:-1])
 
                 uris = parse_utf(selection_data.data)
-                uris = [xx for xx in (urllib.unquote(uri.strip())
-                                      for uri in uris.split("\n"))
-                        if len(xx) > 0 and xx[0] != "#"]
+                uris = [
+                    xx
+                    for xx in (urllib.unquote(uri.strip()) for uri in uris.split("\n"))
+                    if len(xx) > 0 and xx[0] != "#"
+                ]
 
                 for uri in reversed(uris):
                     if uri.startswith("file://"):
@@ -1153,8 +1192,9 @@ class KeepNoteBaseTreeView (gtk.TreeView):
             it = self.model.get_iter(path)
             return self.model.get_value(it, self._node_col)
 
-    def _on_drag_node_received(self, treeview, drag_context, x, y,
-                               selection_data, info, eventtime):
+    def _on_drag_node_received(
+        self, treeview, drag_context, x, y, selection_data, info, eventtime
+    ):
         """
         Callback for node received from another widget
         """
@@ -1211,54 +1251,114 @@ class KeepNoteBaseTreeView (gtk.TreeView):
                 return False
             ptr = ptr.get_parent()
 
-        drop_into = (drop_position == gtk.TREE_VIEW_DROP_INTO_OR_BEFORE or
-                     drop_position == gtk.TREE_VIEW_DROP_INTO_OR_AFTER)
+        drop_into = (
+            drop_position == gtk.TREE_VIEW_DROP_INTO_OR_BEFORE
+            or drop_position == gtk.TREE_VIEW_DROP_INTO_OR_AFTER
+        )
 
         return (
             # (1) do not let nodes move out of notebook root
-            not (target_node.get_parent() is None and not drop_into) and
-
+            not (target_node.get_parent() is None and not drop_into)
+            and
             # (2) do not let nodes move into nodes that don't allow children
-            not (not target_node.allows_children() and drop_into) and
-
+            not (not target_node.allows_children() and drop_into)
+            and
             # (3) if reorder == FOLDER, ensure drop is either INTO a node
             #     or new_parent == old_parent
-            not (source_node and
-                 self._reorder == REORDER_FOLDER and not drop_into and
-                 target_node.get_parent() == source_node.get_parent()))
+            not (
+                source_node
+                and self._reorder == REORDER_FOLDER
+                and not drop_into
+                and target_node.get_parent() == source_node.get_parent()
+            )
+        )
 
 
 gobject.type_register(KeepNoteBaseTreeView)
-gobject.signal_new("goto-node", KeepNoteBaseTreeView, gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, (object,))
 gobject.signal_new(
-    "activate-node", KeepNoteBaseTreeView, gobject.SIGNAL_RUN_LAST,
-    gobject.TYPE_NONE, (object,))
+    "goto-node",
+    KeepNoteBaseTreeView,
+    gobject.SIGNAL_RUN_LAST,
+    gobject.TYPE_NONE,
+    (object,),
+)
 gobject.signal_new(
-    "delete-node", KeepNoteBaseTreeView, gobject.SIGNAL_RUN_LAST,
-    gobject.TYPE_NONE, (object,))
-gobject.signal_new("goto-parent-node", KeepNoteBaseTreeView,
-                   gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ())
-gobject.signal_new("copy-clipboard", KeepNoteBaseTreeView,
-                   gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, ())
-gobject.signal_new("copy-tree-clipboard", KeepNoteBaseTreeView,
-                   gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, ())
-gobject.signal_new("cut-clipboard", KeepNoteBaseTreeView,
-                   gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, ())
-gobject.signal_new("paste-clipboard", KeepNoteBaseTreeView,
-                   gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, ())
-gobject.signal_new("select-nodes", KeepNoteBaseTreeView,
-                   gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, (object,))
-gobject.signal_new("edit-node", KeepNoteBaseTreeView,
-                   gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, (object, str, str))
-gobject.signal_new("drop-file", KeepNoteBaseTreeView,
-                   gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, (object, int, str))
-gobject.signal_new("error", KeepNoteBaseTreeView, gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, (str, object,))
+    "activate-node",
+    KeepNoteBaseTreeView,
+    gobject.SIGNAL_RUN_LAST,
+    gobject.TYPE_NONE,
+    (object,),
+)
+gobject.signal_new(
+    "delete-node",
+    KeepNoteBaseTreeView,
+    gobject.SIGNAL_RUN_LAST,
+    gobject.TYPE_NONE,
+    (object,),
+)
+gobject.signal_new(
+    "goto-parent-node",
+    KeepNoteBaseTreeView,
+    gobject.SIGNAL_RUN_LAST,
+    gobject.TYPE_NONE,
+    (),
+)
+gobject.signal_new(
+    "copy-clipboard",
+    KeepNoteBaseTreeView,
+    gobject.SIGNAL_RUN_LAST,
+    gobject.TYPE_NONE,
+    (),
+)
+gobject.signal_new(
+    "copy-tree-clipboard",
+    KeepNoteBaseTreeView,
+    gobject.SIGNAL_RUN_LAST,
+    gobject.TYPE_NONE,
+    (),
+)
+gobject.signal_new(
+    "cut-clipboard",
+    KeepNoteBaseTreeView,
+    gobject.SIGNAL_RUN_LAST,
+    gobject.TYPE_NONE,
+    (),
+)
+gobject.signal_new(
+    "paste-clipboard",
+    KeepNoteBaseTreeView,
+    gobject.SIGNAL_RUN_LAST,
+    gobject.TYPE_NONE,
+    (),
+)
+gobject.signal_new(
+    "select-nodes",
+    KeepNoteBaseTreeView,
+    gobject.SIGNAL_RUN_LAST,
+    gobject.TYPE_NONE,
+    (object,),
+)
+gobject.signal_new(
+    "edit-node",
+    KeepNoteBaseTreeView,
+    gobject.SIGNAL_RUN_LAST,
+    gobject.TYPE_NONE,
+    (object, str, str),
+)
+gobject.signal_new(
+    "drop-file",
+    KeepNoteBaseTreeView,
+    gobject.SIGNAL_RUN_LAST,
+    gobject.TYPE_NONE,
+    (object, int, str),
+)
+gobject.signal_new(
+    "error",
+    KeepNoteBaseTreeView,
+    gobject.SIGNAL_RUN_LAST,
+    gobject.TYPE_NONE,
+    (
+        str,
+        object,
+    ),
+)

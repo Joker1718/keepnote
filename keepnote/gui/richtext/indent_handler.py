@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Richtext indentation handler
+KeepNote
+Richtext indentation handler
 
 """
 
@@ -24,10 +24,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-from .textbuffer_tools import \
-    move_to_start_of_line, \
-    move_to_end_of_line, \
-    paragraph_iter
+from .textbuffer_tools import move_to_start_of_line, move_to_end_of_line, paragraph_iter
 from .richtext_tags import RichTextIndentTag
 from .richtextbasebuffer import get_paragraph
 from textbuffer_tools import get_paragraphs_selected
@@ -37,11 +34,12 @@ from textbuffer_tools import get_paragraphs_selected
 BULLET_STR = "\u2022 "
 
 
-#=============================================================================
+# =============================================================================
 
-class IndentHandler :
+
+class IndentHandler:
     """This object will manage the indentation of paragraphs in a
-       TextBuffer with RichTextTags
+    TextBuffer with RichTextTags
     """
 
     def __init__(self, textbuffer):
@@ -49,22 +47,19 @@ class IndentHandler :
 
         self._indent_update = False
         self._indent_update_start = self._buf.create_mark(
-            "indent_update_start",
-            self._buf.get_start_iter(),
-            True)
+            "indent_update_start", self._buf.get_start_iter(), True
+        )
         self._indent_update_end = self._buf.create_mark(
-            "indent_update_end",
-            self._buf.get_end_iter(),
-            False)
+            "indent_update_end", self._buf.get_end_iter(), False
+        )
         self._bullet_mark = self._buf.create_mark(
-            "bullet",
-            self._buf.get_start_iter(),
-            True)
+            "bullet", self._buf.get_start_iter(), True
+        )
 
         self._delete_start = self._buf.create_mark(
-            None, self._buf.get_start_iter(), True)
-        self._delete_end = self._buf.create_mark(
-            None, self._buf.get_start_iter(), True)
+            None, self._buf.get_start_iter(), True
+        )
+        self._delete_end = self._buf.create_mark(None, self._buf.get_start_iter(), True)
         self._delete_queued = False
 
     def change_indent(self, start, end, change):
@@ -84,8 +79,8 @@ class IndentHandler :
 
             if indent + change > 0:
                 tag = self._buf.tag_table.lookup(
-                    RichTextIndentTag.tag_name(indent + change,
-                                               par_indent))
+                    RichTextIndentTag.tag_name(indent + change, par_indent)
+                )
                 self._buf.clear_tag_class(tag, pos, par_end)
                 self._buf.apply_tag_selected(tag, pos, par_end)
 
@@ -93,8 +88,11 @@ class IndentHandler :
                 # remove indent and possible bullets
                 self._buf.clear_tag_class(
                     self._buf.tag_table.lookup(
-                        RichTextIndentTag.tag_name(indent, par_indent)),
-                    pos, par_end)
+                        RichTextIndentTag.tag_name(indent, par_indent)
+                    ),
+                    pos,
+                    par_end,
+                )
                 self._remove_bullet(pos)
 
             else:
@@ -157,7 +155,8 @@ class IndentHandler :
 
         # apply indent to whole paragraph
         indent_tag = self._buf.tag_table.lookup(
-            RichTextIndentTag.tag_name(indent, par_type))
+            RichTextIndentTag.tag_name(indent, par_type)
+        )
         self._buf.clear_tag_class(indent_tag, par_start, par_end)
         self._buf.apply_tag(indent_tag, par_start, par_end)
 
@@ -308,9 +307,10 @@ class IndentHandler :
                 # remove all indent tags
                 # TODO: RichTextBaseBuffer function
                 self._buf.clear_tag_class(
-                    self._buf.tag_table.lookup(
-                        RichTextIndentTag.tag_name(1)),
-                    pos, par_end)
+                    self._buf.tag_table.lookup(RichTextIndentTag.tag_name(1)),
+                    pos,
+                    par_end,
+                )
                 # remove bullets
                 par_type = "none"
 
@@ -333,11 +333,11 @@ class IndentHandler :
             else:
                 raise Exception(f"unknown par_type '{par_type}'")
 
-        #self._updating = False
+        # self._updating = False
         self._buf.end_noninteractive()
         self._buf.end_user_action()
 
-    #==========================================
+    # ==========================================
     # query and navigate paragraphs/indentation
 
     def get_indent(self, it=None):
@@ -371,8 +371,9 @@ class IndentHandler :
             # handle case where it is within bullet
             it2 = it.copy()
             it2 = move_to_start_of_line(it2)
-            return (self.par_has_bullet(it2) and
-                    it.get_offset() <= it2.get_offset() + len(BULLET_STR))
+            return self.par_has_bullet(
+                it2
+            ) and it.get_offset() <= it2.get_offset() + len(BULLET_STR)
 
     def within_bullet(self, it):
         """Returns True if iter 'it' is within bullet phrase"""
@@ -383,8 +384,9 @@ class IndentHandler :
             it2 = it.copy()
             it2 = move_to_start_of_line(it2)
 
-            return (self.par_has_bullet(it2) and
-                    it.get_offset() < it2.get_offset() + len(BULLET_STR))
+            return self.par_has_bullet(
+                it2
+            ) and it.get_offset() < it2.get_offset() + len(BULLET_STR)
 
     def _get_cursor(self):
         return self._buf.get_iter_at_mark(self._buf.get_insert())

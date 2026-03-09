@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Classic three-paned viewer for KeepNote.
+KeepNote
+Classic three-paned viewer for KeepNote.
 
 """
 
@@ -26,18 +26,15 @@
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gobject
 import gtk
 
 # keepnote imports
 import keepnote
 from keepnote.notebook import NoteBookError
-from keepnote.gui import \
-    add_actions, \
-    Action, \
-    CONTEXT_MENU_ACCEL_PATH, \
-    DEFAULT_COLORS
+from keepnote.gui import add_actions, Action, CONTEXT_MENU_ACCEL_PATH, DEFAULT_COLORS
 from keepnote import notebook as notebooklib
 from keepnote.gui import richtext
 from keepnote.gui.richtext import RichTextError
@@ -60,26 +57,27 @@ DEFAULT_HSASH_POS = 200
 DEFAULT_VIEW_MODE = "vertical"
 
 
-class ThreePaneViewer (Viewer):
+class ThreePaneViewer(Viewer):
     """A viewer with a treeview, listview, and editor"""
 
     def __init__(self, app, main_window, viewerid=None):
-        Viewer.__init__(self, app, main_window, viewerid,
-                        viewer_name="three_pane_viewer")
+        Viewer.__init__(
+            self, app, main_window, viewerid, viewer_name="three_pane_viewer"
+        )
         self._ui_ready = False
 
         # node selections
-        self._current_page = None      # current page in editor
+        self._current_page = None  # current page in editor
         self._treeview_sel_nodes = []  # current selected nodes in treeview
-        self._queue_list_select = []   # nodes to select in listview after
-                                       # treeview change
+        self._queue_list_select = []  # nodes to select in listview after
+        # treeview change
         self._new_page_occurred = False
         self.back_button = None
         self._view_mode = DEFAULT_VIEW_MODE
 
         self.connect("history-changed", self._on_history_changed)
 
-        #=========================================
+        # =========================================
         # widgets
 
         # treeview
@@ -87,8 +85,7 @@ class ThreePaneViewer (Viewer):
         self.treeview.set_get_node(self._app.get_node)
         self.treeview.connect("select-nodes", self._on_tree_select)
         self.treeview.connect("delete-node", self.on_delete_node)
-        self.treeview.connect("error", lambda w, t, e:
-                              self.emit("error", t, e))
+        self.treeview.connect("error", lambda w, t, e: self.emit("error", t, e))
         self.treeview.connect("edit-node", self._on_edit_node)
         self.treeview.connect("goto-node", self.on_goto_node)
         self.treeview.connect("activate-node", self.on_activate_node)
@@ -101,17 +98,15 @@ class ThreePaneViewer (Viewer):
         self.listview.connect("delete-node", self.on_delete_node)
         self.listview.connect("goto-node", self.on_goto_node)
         self.listview.connect("activate-node", self.on_activate_node)
-        self.listview.connect("goto-parent-node",
-                              lambda w: self.on_goto_parent_node())
-        self.listview.connect("error", lambda w, t, e:
-                              self.emit("error", t, e))
+        self.listview.connect("goto-parent-node", lambda w: self.on_goto_parent_node())
+        self.listview.connect("error", lambda w, t, e: self.emit("error", t, e))
         self.listview.connect("edit-node", self._on_edit_node)
         self.listview.connect("drop-file", self._on_attach_file)
         self.listview.on_status = self.set_status  # TODO: clean up
 
         # editor
-        #self.editor = KeepNoteEditor(self._app)
-        #self.editor = RichTextEditor(self._app)
+        # self.editor = KeepNoteEditor(self._app)
+        # self.editor = RichTextEditor(self._app)
         self.editor = ContentEditor(self._app)
         rich_editor = RichTextEditor(self._app)
         self.editor.add_editor("text/xhtml+xml", rich_editor)
@@ -120,17 +115,17 @@ class ThreePaneViewer (Viewer):
 
         self.editor.connect("view-node", self._on_editor_view_node)
         self.editor.connect("child-activated", self._on_child_activated)
-        self.editor.connect("visit-node", lambda w, n:
-                            self.goto_node(n, False))
+        self.editor.connect("visit-node", lambda w, n: self.goto_node(n, False))
         self.editor.connect("error", lambda w, t, e: self.emit("error", t, e))
-        self.editor.connect("window-request", lambda w, t:
-                            self.emit("window-request", t))
+        self.editor.connect(
+            "window-request", lambda w, t: self.emit("window-request", t)
+        )
         self.editor.view_nodes([])
 
         self.editor_pane = gtk.VBox(False, 5)
         self.editor_pane.pack_start(self.editor, True, True, 0)
 
-        #=====================================
+        # =====================================
         # layout
 
         # TODO: make sure to add underscore for these variables
@@ -158,7 +153,7 @@ class ThreePaneViewer (Viewer):
         self.listview_sw.set_shadow_type(gtk.SHADOW_IN)
         self.listview_sw.add(self.listview)
         self.paned2.add1(self.listview_sw)
-        #self.paned2.child_set_property(self.listview_sw, "shrink", True)
+        # self.paned2.child_set_property(self.listview_sw, "shrink", True)
 
         # layout editor
         self.paned2.add2(self.editor_pane)
@@ -174,8 +169,7 @@ class ThreePaneViewer (Viewer):
 
         # deregister last notebook, if it exists
         if self._notebook:
-            self._notebook.node_changed.remove(
-                self.on_notebook_node_changed)
+            self._notebook.node_changed.remove(self.on_notebook_node_changed)
 
         # setup listeners
         if notebook:
@@ -191,8 +185,11 @@ class ThreePaneViewer (Viewer):
             self.treeview.get_popup_menu().iconmenu.set_notebook(notebook)
             self.listview.get_popup_menu().iconmenu.set_notebook(notebook)
 
-            colors = (self._notebook.pref.get("colors", default=DEFAULT_COLORS)
-                      if self._notebook else DEFAULT_COLORS)
+            colors = (
+                self._notebook.pref.get("colors", default=DEFAULT_COLORS)
+                if self._notebook
+                else DEFAULT_COLORS
+            )
             self.treeview.get_popup_menu().fgcolor_menu.set_colors(colors)
             self.treeview.get_popup_menu().bgcolor_menu.set_colors(colors)
             self.listview.get_popup_menu().fgcolor_menu.set_colors(colors)
@@ -219,7 +216,8 @@ class ThreePaneViewer (Viewer):
             # if this version of GTK doesn't have tree-lines, ignore it
             self.treeview.set_property(
                 "enable-tree-lines",
-                app_pref.get("look_and_feel", "treeview_lines", default=True))
+                app_pref.get("look_and_feel", "treeview_lines", default=True),
+            )
         except:
             pass
 
@@ -304,38 +302,48 @@ class ThreePaneViewer (Viewer):
     def _load_selections(self):
         """Load previous node selections from notebook preferences"""
         if self._notebook:
-            info = self._notebook.pref.get("viewers", "ids",
-                                           self._viewerid, define=True)
+            info = self._notebook.pref.get(
+                "viewers", "ids", self._viewerid, define=True
+            )
 
             # load selections
-            nodes = [node for node in (
-                self._notebook.get_node_by_id(i)
-                for i in info.get("selected_treeview_nodes", []))
-                if node is not None]
+            nodes = [
+                node
+                for node in (
+                    self._notebook.get_node_by_id(i)
+                    for i in info.get("selected_treeview_nodes", [])
+                )
+                if node is not None
+            ]
             self.treeview.select_nodes(nodes)
-            nodes = [node for node in (
-                self._notebook.get_node_by_id(i)
-                for i in info.get("selected_listview_nodes", []))
-                if node is not None]
+            nodes = [
+                node
+                for node in (
+                    self._notebook.get_node_by_id(i)
+                    for i in info.get("selected_listview_nodes", [])
+                )
+                if node is not None
+            ]
 
             self.listview.select_nodes(nodes)
 
     def _save_selections(self):
         """Save node selections into notebook preferences"""
         if self._notebook is not None:
-            info = self._notebook.pref.get("viewers", "ids",
-                                           self._viewerid, define=True)
+            info = self._notebook.pref.get(
+                "viewers", "ids", self._viewerid, define=True
+            )
 
             # save selections
             info["selected_treeview_nodes"] = [
-                node.get_attr("nodeid")
-                for node in self.treeview.get_selected_nodes()]
+                node.get_attr("nodeid") for node in self.treeview.get_selected_nodes()
+            ]
             info["selected_listview_nodes"] = [
-                node.get_attr("nodeid")
-                for node in self.listview.get_selected_nodes()]
+                node.get_attr("nodeid") for node in self.listview.get_selected_nodes()
+            ]
             self._notebook.set_preferences_dirty()
 
-    #===============================================
+    # ===============================================
     # node operations
 
     def get_current_node(self):
@@ -389,7 +397,7 @@ class ThreePaneViewer (Viewer):
                 i = children.index(node)
 
                 if i < len(children) - 1:
-                    widget.select_nodes([children[i+1]])
+                    widget.select_nodes([children[i + 1]])
                 else:
                     widget.select_nodes([parent])
             else:
@@ -447,8 +455,7 @@ class ThreePaneViewer (Viewer):
         try:
             self.editor.view_nodes(nodes)
         except RichTextError as e:
-            self.emit("error",
-                      f"Could not load page '{nodes[0].get_title()}'.", e)
+            self.emit("error", f"Could not load page '{nodes[0].get_title()}'.", e)
 
         self.emit("current-node", self._current_page)
 
@@ -464,9 +471,9 @@ class ThreePaneViewer (Viewer):
         else:
             if node and node.has_attr("payload_filename"):
                 # open attached file
-                self._main_window.on_view_node_external_app("file_launcher",
-                                                            node,
-                                                            kind="file")
+                self._main_window.on_view_node_external_app(
+                    "file_launcher", node, kind="file"
+                )
             else:
                 # goto node directly
                 self.goto_node(node, direct=True)
@@ -657,7 +664,7 @@ class ThreePaneViewer (Viewer):
         if gobject.signal_lookup("copy-tree-clipboard", widget) != 0:
             widget.emit("copy-tree-clipboard")
 
-    #============================================
+    # ============================================
     # Search
 
     def start_search_result(self):
@@ -681,10 +688,12 @@ class ThreePaneViewer (Viewer):
 
     def viewing_search(self):
         """Returns True if we are currently viewing a search result"""
-        return (len(self.treeview.get_selected_nodes()) == 0 and
-                len(self.listview.get_selected_nodes()) > 0)
+        return (
+            len(self.treeview.get_selected_nodes()) == 0
+            and len(self.listview.get_selected_nodes()) > 0
+        )
 
-    #=============================================
+    # =============================================
     # Goto functions
 
     def goto_treeview(self):
@@ -699,7 +708,7 @@ class ThreePaneViewer (Viewer):
         """Switch focus to Editor"""
         self.editor.grab_focus()
 
-    #===========================================
+    # ===========================================
     # ui
 
     def add_ui(self, window):
@@ -711,82 +720,71 @@ class ThreePaneViewer (Viewer):
         self._action_group = gtk.ActionGroup("Viewer")
         self._uis = []
         add_actions(self._action_group, self._get_actions())
-        self._main_window.get_uimanager().insert_action_group(
-            self._action_group, 0)
+        self._main_window.get_uimanager().insert_action_group(self._action_group, 0)
 
         for s in self._get_ui():
-            self._uis.append(
-                self._main_window.get_uimanager().add_ui_from_string(s))
+            self._uis.append(self._main_window.get_uimanager().add_ui_from_string(s))
 
         uimanager = self._main_window.get_uimanager()
         uimanager.ensure_update()
 
         # setup toolbar
         self.back_button = uimanager.get_widget("/main_tool_bar/Viewer/Back")
-        self.forward_button = uimanager.get_widget(
-            "/main_tool_bar/Viewer/Forward")
+        self.forward_button = uimanager.get_widget("/main_tool_bar/Viewer/Forward")
 
         # setup editor
         self.editor.add_ui(window)
 
         # TODO: Try to add accellerator to popup menu
-        #menu = viewer.editor.get_textview().get_popup_menu()
-        #menu.set_accel_group(self._accel_group)
-        #menu.set_accel_path(CONTEXT_MENU_ACCEL_PATH)
+        # menu = viewer.editor.get_textview().get_popup_menu()
+        # menu.set_accel_group(self._accel_group)
+        # menu.set_accel_path(CONTEXT_MENU_ACCEL_PATH)
 
         # treeview context menu
-        menu1 = uimanager.get_widget(
-            "/popup_menus/treeview_popup").get_submenu()
+        menu1 = uimanager.get_widget("/popup_menus/treeview_popup").get_submenu()
         self.treeview.set_popup_menu(menu1)
         menu1.set_accel_path(CONTEXT_MENU_ACCEL_PATH)
         menu1.set_accel_group(uimanager.get_accel_group())
 
         # treeview icon menu
         menu1.iconmenu = self._setup_icon_menu()
-        item = uimanager.get_widget(
-            "/popup_menus/treeview_popup/Change Note Icon")
+        item = uimanager.get_widget("/popup_menus/treeview_popup/Change Note Icon")
         item.set_submenu(menu1.iconmenu)
         item.show()
 
         # treeview fg color menu
         menu1.fgcolor_menu = self._setup_color_menu("fg")
-        item = uimanager.get_widget(
-            "/popup_menus/treeview_popup/Change Fg Color")
+        item = uimanager.get_widget("/popup_menus/treeview_popup/Change Fg Color")
         item.set_submenu(menu1.fgcolor_menu)
         item.show()
 
         # treeview bg color menu
         menu1.bgcolor_menu = self._setup_color_menu("bg")
-        item = uimanager.get_widget(
-            "/popup_menus/treeview_popup/Change Bg Color")
+        item = uimanager.get_widget("/popup_menus/treeview_popup/Change Bg Color")
         item.set_submenu(menu1.bgcolor_menu)
         item.show()
 
         # listview context menu
-        menu2 = uimanager.get_widget(
-            "/popup_menus/listview_popup").get_submenu()
+        menu2 = uimanager.get_widget("/popup_menus/listview_popup").get_submenu()
         self.listview.set_popup_menu(menu2)
         menu2.set_accel_group(uimanager.get_accel_group())
         menu2.set_accel_path(CONTEXT_MENU_ACCEL_PATH)
 
         # listview icon menu
         menu2.iconmenu = self._setup_icon_menu()
-        item = uimanager.get_widget(
-            "/popup_menus/listview_popup/Change Note Icon")
+        item = uimanager.get_widget("/popup_menus/listview_popup/Change Note Icon")
         item.set_submenu(menu2.iconmenu)
         item.show()
 
         # listview fg color menu
         menu2.fgcolor_menu = self._setup_color_menu("fg")
-        item = uimanager.get_widget(
-            "/popup_menus/listview_popup/Change Fg Color")
+        item = uimanager.get_widget("/popup_menus/listview_popup/Change Fg Color")
         item.set_submenu(menu2.fgcolor_menu)
         item.show()
 
         # listview bg color menu
         menu2.bgcolor_menu = self._setup_color_menu("bg")
-        item = uimanager.get_widget(
-            "/popup_menus/listview_popup/Change Bg Color")
+        item = uimanager.get_widget("/popup_menus/listview_popup/Change Bg Color")
         item.set_submenu(menu2.bgcolor_menu)
         item.show()
 
@@ -795,13 +793,14 @@ class ThreePaneViewer (Viewer):
         iconmenu = IconMenu()
         iconmenu.connect(
             "set-icon",
-            lambda w, i: self._app.on_set_icon(
-                i, "", self.get_selected_nodes()))
+            lambda w, i: self._app.on_set_icon(i, "", self.get_selected_nodes()),
+        )
         iconmenu.new_icon.connect(
             "activate",
             lambda w: self._app.on_new_icon(
-                self.get_selected_nodes(), self._notebook,
-                self._main_window))
+                self.get_selected_nodes(), self._notebook, self._main_window
+            ),
+        )
         iconmenu.set_notebook(self._notebook)
 
         return iconmenu
@@ -823,15 +822,17 @@ class ThreePaneViewer (Viewer):
         def on_set_colors(w, colors):
             if self._notebook:
                 self._notebook.pref.set("colors", list(colors))
-                self._app.get_listeners("colors_changed").notify(
-                    self._notebook, colors)
+                self._app.get_listeners("colors_changed").notify(self._notebook, colors)
 
         def on_new_colors(notebook, colors):
             if self._notebook == notebook:
                 menu.set_colors(colors)
 
-        colors = self._notebook.pref.get("colors", default=DEFAULT_COLORS) \
-            if self._notebook else DEFAULT_COLORS
+        colors = (
+            self._notebook.pref.get("colors", default=DEFAULT_COLORS)
+            if self._notebook
+            else DEFAULT_COLORS
+        )
 
         menu = ColorMenu(colors)
 
@@ -854,8 +855,7 @@ class ThreePaneViewer (Viewer):
         self._uis = []
 
         self._main_window.get_uimanager().ensure_update()
-        self._main_window.get_uimanager().remove_action_group(
-            self._action_group)
+        self._main_window.get_uimanager().remove_action_group(self._action_group)
         self._action_group = None
 
     def _get_ui(self):
@@ -864,7 +864,8 @@ class ThreePaneViewer (Viewer):
         # NOTE: I use a dummy menubar popup_menus so that I can have
         # accelerators on the menus.  It is a hack.
 
-        return ["""
+        return [
+            """
         <ui>
         <menubar name="main_menu_bar">
           <menu action="File">
@@ -985,104 +986,190 @@ class ThreePaneViewer (Viewer):
         </menubar>
 
         </ui>
-        """]
+        """
+        ]
 
     def _get_actions(self):
         """Returns actions for view's UI"""
 
-        return map(lambda x: Action(*x), [
-
-            ("treeview_popup", None, "", "", None, lambda w: None),
-            ("listview_popup", None, "", "", None, lambda w: None),
-
-            ("Copy Tree", gtk.STOCK_COPY, _("Copy _Tree"),
-             "<control><shift>C", _("Copy entire tree"),
-             lambda w: self.on_copy_tree()),
-
-            ("New Page", gtk.STOCK_NEW, _("New _Page"),
-             "<control>N", _("Create a new page"),
-             lambda w: self.on_new_page(), "note-new.png"),
-
-            ("New Child Page", gtk.STOCK_NEW, _("New _Child Page"),
-             "<control><shift>N", _("Create a new child page"),
-             lambda w: self.on_new_child_page(),
-             "note-new.png"),
-
-            ("New Folder", gtk.STOCK_DIRECTORY, _("New _Folder"),
-             "<control><shift>M", _("Create a new folder"),
-             lambda w: self.on_new_dir(),
-             "folder-new.png"),
-
-            ("Attach File", gtk.STOCK_ADD, _("_Attach File..."),
-             "", _("Attach a file to the notebook"),
-             lambda w: self._on_attach_file_menu()),
-
-
-            ("Back", gtk.STOCK_GO_BACK, _("_Back"), "", None,
-             lambda w: self.visit_history(-1)),
-
-            ("Forward", gtk.STOCK_GO_FORWARD, _("_Forward"), "", None,
-             lambda w: self.visit_history(1)),
-
-            ("Go to Note", gtk.STOCK_JUMP_TO, _("Go to _Note"),
-             "", None,
-             lambda w: self.on_goto_node(None, None)),
-
-            ("Go to Parent Note", gtk.STOCK_GO_BACK, _("Go to _Parent Note"),
-             "<shift><alt>Left", None,
-             lambda w: self.on_goto_parent_node()),
-
-            ("Go to Next Note", gtk.STOCK_GO_DOWN, _("Go to Next N_ote"),
-             "<alt>Down", None,
-             lambda w: self.goto_next_node()),
-
-            ("Go to Previous Note", gtk.STOCK_GO_UP, _("Go to _Previous Note"),
-             "<alt>Up", None,
-             lambda w: self.goto_prev_node()),
-
-            ("Expand Note", gtk.STOCK_ADD, _("E_xpand Note"),
-             "<alt>Right", None,
-             lambda w: self.expand_node()),
-
-            ("Collapse Note", gtk.STOCK_REMOVE, _("_Collapse Note"),
-             "<alt>Left", None,
-             lambda w: self.collapse_node()),
-
-            ("Expand All Child Notes", gtk.STOCK_ADD,
-             _("Expand _All Child Notes"),
-             "<shift><alt>Right", None,
-             lambda w: self.expand_node(True)),
-
-            ("Collapse All Child Notes", gtk.STOCK_REMOVE,
-             _("Collapse A_ll Child Notes"),
-             "<shift><alt>Left", None,
-             lambda w: self.collapse_node(True)),
-
-
-            ("Go to Tree View", None, _("Go to _Tree View"),
-             "<control>T", None,
-             lambda w: self.goto_treeview()),
-
-            ("Go to List View", None, _("Go to _List View"),
-             "<control>Y", None,
-             lambda w: self.goto_listview()),
-
-            ("Go to Editor", None, _("Go to _Editor"),
-             "<control>D", None,
-             lambda w: self.goto_editor()),
-
-            ("Delete Note", gtk.STOCK_DELETE, _("_Delete"),
-             "", None, self.on_delete_node),
-
-            ("Rename Note", gtk.STOCK_EDIT, _("_Rename"),
-             "", None,
-             lambda w: self._on_rename_node()),
-
-            ("Change Note Icon", None, _("_Change Note Icon"),
-             "", None, lambda w: None,
-             lookup_icon_filename(None, "folder-red.png")),
-
-            ("Change Fg Color", None, _("Change _Fg Color")),
-
-            ("Change Bg Color", None, _("Change _Bg Color")),
-        ])
+        return map(
+            lambda x: Action(*x),
+            [
+                ("treeview_popup", None, "", "", None, lambda w: None),
+                ("listview_popup", None, "", "", None, lambda w: None),
+                (
+                    "Copy Tree",
+                    gtk.STOCK_COPY,
+                    _("Copy _Tree"),
+                    "<control><shift>C",
+                    _("Copy entire tree"),
+                    lambda w: self.on_copy_tree(),
+                ),
+                (
+                    "New Page",
+                    gtk.STOCK_NEW,
+                    _("New _Page"),
+                    "<control>N",
+                    _("Create a new page"),
+                    lambda w: self.on_new_page(),
+                    "note-new.png",
+                ),
+                (
+                    "New Child Page",
+                    gtk.STOCK_NEW,
+                    _("New _Child Page"),
+                    "<control><shift>N",
+                    _("Create a new child page"),
+                    lambda w: self.on_new_child_page(),
+                    "note-new.png",
+                ),
+                (
+                    "New Folder",
+                    gtk.STOCK_DIRECTORY,
+                    _("New _Folder"),
+                    "<control><shift>M",
+                    _("Create a new folder"),
+                    lambda w: self.on_new_dir(),
+                    "folder-new.png",
+                ),
+                (
+                    "Attach File",
+                    gtk.STOCK_ADD,
+                    _("_Attach File..."),
+                    "",
+                    _("Attach a file to the notebook"),
+                    lambda w: self._on_attach_file_menu(),
+                ),
+                (
+                    "Back",
+                    gtk.STOCK_GO_BACK,
+                    _("_Back"),
+                    "",
+                    None,
+                    lambda w: self.visit_history(-1),
+                ),
+                (
+                    "Forward",
+                    gtk.STOCK_GO_FORWARD,
+                    _("_Forward"),
+                    "",
+                    None,
+                    lambda w: self.visit_history(1),
+                ),
+                (
+                    "Go to Note",
+                    gtk.STOCK_JUMP_TO,
+                    _("Go to _Note"),
+                    "",
+                    None,
+                    lambda w: self.on_goto_node(None, None),
+                ),
+                (
+                    "Go to Parent Note",
+                    gtk.STOCK_GO_BACK,
+                    _("Go to _Parent Note"),
+                    "<shift><alt>Left",
+                    None,
+                    lambda w: self.on_goto_parent_node(),
+                ),
+                (
+                    "Go to Next Note",
+                    gtk.STOCK_GO_DOWN,
+                    _("Go to Next N_ote"),
+                    "<alt>Down",
+                    None,
+                    lambda w: self.goto_next_node(),
+                ),
+                (
+                    "Go to Previous Note",
+                    gtk.STOCK_GO_UP,
+                    _("Go to _Previous Note"),
+                    "<alt>Up",
+                    None,
+                    lambda w: self.goto_prev_node(),
+                ),
+                (
+                    "Expand Note",
+                    gtk.STOCK_ADD,
+                    _("E_xpand Note"),
+                    "<alt>Right",
+                    None,
+                    lambda w: self.expand_node(),
+                ),
+                (
+                    "Collapse Note",
+                    gtk.STOCK_REMOVE,
+                    _("_Collapse Note"),
+                    "<alt>Left",
+                    None,
+                    lambda w: self.collapse_node(),
+                ),
+                (
+                    "Expand All Child Notes",
+                    gtk.STOCK_ADD,
+                    _("Expand _All Child Notes"),
+                    "<shift><alt>Right",
+                    None,
+                    lambda w: self.expand_node(True),
+                ),
+                (
+                    "Collapse All Child Notes",
+                    gtk.STOCK_REMOVE,
+                    _("Collapse A_ll Child Notes"),
+                    "<shift><alt>Left",
+                    None,
+                    lambda w: self.collapse_node(True),
+                ),
+                (
+                    "Go to Tree View",
+                    None,
+                    _("Go to _Tree View"),
+                    "<control>T",
+                    None,
+                    lambda w: self.goto_treeview(),
+                ),
+                (
+                    "Go to List View",
+                    None,
+                    _("Go to _List View"),
+                    "<control>Y",
+                    None,
+                    lambda w: self.goto_listview(),
+                ),
+                (
+                    "Go to Editor",
+                    None,
+                    _("Go to _Editor"),
+                    "<control>D",
+                    None,
+                    lambda w: self.goto_editor(),
+                ),
+                (
+                    "Delete Note",
+                    gtk.STOCK_DELETE,
+                    _("_Delete"),
+                    "",
+                    None,
+                    self.on_delete_node,
+                ),
+                (
+                    "Rename Note",
+                    gtk.STOCK_EDIT,
+                    _("_Rename"),
+                    "",
+                    None,
+                    lambda w: self._on_rename_node(),
+                ),
+                (
+                    "Change Note Icon",
+                    None,
+                    _("_Change Note Icon"),
+                    "",
+                    None,
+                    lambda w: None,
+                    lookup_icon_filename(None, "folder-red.png"),
+                ),
+                ("Change Fg Color", None, _("Change _Fg Color")),
+                ("Change Bg Color", None, _("Change _Bg Color")),
+            ],
+        )

@@ -1,10 +1,10 @@
 """
-    KeepNote
-    extended plist module
+KeepNote
+extended plist module
 
-    Apple's property list xml serialization
+Apple's property list xml serialization
 
-    - added null type
+- added null type
 """
 
 #
@@ -26,7 +26,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-
 # python imports
 try:
     import xml.etree.ElementTree as ET
@@ -45,7 +44,7 @@ except (ImportError, ValueError):
     OrderDict = dict
 
 
-class Data :
+class Data:
     def __init__(self, text):
         self.text = text
 
@@ -59,9 +58,9 @@ _unmarshallers = {
     # collections
     "array": lambda x: [v.text for v in x],
     "dict": lambda x: OrderDict(
-        (x[i].text, x[i+1].text) for i in range(0, len(x), 2)),
+        (x[i].text, x[i + 1].text) for i in range(0, len(x), 2)
+    ),
     "key": lambda x: x.text or "",
-
     # simple types
     "string": lambda x: x.text or "",
     "data": lambda x: Data(base64.decodestring(x.text or "")),
@@ -70,8 +69,7 @@ _unmarshallers = {
     "false": lambda x: False,
     "real": lambda x: float(x.text),
     "integer": lambda x: int(x.text),
-    "null": lambda x: None
-
+    "null": lambda x: None,
 }
 
 
@@ -122,7 +120,7 @@ def dump(elm, out=sys.stdout, indent=0, depth=0, suppress=False):
             if indent:
                 out.write(" " * (depth + indent))
             out.write(f"<key>{key}</key>")
-            dump(val, out, indent, depth+indent, suppress=True)
+            dump(val, out, indent, depth + indent, suppress=True)
         if indent:
             out.write(" " * depth)
         out.write("</dict>")
@@ -132,7 +130,7 @@ def dump(elm, out=sys.stdout, indent=0, depth=0, suppress=False):
         if indent:
             out.write("\n")
         for item in elm:
-            dump(item, out, indent, depth+indent)
+            dump(item, out, indent, depth + indent)
         if indent:
             out.write(" " * depth)
         out.write("</array>")

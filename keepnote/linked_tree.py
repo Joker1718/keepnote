@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    A tree implemented with linked lists
+KeepNote
+A tree implemented with linked lists
 
 """
 
@@ -25,7 +25,7 @@
 #
 
 
-class LinkedTreeNode :
+class LinkedTreeNode:
     """A node in a linked list tree"""
 
     def __init__(self):

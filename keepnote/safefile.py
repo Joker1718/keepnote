@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Safely write to a tempfile before replacing previous file.
+KeepNote
+Safely write to a tempfile before replacing previous file.
 
 """
 
@@ -58,8 +58,7 @@ def open(filename, mode="r", tmp=None, codec=None):
     return stream
 
 
-class SafeFile (file):
-
+class SafeFile(file):
     def __init__(self, filename, mode="r", tmp=None):
         """
         filename -- filename to open
@@ -69,7 +68,7 @@ class SafeFile (file):
 
         # set tempfile
         if "w" in mode and tmp is None:
-            f, tmp = tempfile.mkstemp(".tmp", filename+"_", dir=".")
+            f, tmp = tempfile.mkstemp(".tmp", filename + "_", dir=".")
             os.close(f)
 
         self._tmp = tmp

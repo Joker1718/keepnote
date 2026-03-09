@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Listener (Observer) pattern
+KeepNote
+Listener (Observer) pattern
 
 """
 
@@ -25,10 +25,11 @@
 #
 
 
-class Listeners :
+class Listeners:
     """Maintains a list of listeners (functions) that are called when the
-       notify function is called.
+    notify function is called.
     """
+
     def __init__(self):
         self._listeners = []
         self._suppress = {}

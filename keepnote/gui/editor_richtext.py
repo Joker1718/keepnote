@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Editor widget in main window
+KeepNote
+Editor widget in main window
 
 """
 
@@ -30,25 +30,25 @@ import re
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 from gtk import gdk
 import gtk.glade
 import gobject
 
 # keepnote imports
 import keepnote
-from keepnote import \
-    KeepNoteError, is_url, unicode_gtk
-from keepnote.notebook import \
-    NoteBookError, \
-    get_node_url, \
-    parse_node_url, \
-    is_node_url
+from keepnote import KeepNoteError, is_url, unicode_gtk
+from keepnote.notebook import NoteBookError, get_node_url, parse_node_url, is_node_url
 from keepnote import notebook as notebooklib
 from keepnote.gui import dialog_image_new
-from keepnote.gui.richtext import \
-    RichTextView, RichTextBuffer, \
-    RichTextIO, RichTextError, RichTextImage
+from keepnote.gui.richtext import (
+    RichTextView,
+    RichTextBuffer,
+    RichTextIO,
+    RichTextError,
+    RichTextImage,
+)
 from keepnote.gui.richtext.richtext_tags import RichTextLinkTag
 from keepnote.gui.icons import lookup_icon_filename
 from keepnote.gui.font_selector import FontSelector
@@ -56,18 +56,19 @@ from keepnote.gui.colortool import FgColorTool, BgColorTool
 from keepnote.gui.linkcomplete import LinkPickerPopup
 from keepnote.gui.link_editor import LinkEditor
 from keepnote.gui.editor import KeepNoteEditor
-from keepnote.gui import \
-    CONTEXT_MENU_ACCEL_PATH, \
-    DEFAULT_FONT, \
-    DEFAULT_COLORS, \
-    FileChooserDialog, \
-    get_resource_pixbuf, \
-    Action, \
-    ToggleAction, \
-    add_actions, \
-    update_file_preview, \
-    dialog_find, \
-    dialog_image_resize
+from keepnote.gui import (
+    CONTEXT_MENU_ACCEL_PATH,
+    DEFAULT_FONT,
+    DEFAULT_COLORS,
+    FileChooserDialog,
+    get_resource_pixbuf,
+    Action,
+    ToggleAction,
+    add_actions,
+    update_file_preview,
+    dialog_find,
+    dialog_image_resize,
+)
 
 
 _ = keepnote.translate
@@ -75,15 +76,14 @@ _ = keepnote.translate
 
 def is_relative_file(filename):
     """Returns True if filename is relative"""
-    return (not re.match("[^:/]+://", filename) and
-            not os.path.isabs(filename))
+    return not re.match("[^:/]+://", filename) and not os.path.isabs(filename)
 
 
 def is_local_file(filename):
     return filename and ("/" not in filename) and ("\\" not in filename)
 
 
-class NodeIO (RichTextIO):
+class NodeIO(RichTextIO):
     """Read/Writes the contents of a RichTextBuffer to disk"""
 
     def __init__(self):
@@ -119,8 +119,7 @@ class NodeIO (RichTextIO):
         RichTextIO._save_images(self, textbuffer, html_filename)
 
         # delete images not part of the saved set
-        self._delete_images(html_filename,
-                            self._image_files - self._saved_image_files)
+        self._delete_images(html_filename, self._image_files - self._saved_image_files)
         self._image_files = set(self._saved_image_files)
 
     def _delete_images(self, html_filename, image_files):
@@ -161,8 +160,7 @@ class NodeIO (RichTextIO):
         self._saved_image_files.add(image.get_filename())
 
 
-class RichTextEditor (KeepNoteEditor):
-
+class RichTextEditor(KeepNoteEditor):
     def __init__(self, app):
         KeepNoteEditor.__init__(self, app)
         self._app = app
@@ -172,8 +170,8 @@ class RichTextEditor (KeepNoteEditor):
         self._maxlinks = 10  # maximum number of links to show in link picker
 
         # state
-        self._page = None                  # current NoteBookPage
-        self._page_scrolls = {}            # remember scroll in each page
+        self._page = None  # current NoteBookPage
+        self._page_scrolls = {}  # remember scroll in each page
         self._page_cursors = {}
         self._textview_io = NodeIO()
 
@@ -181,15 +179,15 @@ class RichTextEditor (KeepNoteEditor):
         self.connect("make-link", self._on_make_link)
 
         # textview and its callbacks
-        self._textview = RichTextView(RichTextBuffer(
-            self._app.get_richtext_tag_table()))  # textview
+        self._textview = RichTextView(
+            RichTextBuffer(self._app.get_richtext_tag_table())
+        )  # textview
         self._textview.disable()
         self._textview.connect("font-change", self._on_font_callback)
         self._textview.connect("modified", self._on_modified_callback)
         self._textview.connect("child-activated", self._on_child_activated)
         self._textview.connect("visit-url", self._on_visit_url)
-        self._textview.get_buffer().connect("ending-user-action",
-                                            self._on_text_changed)
+        self._textview.get_buffer().connect("ending-user-action", self._on_text_changed)
         self._textview.connect("key-press-event", self._on_key_press_event)
 
         # scrollbars
@@ -235,8 +233,8 @@ class RichTextEditor (KeepNoteEditor):
     def load_preferences(self, app_pref, first_open=False):
         """Load application preferences"""
         self.editor_menus.enable_spell_check(
-            app_pref.get("editors", "general", "spell_check",
-                         default=True))
+            app_pref.get("editors", "general", "spell_check", default=True)
+        )
 
         try:
             format = app_pref.get("editors", "general", "quote_format")
@@ -249,18 +247,20 @@ class RichTextEditor (KeepNoteEditor):
     def save_preferences(self, app_pref):
         """Save application preferences"""
         # record state in preferences
-        app_pref.set("editors", "general", "spell_check",
-                     self._textview.is_spell_check_enabled())
-        app_pref.set("editors", "general", "quote_format",
-                     self._textview.get_quote_format())
+        app_pref.set(
+            "editors", "general", "spell_check", self._textview.is_spell_check_enabled()
+        )
+        app_pref.set(
+            "editors", "general", "quote_format", self._textview.get_quote_format()
+        )
 
     def load_notebook_preferences(self):
         """Load notebook-specific preferences"""
         if self._notebook:
             # read default font
             self._textview.set_default_font(
-                self._notebook.pref.get("default_font",
-                                        default=DEFAULT_FONT))
+                self._notebook.pref.get("default_font", default=DEFAULT_FONT)
+            )
 
     def is_focus(self):
         """Return True if text editor has focus"""
@@ -295,9 +295,11 @@ class RichTextEditor (KeepNoteEditor):
         self.save()
         self._save_cursor()
 
-        pages = [node for node in nodes
-                 if node.get_attr("content_type") ==
-                 notebooklib.CONTENT_TYPE_PAGE]
+        pages = [
+            node
+            for node in nodes
+            if node.get_attr("content_type") == notebooklib.CONTENT_TYPE_PAGE
+        ]
 
         if len(pages) == 0:
             self.clear_view()
@@ -308,15 +310,16 @@ class RichTextEditor (KeepNoteEditor):
             self._textview.enable()
 
             try:
-                self._textview.set_current_url(page.get_url(),
-                                               title=page.get_title())
+                self._textview.set_current_url(page.get_url(), title=page.get_title())
                 self._textview_io.set_node(self._page)
                 self._textview_io.load(
                     self._textview,
                     self._textview.get_buffer(),
                     self._page.get_page_file(),
                     stream=self._page.open_file(
-                        self._page.get_page_file(), "r", "utf-8"))
+                        self._page.get_page_file(), "r", "utf-8"
+                    ),
+                )
                 self._load_cursor()
 
             except RichTextError as e:
@@ -334,8 +337,7 @@ class RichTextEditor (KeepNoteEditor):
             it = self._textview.get_buffer().get_insert_iter()
             self._page_cursors[self._page] = it.get_offset()
 
-            x, y = self._textview.window_to_buffer_coords(
-                gtk.TEXT_WINDOW_TEXT, 0, 0)
+            x, y = self._textview.window_to_buffer_coords(gtk.TEXT_WINDOW_TEXT, 0, 0)
             it = self._textview.get_iter_at_location(x, y)
             self._page_scrolls[self._page] = it.get_offset()
 
@@ -353,17 +355,17 @@ class RichTextEditor (KeepNoteEditor):
             buf = self._textview.get_buffer()
             it = buf.get_iter_at_offset(offset)
             mark = buf.create_mark(None, it, True)
-            self._textview.scroll_to_mark(
-                mark, 0.49, use_align=True, xalign=0.0)
+            self._textview.scroll_to_mark(mark, 0.49, use_align=True, xalign=0.0)
             buf.delete_mark(mark)
 
     def save(self):
         """Save the loaded page"""
 
-        if self._page is not None and \
-           self._page.is_valid() and \
-           self._textview.is_modified():
-
+        if (
+            self._page is not None
+            and self._page.is_valid()
+            and self._textview.is_modified()
+        ):
             try:
                 # save text data
                 self._textview_io.save(
@@ -371,7 +373,9 @@ class RichTextEditor (KeepNoteEditor):
                     self._page.get_page_file(),
                     self._page.get_title(),
                     stream=self._page.open_file(
-                        self._page.get_page_file(), "w", "utf-8"))
+                        self._page.get_page_file(), "w", "utf-8"
+                    ),
+                )
 
                 # save meta data
                 self._page.set_attr_timestamp("modified_time")
@@ -390,15 +394,14 @@ class RichTextEditor (KeepNoteEditor):
     def add_ui(self, window):
         self._textview.set_accel_group(window.get_accel_group())
         self._textview.set_accel_path(CONTEXT_MENU_ACCEL_PATH)
-        self._textview.get_image_menu().set_accel_group(
-            window.get_accel_group())
+        self._textview.get_image_menu().set_accel_group(window.get_accel_group())
 
         self.editor_menus.add_ui(window)
 
     def remove_ui(self, window):
         self.editor_menus.remove_ui(window)
 
-    #===========================================
+    # ===========================================
     # callbacks for textview
 
     def _on_font_callback(self, textview, font):
@@ -427,12 +430,16 @@ class RichTextEditor (KeepNoteEditor):
         """Callback for keypress in textview"""
 
         # decide if keypress should be forwarded to link picker
-        if (self._link_picker and self._link_picker.shown() and
-            (event.keyval == gtk.keysyms.Down or
-             event.keyval == gtk.keysyms.Up or
-             event.keyval == gtk.keysyms.Return or
-             event.keyval == gtk.keysyms.Escape)):
-
+        if (
+            self._link_picker
+            and self._link_picker.shown()
+            and (
+                event.keyval == gtk.keysyms.Down
+                or event.keyval == gtk.keysyms.Up
+                or event.keyval == gtk.keysyms.Return
+                or event.keyval == gtk.keysyms.Escape
+            )
+        ):
             return self._link_picker.on_key_press_event(textview, event)
 
     def _on_visit_url(self, textview, url):
@@ -454,18 +461,19 @@ class RichTextEditor (KeepNoteEditor):
         """Callback from editor to make a link"""
         self._link_editor.edit()
 
-    #=====================================
+    # =====================================
     # callback for link editor
 
     def _search_nodes(self, text):
         """Return nodes with titles containing 'text'"""
 
         # TODO: make proper interface
-        nodes = [(nodeid, title)
-                 for nodeid, title in self._notebook.search_node_titles(text)]
+        nodes = [
+            (nodeid, title) for nodeid, title in self._notebook.search_node_titles(text)
+        ]
         return nodes
 
-    #======================================
+    # ======================================
     # link auto-complete
 
     def _check_link(self, popup=True):
@@ -480,7 +488,8 @@ class RichTextEditor (KeepNoteEditor):
 
             # TODO: clean up icon handling.
             for nodeid, title in self._notebook.search_node_titles(text)[
-                    :self._maxlinks]:
+                : self._maxlinks
+            ]:
                 icon = self._notebook.get_attr_by_id(nodeid, "icon")
                 if icon is None:
                     icon = "note.png"
@@ -490,14 +499,14 @@ class RichTextEditor (KeepNoteEditor):
 
                 pb = keepnote.gui.get_pixbuf(icon)
 
-                #if node is not None:
+                # if node is not None:
                 results.append((get_node_url(nodeid), title, pb))
 
             # offer url match
             if is_url(text):
-                results = [(text, text,
-                            get_resource_pixbuf("node_icons",
-                                                "web.png"))] + results
+                results = [
+                    (text, text, get_resource_pixbuf("node_icons", "web.png"))
+                ] + results
 
             # ensure link picker is initialized
             if self._link_picker is None:
@@ -511,10 +520,12 @@ class RichTextEditor (KeepNoteEditor):
             if len(results) > 0:
                 rect = self._textview.get_iter_location(start)
                 x, y = self._textview.buffer_to_window_coords(
-                    gtk.TEXT_WINDOW_WIDGET, rect.x, rect.y)
+                    gtk.TEXT_WINDOW_WIDGET, rect.x, rect.y
+                )
                 rect = self._textview.get_iter_location(end)
                 _, y = self._textview.buffer_to_window_coords(
-                    gtk.TEXT_WINDOW_WIDGET, rect.x, rect.y)
+                    gtk.TEXT_WINDOW_WIDGET, rect.x, rect.y
+                )
 
                 self._link_picker.move_on_parent(x, y + rect.height, y)
 
@@ -550,7 +561,7 @@ class RichTextEditor (KeepNoteEditor):
         # exit link mode
         self._textview.get_buffer().font_handler.clear_current_tag_class(tag)
 
-    #==================================================
+    # ==================================================
     # Image/screenshot actions
 
     def on_screenshot(self):
@@ -574,18 +585,23 @@ class RichTextEditor (KeepNoteEditor):
         except Exception as e:
             # catch exceptions for screenshot program
             self.emit("window-request", "restore")
-            self.emit("error",
-                      _("The screenshot program encountered an error:\n {0}").format(
-                      str(e)), e)
+            self.emit(
+                "error",
+                _("The screenshot program encountered an error:\n {0}").format(str(e)),
+                e,
+            )
 
         # remove temp file
         try:
             if os.path.exists(imgfile):
                 os.remove(imgfile)
         except OSError as e:
-            self.emit("error",
-                      _("{0} was unable to remove temp file for screenshot").format(
-                      keepnote.PROGRAM_NAME))
+            self.emit(
+                "error",
+                _("{0} was unable to remove temp file for screenshot").format(
+                    keepnote.PROGRAM_NAME
+                ),
+            )
 
     def on_insert_hr(self):
         """Insert horizontal rule into editor"""
@@ -599,12 +615,13 @@ class RichTextEditor (KeepNoteEditor):
             return
 
         dialog = FileChooserDialog(
-            _("Insert Image From File"), self.get_toplevel(),
+            _("Insert Image From File"),
+            self.get_toplevel(),
             action=gtk.FILE_CHOOSER_ACTION_OPEN,
-            buttons=(_("Cancel"), gtk.RESPONSE_CANCEL,
-                     _("Insert"), gtk.RESPONSE_OK),
+            buttons=(_("Cancel"), gtk.RESPONSE_CANCEL, _("Insert"), gtk.RESPONSE_OK),
             app=self._app,
-            persistent_path="insert_image_path")
+            persistent_path="insert_image_path",
+        )
 
         # add image filters
         filter = gtk.FileFilter()
@@ -651,8 +668,9 @@ class RichTextEditor (KeepNoteEditor):
                 self.insert_image(filename, imgname2)
             except Exception as e:
                 # TODO: make exception more specific
-                self.emit("error",
-                          _("Could not insert image '{0}'").format(filename), e)
+                self.emit(
+                    "error", _("Could not insert image '{0}'").format(filename), e
+                )
         else:
             dialog.destroy()
 
@@ -665,7 +683,7 @@ class RichTextEditor (KeepNoteEditor):
         img.set_from_pixbuf(gdk.pixbuf_new_from_file(filename))
         self._textview.insert_image(img, savename)
 
-    #=================================================
+    # =================================================
     # Image context menu
 
     def view_image(self, image_filename):
@@ -701,9 +719,9 @@ class RichTextEditor (KeepNoteEditor):
             return
 
         image = menuitem.get_parent().get_child()
-        image_resize_dialog = \
-            dialog_image_resize.ImageResizeDialog(self.get_toplevel(),
-                                                  self._app.pref)
+        image_resize_dialog = dialog_image_resize.ImageResizeDialog(
+            self.get_toplevel(), self._app.pref
+        )
         image_resize_dialog.on_resize(image)
 
     def _on_new_image(self):
@@ -725,26 +743,25 @@ class RichTextEditor (KeepNoteEditor):
         image = menuitem.get_parent().get_child()
 
         dialog = FileChooserDialog(
-            _("Save Image As..."), self.get_toplevel(),
+            _("Save Image As..."),
+            self.get_toplevel(),
             action=gtk.FILE_CHOOSER_ACTION_SAVE,
-            buttons=(_("Cancel"), gtk.RESPONSE_CANCEL,
-                     _("Save"), gtk.RESPONSE_OK),
+            buttons=(_("Cancel"), gtk.RESPONSE_CANCEL, _("Save"), gtk.RESPONSE_OK),
             app=self._app,
-            persistent_path="save_image_path")
+            persistent_path="save_image_path",
+        )
         dialog.set_default_response(gtk.RESPONSE_OK)
         response = dialog.run()
 
         if response == gtk.RESPONSE_OK:
             if not dialog.get_filename():
-                self.emit("error", _("Must specify a filename for the image."),
-                          None)
+                self.emit("error", _("Must specify a filename for the image."), None)
             else:
                 filename = unicode_gtk(dialog.get_filename())
                 try:
                     image.write(filename)
                 except Exception:
-                    self.emit("error", _("Could not save image '%s'.")
-                              % filename, None)
+                    self.emit("error", _("Could not save image '%s'.") % filename, None)
 
         dialog.destroy()
 
@@ -783,10 +800,15 @@ class RichTextEditor (KeepNoteEditor):
         menu.append(item)
 
 
-class FontUI :
-
-    def __init__(self, widget, signal, update_func=lambda ui, font: None,
-                 block=None, unblock=None):
+class FontUI:
+    def __init__(
+        self,
+        widget,
+        signal,
+        update_func=lambda ui, font: None,
+        block=None,
+        unblock=None,
+    ):
         self.widget = widget
         self.signal = signal
         self.update_func = update_func
@@ -802,8 +824,7 @@ class FontUI :
             self.unblock = unblock
 
 
-class EditorMenus (gobject.GObject):
-
+class EditorMenus(gobject.GObject):
     def __init__(self, app, editor):
         gobject.GObject.__init__(self)
 
@@ -811,12 +832,12 @@ class EditorMenus (gobject.GObject):
         self._app = app
         self._action_group = None
         self._uis = []
-        self._font_ui_signals = []     # list of font ui widgets
+        self._font_ui_signals = []  # list of font ui widgets
         self.spell_check_toggle = None
 
         self._removed_widgets = []
 
-    #=============================================================
+    # =============================================================
     # Update UI (menubar) from font under cursor
 
     def on_font_change(self, editor, font):
@@ -833,7 +854,7 @@ class EditorMenus (gobject.GObject):
         for ui in self._font_ui_signals:
             ui.unblock()
 
-    #==================================================
+    # ==================================================
     # changing font handlers
 
     def _on_mod(self, mod):
@@ -856,14 +877,14 @@ class EditorMenus (gobject.GObject):
     def _on_justify(self, justify):
         """Set font justification"""
         self._editor.get_textview().set_justify(justify)
-        #font = self._editor.get_textview().get_font()
-        #self.on_font_change(self._editor, font)
+        # font = self._editor.get_textview().get_font()
+        # self.on_font_change(self._editor, font)
 
     def _on_bullet_list(self):
         """Toggle bullet list"""
         self._editor.get_textview().toggle_bullet()
-        #font = self._editor.get_textview().get_font()
-        #self.on_font_change(self._editor, font)
+        # font = self._editor.get_textview().get_font()
+        # self.on_font_change(self._editor, font)
 
     def _on_indent(self):
         """Indent current paragraph"""
@@ -875,8 +896,7 @@ class EditorMenus (gobject.GObject):
 
     def _on_family_set(self, font_family_combo):
         """Set the font family"""
-        self._editor.get_textview().set_font_family(
-            font_family_combo.get_family())
+        self._editor.get_textview().set_font_family(font_family_combo.get_family())
         self._editor.get_textview().grab_focus()
 
     def _on_font_size_change(self, size):
@@ -889,7 +909,7 @@ class EditorMenus (gobject.GObject):
         font = self._editor.get_textview().get_font()
         font.size += 2
         self._editor.get_textview().set_font_size(font.size)
-        #self.on_font_change(self._editor, font)
+        # self.on_font_change(self._editor, font)
 
     def _on_font_size_dec(self):
         """Decrease font size"""
@@ -897,7 +917,7 @@ class EditorMenus (gobject.GObject):
         if font.size > 4:
             font.size -= 2
         self._editor.get_textview().set_font_size(font.size)
-        #self.on_font_change(self._editor, font)
+        # self.on_font_change(self._editor, font)
 
     def _on_color_set(self, kind, widget, color=0):
         """Set text/background color"""
@@ -935,7 +955,7 @@ class EditorMenus (gobject.GObject):
 
         dialog.destroy()
 
-    #=======================================================
+    # =======================================================
     # spellcheck
 
     def enable_spell_check(self, enabled):
@@ -955,15 +975,14 @@ class EditorMenus (gobject.GObject):
         """Toggle spell checker"""
         self.enable_spell_check(widget.get_active())
 
-    #=====================================================
+    # =====================================================
     # toolbar and menus
 
     def add_ui(self, window):
         self._action_group = gtk.ActionGroup("Editor")
         self._uis = []
         add_actions(self._action_group, self.get_actions())
-        window.get_uimanager().insert_action_group(
-            self._action_group, 0)
+        window.get_uimanager().insert_action_group(self._action_group, 0)
 
         for s in self.get_ui():
             self._uis.append(window.get_uimanager().add_ui_from_string(s))
@@ -982,7 +1001,7 @@ class EditorMenus (gobject.GObject):
         for ui in reversed(self._uis):
             window.get_uimanager().remove_ui(ui)
         self._uis = []
-        #window.get_uimanager().ensure_update()
+        # window.get_uimanager().ensure_update()
 
         # remove action group
         window.get_uimanager().remove_action_group(self._action_group)
@@ -993,163 +1012,286 @@ class EditorMenus (gobject.GObject):
         def BothAction(name1, *args):
             return [Action(name1, *args), ToggleAction(name1 + " Tool", *args)]
 
-        return (map(lambda x: Action(*x), [
-            ("Insert Horizontal Rule", None, _("Insert _Horizontal Rule"),
-             "<control>H", None,
-             lambda w: self._editor.on_insert_hr()),
-
-            ("Insert Image", None, _("Insert _Image..."),
-             "", None,
-             lambda w: self._editor.on_insert_image()),
-
-            ("Insert New Image", None, _("Insert _New Image..."),
-             "", _("Insert a new image"),
-             lambda w: self._on_new_image()),
-
-            ("Insert Screenshot", None, _("Insert _Screenshot..."),
-             "<control>Insert", None,
-             lambda w: self._editor.on_screenshot()),
-
-            # finding
-            ("Find In Page", gtk.STOCK_FIND, _("_Find In Page..."),
-             "<control>F", None,
-             lambda w: self._editor.find_dialog.on_find(False)),
-
-            ("Find Next In Page", gtk.STOCK_FIND, _("Find _Next In Page..."),
-             "<control>G", None,
-             lambda w: self._editor.find_dialog.on_find(False, forward=True)),
-
-            ("Find Previous In Page", gtk.STOCK_FIND,
-             _("Find Pre_vious In Page..."),
-             "<control><shift>G", None,
-             lambda w: self._editor.find_dialog.on_find(False, forward=False)),
-
-            ("Replace In Page", gtk.STOCK_FIND_AND_REPLACE,
-             _("_Replace In Page..."),
-             "<control>R", None,
-             lambda w: self._editor.find_dialog.on_find(True)),
-
-            ("Format", None, _("Fo_rmat"))]) +
-
-            BothAction("Bold", gtk.STOCK_BOLD, _("_Bold"),
-                       "<control>B", _("Bold"),
-                       lambda w: self._on_mod("bold"),
-                       "bold.png") +
-
-            BothAction("Italic", gtk.STOCK_ITALIC, _("_Italic"),
-                       "<control>I", _("Italic"),
-                       lambda w: self._on_mod("italic"),
-                       "italic.png") +
-
-            BothAction("Underline", gtk.STOCK_UNDERLINE, _("_Underline"),
-                       "<control>U", _("Underline"),
-                       lambda w: self._on_mod("underline"),
-                       "underline.png") +
-
-            BothAction("Strike", None, _("S_trike"),
-                       "", _("Strike"),
-                       lambda w: self._on_mod("strike"),
-                       "strike.png") +
-
-            BothAction("Monospace", None, _("_Monospace"),
-                       "<control>M", _("Monospace"),
-                       lambda w: self._on_mod("tt"),
-                       "fixed-width.png") +
-
-            BothAction("Link", None, _("Lin_k"),
-                       "<control>L", _("Make Link"),
-                       lambda w: self._on_toggle_link(),
-                       "link.png") +
-
-            BothAction("No Wrapping", None, _("No _Wrapping"),
-                       "", _("No Wrapping"),
-                       lambda w: self._on_mod("nowrap"),
-                       "no-wrap.png") +
-
-            BothAction("Left Align", None, _("_Left Align"),
-                       "<shift><control>L", _("Left Align"),
-                       lambda w: self._on_justify("left"),
-                       "alignleft.png") +
-
-            BothAction("Center Align", None, _("C_enter Align"),
-                       "<shift><control>E", _("Center Align"),
-                       lambda w: self._on_justify("center"),
-                       "aligncenter.png") +
-
-            BothAction("Right Align", None, _("_Right Align"),
-                       "<shift><control>R", _("Right Align"),
-                       lambda w: self._on_justify("right"),
-                       "alignright.png") +
-
-            BothAction("Justify Align", None, _("_Justify Align"),
-                       "<shift><control>J", _("Justify Align"),
-                       lambda w: self._on_justify("fill"),
-                       "alignjustify.png") +
-
-            BothAction("Bullet List", None, _("_Bullet List"),
-                       "<control>asterisk", _("Bullet List"),
-                       lambda w: self._on_bullet_list(),
-                       "bullet.png") +
-
-            map(lambda x: Action(*x), [
-
-                ("Font Selector Tool", None, "", "", _("Set Font Face")),
-                ("Font Size Tool", None, "", "", _("Set Font Size")),
-                ("Font Fg Color Tool", None, "", "", _("Set Text Color")),
-                ("Font Bg Color Tool", None, "", "",
-                 _("Set Background Color")),
-
-                ("Indent More", None, _("Indent M_ore"),
-                 "<control>parenright", None,
-                 lambda w: self._on_indent(),
-                 "indent-more.png"),
-
-                ("Indent Less", None, _("Indent Le_ss"),
-                 "<control>parenleft", None,
-                 lambda w: self._on_unindent(),
-                 "indent-less.png"),
-
-                ("Increase Font Size", None, _("Increase Font _Size"),
-                 "<control>equal", None,
-                 lambda w: self._on_font_size_inc()),
-
-                ("Decrease Font Size", None, _("_Decrease Font Size"),
-                 "<control>minus", None,
-                 lambda w: self._on_font_size_dec()),
-
-                ("Apply Text Color", None, _("_Apply Text Color"),
-                 "", None,
-                 lambda w: self._on_color_set("fg", self.fg_color_button),
-                 "font-inc.png"),
-
-                ("Apply Background Color", None, _("A_pply Background Color"),
-                 "", None,
-                 lambda w: self._on_color_set("bg", self.bg_color_button),
-                 "font-dec.png"),
-
-                ("Choose Font", None, _("Choose _Font"),
-                 "<control><shift>F", None,
-                 lambda w: self._on_choose_font(),
-                 "font.png"),
-
-                ("Go to Link", None, _("Go to Lin_k"),
-                 "<control>space", None,
-                 lambda w: self._editor.get_textview().click_iter()),
-
-                ]) +
-
-            [ToggleAction("Spell Check", None, _("_Spell Check"),
-                          "", None,
-                          self.on_spell_check_toggle)]
+        return (
+            map(
+                lambda x: Action(*x),
+                [
+                    (
+                        "Insert Horizontal Rule",
+                        None,
+                        _("Insert _Horizontal Rule"),
+                        "<control>H",
+                        None,
+                        lambda w: self._editor.on_insert_hr(),
+                    ),
+                    (
+                        "Insert Image",
+                        None,
+                        _("Insert _Image..."),
+                        "",
+                        None,
+                        lambda w: self._editor.on_insert_image(),
+                    ),
+                    (
+                        "Insert New Image",
+                        None,
+                        _("Insert _New Image..."),
+                        "",
+                        _("Insert a new image"),
+                        lambda w: self._on_new_image(),
+                    ),
+                    (
+                        "Insert Screenshot",
+                        None,
+                        _("Insert _Screenshot..."),
+                        "<control>Insert",
+                        None,
+                        lambda w: self._editor.on_screenshot(),
+                    ),
+                    # finding
+                    (
+                        "Find In Page",
+                        gtk.STOCK_FIND,
+                        _("_Find In Page..."),
+                        "<control>F",
+                        None,
+                        lambda w: self._editor.find_dialog.on_find(False),
+                    ),
+                    (
+                        "Find Next In Page",
+                        gtk.STOCK_FIND,
+                        _("Find _Next In Page..."),
+                        "<control>G",
+                        None,
+                        lambda w: self._editor.find_dialog.on_find(False, forward=True),
+                    ),
+                    (
+                        "Find Previous In Page",
+                        gtk.STOCK_FIND,
+                        _("Find Pre_vious In Page..."),
+                        "<control><shift>G",
+                        None,
+                        lambda w: self._editor.find_dialog.on_find(
+                            False, forward=False
+                        ),
+                    ),
+                    (
+                        "Replace In Page",
+                        gtk.STOCK_FIND_AND_REPLACE,
+                        _("_Replace In Page..."),
+                        "<control>R",
+                        None,
+                        lambda w: self._editor.find_dialog.on_find(True),
+                    ),
+                    ("Format", None, _("Fo_rmat")),
+                ],
+            )
+            + BothAction(
+                "Bold",
+                gtk.STOCK_BOLD,
+                _("_Bold"),
+                "<control>B",
+                _("Bold"),
+                lambda w: self._on_mod("bold"),
+                "bold.png",
+            )
+            + BothAction(
+                "Italic",
+                gtk.STOCK_ITALIC,
+                _("_Italic"),
+                "<control>I",
+                _("Italic"),
+                lambda w: self._on_mod("italic"),
+                "italic.png",
+            )
+            + BothAction(
+                "Underline",
+                gtk.STOCK_UNDERLINE,
+                _("_Underline"),
+                "<control>U",
+                _("Underline"),
+                lambda w: self._on_mod("underline"),
+                "underline.png",
+            )
+            + BothAction(
+                "Strike",
+                None,
+                _("S_trike"),
+                "",
+                _("Strike"),
+                lambda w: self._on_mod("strike"),
+                "strike.png",
+            )
+            + BothAction(
+                "Monospace",
+                None,
+                _("_Monospace"),
+                "<control>M",
+                _("Monospace"),
+                lambda w: self._on_mod("tt"),
+                "fixed-width.png",
+            )
+            + BothAction(
+                "Link",
+                None,
+                _("Lin_k"),
+                "<control>L",
+                _("Make Link"),
+                lambda w: self._on_toggle_link(),
+                "link.png",
+            )
+            + BothAction(
+                "No Wrapping",
+                None,
+                _("No _Wrapping"),
+                "",
+                _("No Wrapping"),
+                lambda w: self._on_mod("nowrap"),
+                "no-wrap.png",
+            )
+            + BothAction(
+                "Left Align",
+                None,
+                _("_Left Align"),
+                "<shift><control>L",
+                _("Left Align"),
+                lambda w: self._on_justify("left"),
+                "alignleft.png",
+            )
+            + BothAction(
+                "Center Align",
+                None,
+                _("C_enter Align"),
+                "<shift><control>E",
+                _("Center Align"),
+                lambda w: self._on_justify("center"),
+                "aligncenter.png",
+            )
+            + BothAction(
+                "Right Align",
+                None,
+                _("_Right Align"),
+                "<shift><control>R",
+                _("Right Align"),
+                lambda w: self._on_justify("right"),
+                "alignright.png",
+            )
+            + BothAction(
+                "Justify Align",
+                None,
+                _("_Justify Align"),
+                "<shift><control>J",
+                _("Justify Align"),
+                lambda w: self._on_justify("fill"),
+                "alignjustify.png",
+            )
+            + BothAction(
+                "Bullet List",
+                None,
+                _("_Bullet List"),
+                "<control>asterisk",
+                _("Bullet List"),
+                lambda w: self._on_bullet_list(),
+                "bullet.png",
+            )
+            + map(
+                lambda x: Action(*x),
+                [
+                    ("Font Selector Tool", None, "", "", _("Set Font Face")),
+                    ("Font Size Tool", None, "", "", _("Set Font Size")),
+                    ("Font Fg Color Tool", None, "", "", _("Set Text Color")),
+                    ("Font Bg Color Tool", None, "", "", _("Set Background Color")),
+                    (
+                        "Indent More",
+                        None,
+                        _("Indent M_ore"),
+                        "<control>parenright",
+                        None,
+                        lambda w: self._on_indent(),
+                        "indent-more.png",
+                    ),
+                    (
+                        "Indent Less",
+                        None,
+                        _("Indent Le_ss"),
+                        "<control>parenleft",
+                        None,
+                        lambda w: self._on_unindent(),
+                        "indent-less.png",
+                    ),
+                    (
+                        "Increase Font Size",
+                        None,
+                        _("Increase Font _Size"),
+                        "<control>equal",
+                        None,
+                        lambda w: self._on_font_size_inc(),
+                    ),
+                    (
+                        "Decrease Font Size",
+                        None,
+                        _("_Decrease Font Size"),
+                        "<control>minus",
+                        None,
+                        lambda w: self._on_font_size_dec(),
+                    ),
+                    (
+                        "Apply Text Color",
+                        None,
+                        _("_Apply Text Color"),
+                        "",
+                        None,
+                        lambda w: self._on_color_set("fg", self.fg_color_button),
+                        "font-inc.png",
+                    ),
+                    (
+                        "Apply Background Color",
+                        None,
+                        _("A_pply Background Color"),
+                        "",
+                        None,
+                        lambda w: self._on_color_set("bg", self.bg_color_button),
+                        "font-dec.png",
+                    ),
+                    (
+                        "Choose Font",
+                        None,
+                        _("Choose _Font"),
+                        "<control><shift>F",
+                        None,
+                        lambda w: self._on_choose_font(),
+                        "font.png",
+                    ),
+                    (
+                        "Go to Link",
+                        None,
+                        _("Go to Lin_k"),
+                        "<control>space",
+                        None,
+                        lambda w: self._editor.get_textview().click_iter(),
+                    ),
+                ],
+            )
+            + [
+                ToggleAction(
+                    "Spell Check",
+                    None,
+                    _("_Spell Check"),
+                    "",
+                    None,
+                    self.on_spell_check_toggle,
+                )
+            ]
         )
 
     def get_ui(self):
 
-        use_minitoolbar = self._app.pref.get("look_and_feel",
-                                             "use_minitoolbar",
-                                             default=False)
+        use_minitoolbar = self._app.pref.get(
+            "look_and_feel", "use_minitoolbar", default=False
+        )
 
-        ui = ["""
+        ui = [
+            """
         <ui>
         <menubar name="main_menu_bar">
           <menu action="Edit">
@@ -1216,7 +1358,8 @@ class EditorMenus (gobject.GObject):
           </menu>
         </menubar>
      </ui>
-        """]
+        """
+        ]
 
         if use_minitoolbar:
             ui.append("""
@@ -1275,8 +1418,9 @@ class EditorMenus (gobject.GObject):
 
         return ui
 
-    def setup_font_toggle(self, uimanager, path, stock=False,
-                          update_func=lambda ui, font: None):
+    def setup_font_toggle(
+        self, uimanager, path, stock=False, update_func=lambda ui, font: None
+    ):
 
         action = uimanager.get_action(path)
         # NOTE: action can be none if minimal toolbar is in use.
@@ -1297,9 +1441,9 @@ class EditorMenus (gobject.GObject):
                 action.handler_unblock(action.signal)
                 action.unblock_activate_from(widget)
 
-            ui = FontUI(action, action.signal, update_func,
-                        block=block,
-                        unblock=unblock)
+            ui = FontUI(
+                action, action.signal, update_func, block=block, unblock=unblock
+            )
             self._font_ui_signals.append(ui)
             return ui
         else:
@@ -1322,91 +1466,109 @@ class EditorMenus (gobject.GObject):
                 w.set_homogeneous(False)
 
         self.setup_font_toggle(
-            uimanager, "/main_tool_bar/Viewer/Editor/Bold Tool",
-            update_func=lambda ui, font: update_toggle(ui, font.mods["bold"]))
+            uimanager,
+            "/main_tool_bar/Viewer/Editor/Bold Tool",
+            update_func=lambda ui, font: update_toggle(ui, font.mods["bold"]),
+        )
         self.setup_font_toggle(
-            uimanager, "/main_tool_bar/Viewer/Editor/Italic Tool",
-            update_func=lambda ui, font:
-            update_toggle(ui, font.mods["italic"]))
+            uimanager,
+            "/main_tool_bar/Viewer/Editor/Italic Tool",
+            update_func=lambda ui, font: update_toggle(ui, font.mods["italic"]),
+        )
         self.setup_font_toggle(
-            uimanager, "/main_tool_bar/Viewer/Editor/Underline Tool",
-            update_func=lambda ui, font:
-            update_toggle(ui, font.mods["underline"]))
+            uimanager,
+            "/main_tool_bar/Viewer/Editor/Underline Tool",
+            update_func=lambda ui, font: update_toggle(ui, font.mods["underline"]),
+        )
         self.setup_font_toggle(
-            uimanager, "/main_tool_bar/Viewer/Editor/Strike Tool",
-            update_func=lambda ui, font:
-            update_toggle(ui, font.mods["strike"]))
+            uimanager,
+            "/main_tool_bar/Viewer/Editor/Strike Tool",
+            update_func=lambda ui, font: update_toggle(ui, font.mods["strike"]),
+        )
         self.setup_font_toggle(
-            uimanager, "/main_tool_bar/Viewer/Editor/Monospace Tool",
-            update_func=lambda ui, font: update_toggle(ui, font.mods["tt"]))
+            uimanager,
+            "/main_tool_bar/Viewer/Editor/Monospace Tool",
+            update_func=lambda ui, font: update_toggle(ui, font.mods["tt"]),
+        )
         self.setup_font_toggle(
-            uimanager, "/main_tool_bar/Viewer/Editor/Link Tool",
-            update_func=lambda ui, font:
-            update_toggle(ui, font.link is not None))
+            uimanager,
+            "/main_tool_bar/Viewer/Editor/Link Tool",
+            update_func=lambda ui, font: update_toggle(ui, font.link is not None),
+        )
         self.setup_font_toggle(
-            uimanager, "/main_tool_bar/Viewer/Editor/No Wrapping Tool",
-            update_func=lambda ui, font:
-            update_toggle(ui, font.mods["nowrap"]))
+            uimanager,
+            "/main_tool_bar/Viewer/Editor/No Wrapping Tool",
+            update_func=lambda ui, font: update_toggle(ui, font.mods["nowrap"]),
+        )
 
         self.setup_font_toggle(
-            uimanager, "/main_tool_bar/Viewer/Editor/Left Align Tool",
-            update_func=lambda ui, font:
-            update_toggle(ui, font.justify == "left"))
+            uimanager,
+            "/main_tool_bar/Viewer/Editor/Left Align Tool",
+            update_func=lambda ui, font: update_toggle(ui, font.justify == "left"),
+        )
         self.setup_font_toggle(
-            uimanager, "/main_tool_bar/Viewer/Editor/Center Align Tool",
-            update_func=lambda ui, font:
-            update_toggle(ui, font.justify == "center"))
+            uimanager,
+            "/main_tool_bar/Viewer/Editor/Center Align Tool",
+            update_func=lambda ui, font: update_toggle(ui, font.justify == "center"),
+        )
         self.setup_font_toggle(
-            uimanager, "/main_tool_bar/Viewer/Editor/Right Align Tool",
-            update_func=lambda ui, font:
-            update_toggle(ui, font.justify == "right"))
+            uimanager,
+            "/main_tool_bar/Viewer/Editor/Right Align Tool",
+            update_func=lambda ui, font: update_toggle(ui, font.justify == "right"),
+        )
         self.setup_font_toggle(
-            uimanager, "/main_tool_bar/Viewer/Editor/Justify Align Tool",
-            update_func=lambda ui, font:
-            update_toggle(ui, font.justify == "fill"))
+            uimanager,
+            "/main_tool_bar/Viewer/Editor/Justify Align Tool",
+            update_func=lambda ui, font: update_toggle(ui, font.justify == "fill"),
+        )
         self.setup_font_toggle(
-            uimanager, "/main_tool_bar/Viewer/Editor/Bullet List Tool",
-            update_func=lambda ui, font:
-            update_toggle(ui, font.par_type == "bullet"))
+            uimanager,
+            "/main_tool_bar/Viewer/Editor/Bullet List Tool",
+            update_func=lambda ui, font: update_toggle(ui, font.par_type == "bullet"),
+        )
 
         # family combo
         font_family_combo = FontSelector()
         font_family_combo.set_size_request(150, 25)
-        replace_widget("/main_tool_bar/Viewer/Editor/Font Selector Tool",
-                       font_family_combo)
-        font_family_id = font_family_combo.connect("changed",
-                                                   self._on_family_set)
+        replace_widget(
+            "/main_tool_bar/Viewer/Editor/Font Selector Tool", font_family_combo
+        )
+        font_family_id = font_family_combo.connect("changed", self._on_family_set)
         self._font_ui_signals.append(
-            FontUI(font_family_combo,
-                   font_family_id,
-                   update_func=lambda ui, font:
-                   ui.widget.set_family(font.family)))
+            FontUI(
+                font_family_combo,
+                font_family_id,
+                update_func=lambda ui, font: ui.widget.set_family(font.family),
+            )
+        )
 
         # font size
         DEFAULT_FONT_SIZE = 10
         font_size_button = gtk.SpinButton(
-            gtk.Adjustment(value=DEFAULT_FONT_SIZE, lower=2, upper=500,
-                           step_incr=1))
+            gtk.Adjustment(value=DEFAULT_FONT_SIZE, lower=2, upper=500, step_incr=1)
+        )
         font_size_button.set_size_request(-1, 25)
         font_size_button.set_value(DEFAULT_FONT_SIZE)
         font_size_button.set_editable(False)
-        replace_widget("/main_tool_bar/Viewer/Editor/Font Size Tool",
-                       font_size_button)
+        replace_widget("/main_tool_bar/Viewer/Editor/Font Size Tool", font_size_button)
 
         font_size_id = font_size_button.connect(
             "value-changed",
-            lambda w:
-            self._on_font_size_change(font_size_button.get_value()))
+            lambda w: self._on_font_size_change(font_size_button.get_value()),
+        )
         self._font_ui_signals.append(
-            FontUI(font_size_button,
-                   font_size_id,
-                   update_func=lambda ui, font:
-                   ui.widget.set_value(font.size)))
+            FontUI(
+                font_size_button,
+                font_size_id,
+                update_func=lambda ui, font: ui.widget.set_value(font.size),
+            )
+        )
 
         def on_new_colors(notebook, colors):
             if self._editor.get_notebook() == notebook:
                 self.fg_color_button.set_colors(colors)
                 self.bg_color_button.set_colors(colors)
+
         self._app.get_listeners("colors_changed").add(on_new_colors)
 
         # init colors
@@ -1423,13 +1585,14 @@ class EditorMenus (gobject.GObject):
         self.fg_color_button.set_homogeneous(False)
         self.fg_color_button.connect(
             "set-color",
-            lambda w, color: self._on_color_set(
-                "fg", self.fg_color_button, color))
+            lambda w, color: self._on_color_set("fg", self.fg_color_button, color),
+        )
         self.fg_color_button.connect(
-            "set-colors",
-            lambda w, colors: self._on_colors_set(colors))
-        replace_widget("/main_tool_bar/Viewer/Editor/Font Fg Color Tool",
-                       self.fg_color_button)
+            "set-colors", lambda w, colors: self._on_colors_set(colors)
+        )
+        replace_widget(
+            "/main_tool_bar/Viewer/Editor/Font Fg Color Tool", self.fg_color_button
+        )
 
         # font bg color
         self.bg_color_button = BgColorTool(14, 15, "#ffffff")
@@ -1437,25 +1600,28 @@ class EditorMenus (gobject.GObject):
         self.bg_color_button.set_homogeneous(False)
         self.bg_color_button.connect(
             "set-color",
-            lambda w, color: self._on_color_set(
-                "bg", self.bg_color_button, color))
+            lambda w, color: self._on_color_set("bg", self.bg_color_button, color),
+        )
         self.bg_color_button.connect(
-            "set-colors",
-            lambda w, colors: self._on_colors_set(colors))
-        replace_widget("/main_tool_bar/Viewer/Editor/Font Bg Color Tool",
-                       self.bg_color_button)
+            "set-colors", lambda w, colors: self._on_colors_set(colors)
+        )
+        replace_widget(
+            "/main_tool_bar/Viewer/Editor/Font Bg Color Tool", self.bg_color_button
+        )
 
         # get spell check toggle
-        self.spell_check_toggle = \
-            uimanager.get_widget("/main_menu_bar/Tools/Viewer/Spell Check")
+        self.spell_check_toggle = uimanager.get_widget(
+            "/main_menu_bar/Tools/Viewer/Spell Check"
+        )
         self.spell_check_toggle.set_sensitive(
-            self._editor.get_textview().can_spell_check())
-        self.spell_check_toggle.set_active(window.get_app().pref.get(
-            "editors", "general", "spell_check", default=True))
+            self._editor.get_textview().can_spell_check()
+        )
+        self.spell_check_toggle.set_active(
+            window.get_app().pref.get("editors", "general", "spell_check", default=True)
+        )
 
 
 class ComboToolItem(gtk.ToolItem):
-
     __gtype_name__ = "ComboToolItem"
 
     def __init__(self):
@@ -1466,7 +1632,7 @@ class ComboToolItem(gtk.ToolItem):
         self.set_expand(False)
 
         self.combobox = gtk.combo_box_entry_new_text()
-        for text in ['a', 'b', 'c', 'd', 'e', 'f']:
+        for text in ["a", "b", "c", "d", "e", "f"]:
             self.combobox.append_text(text)
         self.combobox.show()
         self.add(self.combobox)
@@ -1478,7 +1644,6 @@ class ComboToolItem(gtk.ToolItem):
 
 
 class ComboToolAction(gtk.Action):
-
     __gtype_name__ = "ComboToolAction"
 
     def __init__(self, name, label, tooltip, stock_id):

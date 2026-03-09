@@ -1,8 +1,8 @@
 """
-    KeepNote Extension
-    notebook_html
+KeepNote Extension
+notebook_html
 
-    Command-line basic commands
+Command-line basic commands
 """
 
 #
@@ -24,7 +24,6 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-
 # python imports
 import sys
 import thread
@@ -39,8 +38,7 @@ from keepnote.notebook.connection.fs import NoteBookConnectionFS
 from keepnote.server import NoteBookHttpServer
 
 
-class Extension (keepnote.gui.extension.Extension):
-
+class Extension(keepnote.gui.extension.Extension):
     def __init__(self, app):
         """Initialize extension"""
 
@@ -52,20 +50,22 @@ class Extension (keepnote.gui.extension.Extension):
 
         self.commands = [
             # window commands
-            AppCommand("start-http",
-                       self.start_http,
-                       metavar="PORT NOTEBOOK",
-                       help="start HTTP server on PORT with NOTEBOOK"),
-            AppCommand("stop-http",
-                       self.stop_http,
-                       metavar="PORT",
-                       help="stop HTTP server on port PORT")
-            ]
-
+            AppCommand(
+                "start-http",
+                self.start_http,
+                metavar="PORT NOTEBOOK",
+                help="start HTTP server on PORT with NOTEBOOK",
+            ),
+            AppCommand(
+                "stop-http",
+                self.stop_http,
+                metavar="PORT",
+                help="stop HTTP server on port PORT",
+            ),
+        ]
 
     def get_depends(self):
         return [("keepnote", ">=", (0, 7, 6))]
-
 
     def on_enabled(self, enabled):
 
@@ -76,15 +76,15 @@ class Extension (keepnote.gui.extension.Extension):
                 try:
                     self.app.add_command(command)
                 except Exception as e:
-                    self.app.error(f"Could not add command '{command.name}'",
-                                   e, sys.exc_info()[2])
+                    self.app.error(
+                        f"Could not add command '{command.name}'", e, sys.exc_info()[2]
+                    )
 
         else:
             for command in self.commands:
                 self.app.remove_command(command.name)
 
-
-    #====================================================
+    # ====================================================
     # commands
 
     def start_http(self, app, args):
@@ -110,8 +110,9 @@ class Extension (keepnote.gui.extension.Extension):
         thread.start_new_thread(server.serve_forever, ())
 
         if host == "localhost":
-            keepnote.log_message("NOTE: server is local only.  Use ssh port forwarding for security.\n")
-
+            keepnote.log_message(
+                "NOTE: server is local only.  Use ssh port forwarding for security.\n"
+            )
 
     def stop_http(self, app, args):
 
@@ -126,6 +127,3 @@ class Extension (keepnote.gui.extension.Extension):
         server.shutdown()
 
         del self._ports[port]
-
-
-

@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    TagTable and Tags for RichTextBuffer
+KeepNote
+TagTable and Tags for RichTextBuffer
 
 """
 
@@ -26,19 +26,18 @@
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gtk
 import pango
 
 # richtext imports
-from .richtextbase_tags import \
-    RichTextBaseTagTable, \
-    RichTextTag
+from .richtextbase_tags import RichTextBaseTagTable, RichTextTag
 
 
 # TODO: remove hard coding for 'Sans 10'
 # default indentation sizes
-#MIN_INDENT = 5
+# MIN_INDENT = 5
 MIN_INDENT = 30 - 6
 INDENT_SIZE = 30
 BULLET_PAR_INDENT = 12  # hard-coded for 'Sans 10'
@@ -87,8 +86,9 @@ def get_text_scale():
     """Returns current text scale"""
     global _text_scale
     if _text_scale is None:
-        _text_scale = (float(gtk.gdk.screen_height()) /
-                       gtk.gdk.screen_height_mm()) / 2.95566
+        _text_scale = (
+            float(gtk.gdk.screen_height()) / gtk.gdk.screen_height_mm()
+        ) / 2.95566
 
     return _text_scale
 
@@ -99,14 +99,13 @@ def set_text_scale(scale):
 
 
 def get_attr_size(attr):
-    #return int(attr.font_scale * 10.0)
-    #print font.get_style()
+    # return int(attr.font_scale * 10.0)
+    # print font.get_style()
     PIXELS_PER_PANGO_UNIT = 1024
-    return attr.font.get_size() // int(
-        get_text_scale() * PIXELS_PER_PANGO_UNIT)
+    return attr.font.get_size() // int(get_text_scale() * PIXELS_PER_PANGO_UNIT)
 
 
-class RichTextTagTable (RichTextBaseTagTable):
+class RichTextTagTable(RichTextBaseTagTable):
     """A tag table for a RichTextBuffer"""
 
     def __init__(self):
@@ -125,48 +124,37 @@ class RichTextTagTable (RichTextBaseTagTable):
 
         # modification (mod) font tags
         # All of these can be combined
+        self.tag_class_add("mod", RichTextModTag("bold", weight=pango.WEIGHT_BOLD))
+        self.tag_class_add("mod", RichTextModTag("italic", style=pango.STYLE_ITALIC))
         self.tag_class_add(
-            "mod",
-            RichTextModTag("bold", weight=pango.WEIGHT_BOLD))
-        self.tag_class_add(
-            "mod",
-            RichTextModTag("italic", style=pango.STYLE_ITALIC))
-        self.tag_class_add(
-            "mod",
-            RichTextModTag("underline",
-                           underline=pango.UNDERLINE_SINGLE))
-        self.tag_class_add(
-            "mod",
-            RichTextModTag("strike",
-                           strikethrough=True))
-        self.tag_class_add(
-            "mod",
-            RichTextModTag("tt", family="Monospace"))
-        self.tag_class_add(
-            "mod",
-            RichTextModTag("nowrap", wrap_mode=gtk.WRAP_NONE))
+            "mod", RichTextModTag("underline", underline=pango.UNDERLINE_SINGLE)
+        )
+        self.tag_class_add("mod", RichTextModTag("strike", strikethrough=True))
+        self.tag_class_add("mod", RichTextModTag("tt", family="Monospace"))
+        self.tag_class_add("mod", RichTextModTag("nowrap", wrap_mode=gtk.WRAP_NONE))
 
         # justify tags
         self.tag_class_add(
-            "justify", RichTextJustifyTag("left",
-                                          justification=gtk.JUSTIFY_LEFT))
+            "justify", RichTextJustifyTag("left", justification=gtk.JUSTIFY_LEFT)
+        )
         self.tag_class_add(
-            "justify", RichTextJustifyTag("center",
-                                          justification=gtk.JUSTIFY_CENTER))
+            "justify", RichTextJustifyTag("center", justification=gtk.JUSTIFY_CENTER)
+        )
         self.tag_class_add(
-            "justify", RichTextJustifyTag("right",
-                                          justification=gtk.JUSTIFY_RIGHT))
+            "justify", RichTextJustifyTag("right", justification=gtk.JUSTIFY_RIGHT)
+        )
         self.tag_class_add(
-            "justify", RichTextJustifyTag("fill",
-                                          justification=gtk.JUSTIFY_FILL))
+            "justify", RichTextJustifyTag("fill", justification=gtk.JUSTIFY_FILL)
+        )
 
         self.bullet_tag = self.tag_class_add("bullet", RichTextBulletTag())
 
 
-class RichTextModTag (RichTextTag):
+class RichTextModTag(RichTextTag):
     """A tag that represents ortholognal font modifications:
-       bold, italic, underline, nowrap
+    bold, italic, underline, nowrap
     """
+
     def __init__(self, name, **kargs):
         RichTextTag.__init__(self, name, **kargs)
 
@@ -179,16 +167,16 @@ class RichTextModTag (RichTextTag):
         return tag_name
 
 
-class RichTextJustifyTag (RichTextTag):
+class RichTextJustifyTag(RichTextTag):
     """A tag that represents ortholognal font modifications:
-       bold, italic, underline, nowrap
+    bold, italic, underline, nowrap
     """
 
     justify2name = {
         gtk.JUSTIFY_LEFT: "left",
         gtk.JUSTIFY_RIGHT: "right",
         gtk.JUSTIFY_CENTER: "center",
-        gtk.JUSTIFY_FILL: "fill"
+        gtk.JUSTIFY_FILL: "fill",
     }
 
     justify_names = {"left", "right", "center", "fill"}
@@ -212,7 +200,7 @@ class RichTextJustifyTag (RichTextTag):
         return tag_name in cls.justify_names
 
 
-class RichTextFamilyTag (RichTextTag):
+class RichTextFamilyTag(RichTextTag):
     """A tag that represents a font family"""
 
     def __init__(self, family):
@@ -234,16 +222,17 @@ class RichTextFamilyTag (RichTextTag):
         return tag_name.startswith("family ")
 
 
-class RichTextSizeTag (RichTextTag):
+class RichTextSizeTag(RichTextTag):
     """A tag that represents a font size"""
 
     def __init__(self, size, scale=1.0):
-        #scale = size / 10.0
-        RichTextTag.__init__(self, f"size {size:d}",
-                             size_points=int(size * get_text_scale()))
+        # scale = size / 10.0
+        RichTextTag.__init__(
+            self, f"size {size:d}", size_points=int(size * get_text_scale())
+        )
 
     def get_size(self):
-        #return int(self.get_property("scale") * 10.0)
+        # return int(self.get_property("scale") * 10.0)
         return int(self.get_property("size-points") / get_text_scale())
 
     @classmethod
@@ -259,12 +248,11 @@ class RichTextSizeTag (RichTextTag):
         return tag_name.startswith("size ")
 
 
-class RichTextFGColorTag (RichTextTag):
+class RichTextFGColorTag(RichTextTag):
     """A tag that represents a font foreground color"""
 
     def __init__(self, color):
-        RichTextTag.__init__(self, f"fg_color {color}",
-                             foreground=color)
+        RichTextTag.__init__(self, f"fg_color {color}", foreground=color)
 
     def get_color(self):
         return color_to_string(self.get_property("foreground-gdk"))
@@ -282,12 +270,11 @@ class RichTextFGColorTag (RichTextTag):
         return tag_name.startswith("fg_color ")
 
 
-class RichTextBGColorTag (RichTextTag):
+class RichTextBGColorTag(RichTextTag):
     """A tag that represents a font background color"""
 
     def __init__(self, color):
-        RichTextTag.__init__(self, f"bg_color {color}",
-                             background=color)
+        RichTextTag.__init__(self, f"bg_color {color}", background=color)
 
     def get_color(self):
         return color_to_string(self.get_property("background-gdk"))
@@ -305,12 +292,12 @@ class RichTextBGColorTag (RichTextTag):
         return tag_name.startswith("bg_color ")
 
 
-class RichTextIndentTag (RichTextTag):
+class RichTextIndentTag(RichTextTag):
     """A tag that represents an indentation level"""
 
     def __init__(self, indent, par_type="none"):
 
-        #if indent <= 0:
+        # if indent <= 0:
         #    print "error"
 
         if par_type == "bullet":
@@ -322,9 +309,11 @@ class RichTextIndentTag (RichTextTag):
             extra_margin = BULLET_PAR_INDENT
 
         RichTextTag.__init__(
-            self, f"indent {indent:d} {par_type}",
-            left_margin=MIN_INDENT + INDENT_SIZE * (indent-1) + extra_margin,
-            indent=-par_indent_size)
+            self,
+            f"indent {indent:d} {par_type}",
+            left_margin=MIN_INDENT + INDENT_SIZE * (indent - 1) + extra_margin,
+            indent=-par_indent_size,
+        )
 
         self._indent = indent
         self._par_type = par_type
@@ -362,15 +351,17 @@ class RichTextIndentTag (RichTextTag):
         return True
 
 
-class RichTextBulletTag (RichTextTag):
+class RichTextBulletTag(RichTextTag):
     """A tag that represents a bullet point"""
+
     def __init__(self):
         RichTextTag.__init__(self, "bullet")
-#                             size_points=BULLET_FONT_SIZE,
-                             #editable=False)
 
-        # TODO: make sure bullet tag has highest priority so that its font
-        # size overrides
+    #                             size_points=BULLET_FONT_SIZE,
+    # editable=False)
+
+    # TODO: make sure bullet tag has highest priority so that its font
+    # size overrides
 
     @classmethod
     def tag_name(cls):
@@ -398,18 +389,21 @@ class RichTextBulletTag (RichTextTag):
         return True
 
 
-class RichTextLinkTag (RichTextTag):
+class RichTextLinkTag(RichTextTag):
     """A tag that represents hyperlink"""
 
     LINK_COLOR = "#00000000ffff"
 
     def __init__(self, href):
-        RichTextTag.__init__(self, f"link {href}",
-                             foreground=self.LINK_COLOR,
-                             underline=pango.UNDERLINE_SINGLE)
+        RichTextTag.__init__(
+            self,
+            f"link {href}",
+            foreground=self.LINK_COLOR,
+            underline=pango.UNDERLINE_SINGLE,
+        )
         self._href = href
 
-        #self.connect("event", self.on_event)
+        # self.connect("event", self.on_event)
 
     def get_href(self):
         return self._href
@@ -429,5 +423,5 @@ class RichTextLinkTag (RichTextTag):
     def is_name(cls, tag_name):
         return tag_name.startswith("link ")
 
-    #def on_event(self, texttag, widget, event, it):
+    # def on_event(self, texttag, widget, event, it):
     #    print event, it

@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Linked list data structure
+KeepNote
+Linked list data structure
 
 """
 
@@ -25,7 +25,7 @@
 #
 
 
-class LinkedNode :
+class LinkedNode:
     """A node in a doubly linked list"""
 
     def __init__(self, item):
@@ -43,7 +43,7 @@ class LinkedNode :
         return self._item
 
 
-class LinkedList :
+class LinkedList:
     """A doubly linked list"""
 
     def __init__(self, items=[]):

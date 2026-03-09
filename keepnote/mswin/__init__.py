@@ -3,6 +3,7 @@ try:
     import sys
     import modulefinder
     import win32com
+
     for p in win32com.__path__[1:]:
         modulefinder.AddPackagePath("win32com", p)
     for extra in ["win32com.shell"]:
@@ -48,8 +49,9 @@ def get_my_documents():
 
     try:
         df = shell.SHGetDesktopFolder()
-        pidl = df.ParseDisplayName(
-            0, None, "::{450d8fba-ad25-11d0-98a8-0800361b1103}")[1]
+        pidl = df.ParseDisplayName(0, None, "::{450d8fba-ad25-11d0-98a8-0800361b1103}")[
+            1
+        ]
     except pywintypes.com_error as e:
         if e.hresult == winerror.E_INVALIDARG:
             # This error occurs when the My Documents virtual folder
@@ -63,12 +65,12 @@ def get_my_documents():
     mydocs = shell.SHGetPathFromIDList(pidl)
 
     # TODO: may need to handle window-specific encoding here.
-    #encoding = locale.getdefaultlocale()[1]
-    #if encoding is None:
+    # encoding = locale.getdefaultlocale()[1]
+    # if encoding is None:
     #    encoding = "utf-8"
 
     return mydocs
 
 
-#def set_env(key, val):
+# def set_env(key, val):
 #    ctypes.windll.kernel32.SetEnvironmentVariableW(key, val)

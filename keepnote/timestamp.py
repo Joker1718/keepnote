@@ -1,8 +1,8 @@
 """
 
-    KeepNote
+KeepNote
 
-    timestamp module
+timestamp module
 
 """
 
@@ -55,15 +55,9 @@ if ENCODING is None:
 """
 
 
-(TM_YEAR,
- TM_MON,
- TM_MDAY,
- TM_HOUR,
- TM_MIN,
- TM_SEC,
- TM_WDAY,
- TM_YDAY,
- TM_ISDST) = range(9)
+(TM_YEAR, TM_MON, TM_MDAY, TM_HOUR, TM_MIN, TM_SEC, TM_WDAY, TM_YDAY, TM_ISDST) = range(
+    9
+)
 
 
 """
@@ -100,7 +94,7 @@ DEFAULT_TIMESTAMP_FORMATS = {
     "same_day": "%I:%M %p",
     "same_month": "%a, %d %I:%M %p",
     "same_year": "%a, %b %d %I:%M %p",
-    "diff_year": "%a, %b %d, %Y"
+    "diff_year": "%a, %b %d, %Y",
 }
 
 
@@ -114,8 +108,7 @@ def get_localtime():
     return time.localtime()
 
 
-def get_str_timestamp(timestamp, current=None,
-                      formats=DEFAULT_TIMESTAMP_FORMATS):
+def get_str_timestamp(timestamp, current=None, formats=DEFAULT_TIMESTAMP_FORMATS):
     """
     Get a string representation of a time stamp
 
@@ -139,18 +132,21 @@ def get_str_timestamp(timestamp, current=None,
         if local[TM_YEAR] == current[TM_YEAR]:
             if local[TM_MON] == current[TM_MON]:
                 if local[TM_MDAY] == current[TM_MDAY]:
-                    return time.strftime(formats["same_day"].encode(ENCODING),
-                                         local).decode(ENCODING)
+                    return time.strftime(
+                        formats["same_day"].encode(ENCODING), local
+                    ).decode(ENCODING)
                 else:
                     return time.strftime(
-                        formats["same_month"].encode(ENCODING),
-                        local).decode(ENCODING)
+                        formats["same_month"].encode(ENCODING), local
+                    ).decode(ENCODING)
             else:
-                return time.strftime(formats["same_year"].encode(ENCODING),
-                                     local).decode(ENCODING)
+                return time.strftime(
+                    formats["same_year"].encode(ENCODING), local
+                ).decode(ENCODING)
         else:
-            return time.strftime(formats["diff_year"].encode(ENCODING),
-                                 local).decode(ENCODING)
+            return time.strftime(formats["diff_year"].encode(ENCODING), local).decode(
+                ENCODING
+            )
     except:
         return "[formatting error]"
 

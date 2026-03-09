@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Notebook updating
+KeepNote
+Notebook updating
 
 """
 
@@ -30,10 +30,12 @@ from keepnote import notebook as notebooklib
 from keepnote.compat import notebook_update_v1_2, notebook_update_v5_6
 
 
-def update_notebook(filename,
-                    desired_version=notebooklib.NOTEBOOK_FORMAT_VERSION,
-                    warn=lambda w: False,
-                    verify=True):
+def update_notebook(
+    filename,
+    desired_version=notebooklib.NOTEBOOK_FORMAT_VERSION,
+    warn=lambda w: False,
+    verify=True,
+):
     """
     Updates a notebook to the desired version (downgrading not implemented)
     """
@@ -44,11 +46,9 @@ def update_notebook(filename,
         return
 
     while version < desired_version:
-
         # upgrade 1 --> 2
         if version == 1:
-            notebook_update_v1_2.update_notebook(filename, 2, warn=warn,
-                                                 verify=verify)
+            notebook_update_v1_2.update_notebook(filename, 2, warn=warn, verify=verify)
             version = 2
 
         # upgrade 2 --> 3
@@ -71,12 +71,12 @@ def update_notebook(filename,
                     node.write_meta_data()
                 except Exception as e:
                     if not warn(e):
-                        raise notebooklib.NoteBookError(
-                            "Could not update notebook", e)
+                        raise notebooklib.NoteBookError("Could not update notebook", e)
 
                 # recurse
                 for child in node.get_children():
                     walk(child)
+
             walk(notebook)
 
             version = notebook.pref.version
@@ -89,6 +89,7 @@ def update_notebook(filename,
                 def walk(node):
                     for child in node.get_children():
                         walk(child)
+
                 walk(notebook)
                 notebook.close()
 
@@ -107,8 +108,7 @@ def update_notebook(filename,
                 os.remove(index_file)
 
             # Write new preferences.
-            notebook_v3.write_new_preferences(notebook.pref,
-                                              notebook.get_pref_file())
+            notebook_v3.write_new_preferences(notebook.pref, notebook.get_pref_file())
             notebook.close()
             version = 4
 
@@ -122,7 +122,7 @@ def update_notebook(filename,
             notebook.pref.set("version", 5)
             notebook.save(force=True)
 
-            #if notebook.index_needed():
+            # if notebook.index_needed():
             #    notebook.clear_index()
 
             notebook.close()

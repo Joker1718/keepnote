@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Font selector widget
+KeepNote
+Font selector widget
 
 """
 
@@ -26,11 +26,12 @@
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gtk.glade
 
 
-class FontSelector (gtk.ComboBox):
+class FontSelector(gtk.ComboBox):
     """ComboBox for selection Font family"""
 
     def __init__(self):
@@ -40,8 +41,8 @@ class FontSelector (gtk.ComboBox):
         self.set_model(self._list)
 
         self._families = sorted(
-            f.get_name()
-            for f in self.get_pango_context().list_families())
+            f.get_name() for f in self.get_pango_context().list_families()
+        )
         self._lookup = [x.lower() for x in self._families]
 
         for f in self._families:
@@ -49,7 +50,7 @@ class FontSelector (gtk.ComboBox):
 
         cell = gtk.CellRendererText()
         self.pack_start(cell, True)
-        self.add_attribute(cell, 'text', 0)
+        self.add_attribute(cell, "text", 0)
 
         fam = self.get_pango_context().get_font_description().get_family()
         self.set_family(fam)

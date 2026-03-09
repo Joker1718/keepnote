@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Font handler for RichText buffer.
+KeepNote
+Font handler for RichText buffer.
 
 """
 
@@ -26,7 +26,8 @@
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gtk
 import gobject
 
@@ -36,12 +37,13 @@ from .undo_handler import InsertAction
 from .richtextbase_tags import RichTextTag
 
 
-#=============================================================================
+# =============================================================================
 # fonts buffer
 
 
-class RichTextBaseFont :
+class RichTextBaseFont:
     """Class for representing a font in a simple way"""
+
     def __init__(self):
         pass
 
@@ -49,11 +51,12 @@ class RichTextBaseFont :
         pass
 
 
-class FontHandler (gobject.GObject):
+class FontHandler(gobject.GObject):
     """Basic RichTextBuffer with the following features
 
-        - manages "current font" behavior
+    - manages "current font" behavior
     """
+
     def __init__(self, textbuffer):
         gobject.GObject.__init__(self)
 
@@ -65,7 +68,7 @@ class FontHandler (gobject.GObject):
         self._insert_mark = self._buf.get_insert()
         self._buf.connect("mark-set", self._on_mark_set)
 
-    #==============================================================
+    # ==============================================================
     # Tag manipulation
 
     def update_current_tags(self, action):
@@ -73,7 +76,6 @@ class FontHandler (gobject.GObject):
         self._buf.begin_user_action()
 
         if isinstance(action, InsertAction):
-
             # apply current style to inserted text if inserted text is
             # at cursor
             if action.cursor_insert and len(action.current_tags) > 0:
@@ -89,14 +91,16 @@ class FontHandler (gobject.GObject):
     def _on_mark_set(self, textbuffer, it, mark):
 
         if mark is self._insert_mark:
-
             # if cursor at startline pick up opening tags,
             # otherwise closing tags
             opening = it.starts_line()
             self.set_current_tags(
-                [x for x in it.get_toggled_tags(opening)
-                 if isinstance(x, RichTextTag) and
-                 x.can_be_current()])
+                [
+                    x
+                    for x in it.get_toggled_tags(opening)
+                    if isinstance(x, RichTextTag) and x.can_be_current()
+                ]
+            )
 
     def set_default_attr(self, attr):
         self._default_attr = attr
@@ -222,10 +226,9 @@ class FontHandler (gobject.GObject):
         """Remove all tags of the same class as 'tag' from current tags"""
         cls = self._buf.tag_table.get_class_of_tag(tag)
         if cls is not None and cls.exclusive:
-            self._current_tags = [x for x in self._current_tags
-                                  if x not in cls.tags]
+            self._current_tags = [x for x in self._current_tags if x not in cls.tags]
 
-    #===========================================================
+    # ===========================================================
     # Font management
 
     def get_font_class(self):
@@ -264,5 +267,6 @@ class FontHandler (gobject.GObject):
 
 
 gobject.type_register(FontHandler)
-gobject.signal_new("font-change", FontHandler, gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, (object,))
+gobject.signal_new(
+    "font-change", FontHandler, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (object,)
+)

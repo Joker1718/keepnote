@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Richtext buffer class
+KeepNote
+Richtext buffer class
 
 """
 
@@ -32,7 +32,8 @@ from itertools import chain
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gobject
 import gtk
 from gtk import gdk
@@ -42,32 +43,30 @@ from gtk import gdk
 import keepnote
 
 # textbuffer imports
-from .textbuffer_tools import \
-    iter_buffer_contents, \
-    iter_buffer_anchors, \
-    insert_buffer_contents
+from .textbuffer_tools import (
+    iter_buffer_contents,
+    iter_buffer_anchors,
+    insert_buffer_contents,
+)
 
 # richtext imports
-from .richtextbasebuffer import \
-    RichTextBaseBuffer, \
-    add_child_to_buffer, \
-    RichTextAnchor
+from .richtextbasebuffer import RichTextBaseBuffer, add_child_to_buffer, RichTextAnchor
 from .indent_handler import IndentHandler
-from .font_handler import \
-    FontHandler, RichTextBaseFont
+from .font_handler import FontHandler, RichTextBaseFont
 
 # richtext tags imports
-from .richtext_tags import \
-    RichTextTagTable, \
-    RichTextJustifyTag, \
-    RichTextFamilyTag, \
-    RichTextSizeTag, \
-    RichTextFGColorTag, \
-    RichTextBGColorTag, \
-    RichTextIndentTag, \
-    RichTextLinkTag, \
-    color_to_string, \
-    get_attr_size
+from .richtext_tags import (
+    RichTextTagTable,
+    RichTextJustifyTag,
+    RichTextFamilyTag,
+    RichTextSizeTag,
+    RichTextFGColorTag,
+    RichTextBGColorTag,
+    RichTextIndentTag,
+    RichTextLinkTag,
+    color_to_string,
+    get_attr_size,
+)
 
 
 # these tags will not be enumerated by iter_buffer_contents
@@ -101,7 +100,7 @@ def download_file(url, filename):
         # open url and download image
         opener = urllib2.build_opener()
         request = urllib2.Request(url)
-        request.add_header('User-Agent', USER_AGENT)
+        request.add_header("User-Agent", USER_AGENT)
         infile = opener.open(request)
 
         outfile = open(filename, "wb")
@@ -114,13 +113,13 @@ def download_file(url, filename):
         return False
 
 
-#=============================================================================
+# =============================================================================
 # RichText child objects
 
 # TODO: remove init signals
 
 
-class BaseWidget (gtk.EventBox):
+class BaseWidget(gtk.EventBox):
     """Widgets in RichTextBuffer must support this interface"""
 
     def __init__(self):
@@ -145,12 +144,12 @@ class BaseWidget (gtk.EventBox):
         gtk.EventBox.show_all(self)
 
 
-#gobject.type_register(BaseWidget)
-#gobject.signal_new("init", BaseWidget, gobject.SIGNAL_RUN_LAST,
+# gobject.type_register(BaseWidget)
+# gobject.signal_new("init", BaseWidget, gobject.SIGNAL_RUN_LAST,
 #                   gobject.TYPE_NONE, ())
 
 
-class RichTextSep (BaseWidget):
+class RichTextSep(BaseWidget):
     """Separator widget for a Horizontal Rule"""
 
     def __init__(self):
@@ -159,18 +158,18 @@ class RichTextSep (BaseWidget):
         self.add(self._sep)
         self._size = None
 
-        self._sep.modify_bg(gtk.STATE_NORMAL, gdk.Color(* DEFAULT_HR_COLOR))
-        self._sep.modify_fg(gtk.STATE_NORMAL, gdk.Color(* DEFAULT_HR_COLOR))
+        self._sep.modify_bg(gtk.STATE_NORMAL, gdk.Color(*DEFAULT_HR_COLOR))
+        self._sep.modify_fg(gtk.STATE_NORMAL, gdk.Color(*DEFAULT_HR_COLOR))
 
         self.connect("size-request", self._on_resize)
         self.connect("parent-set", self._on_parent_set)
 
         self._resizes_id = None
 
-        #pixbuf = gdk.Pixbuf(gdk.COLORSPACE_RGB, False, 8, width, height)
-        #pixbuf.fill(color)
-        #self._widget.set_from_pixbuf(pixbuf)
-        #self._widget.img.set_padding(0, padding)
+        # pixbuf = gdk.Pixbuf(gdk.COLORSPACE_RGB, False, 8, width, height)
+        # pixbuf.fill(color)
+        # self._widget.set_from_pixbuf(pixbuf)
+        # self._widget.img.set_padding(0, padding)
 
     def _on_parent_set(self, widget, old_parent):
         """Callback for changing parent"""
@@ -178,8 +177,9 @@ class RichTextSep (BaseWidget):
             old_parent.disconnect(self._resize_id)
 
         if self.get_parent():
-            self._resize_id = self.get_parent().connect("size-allocate",
-                                                        self._on_size_change)
+            self._resize_id = self.get_parent().connect(
+                "size-allocate", self._on_size_change
+            )
 
     def _on_size_change(self, widget, req):
         """callback for parent's changed size allocation"""
@@ -196,16 +196,17 @@ class RichTextSep (BaseWidget):
         """Returns the desired size"""
         HR_HORIZONTAL_MARGIN = 20
         HR_VERTICAL_MARGIN = 10
-        self._size = (self.get_parent().get_allocation().width -
-                      HR_HORIZONTAL_MARGIN,
-                      HR_VERTICAL_MARGIN)
+        self._size = (
+            self.get_parent().get_allocation().width - HR_HORIZONTAL_MARGIN,
+            HR_VERTICAL_MARGIN,
+        )
         return self._size
 
 
-class RichTextHorizontalRule (RichTextAnchor):
+class RichTextHorizontalRule(RichTextAnchor):
     def __init__(self):
         RichTextAnchor.__init__(self)
-        #self.add_view(None)
+        # self.add_view(None)
 
     def add_view(self, view):
         self._widgets[view] = RichTextSep()
@@ -216,9 +217,9 @@ class RichTextHorizontalRule (RichTextAnchor):
         return RichTextHorizontalRule()
 
 
-class BaseImage (BaseWidget):
+class BaseImage(BaseWidget):
     """Subclasses gtk.Image to make an Image Widget that can be used within
-       RichTextViewS"""
+    RichTextViewS"""
 
     def __init__(self, *args, **kargs):
         BaseWidget.__init__(self)
@@ -248,7 +249,7 @@ def get_image_format(filename):
     return ext
 
 
-class RichTextImage (RichTextAnchor):
+class RichTextImage(RichTextAnchor):
     """An Image child widget in a RichTextView"""
 
     def __init__(self):
@@ -317,6 +318,7 @@ class RichTextImage (RichTextAnchor):
         def write(buf):
             stream.write(buf)
             return True
+
         format = get_image_format(filename)
         self._pixbuf_original.save_to_callback(write, format)
         self._save_needed = False
@@ -335,7 +337,7 @@ class RichTextImage (RichTextAnchor):
 
         return img
 
-    #=====================================================
+    # =====================================================
     # set image
 
     def set_from_file(self, filename):
@@ -425,13 +427,13 @@ class RichTextImage (RichTextAnchor):
         if imgfile and os.path.exists(imgfile):
             os.remove(imgfile)
 
-    #======================
+    # ======================
     # Image Scaling
 
     def get_size(self, actual_size=False):
         """Returns the size of the image
 
-           actual_size: if True, None values will be replaced by original size
+        actual_size: if True, None values will be replaced by original size
         """
         if actual_size:
             if self._pixbuf_original is not None:
@@ -447,8 +449,7 @@ class RichTextImage (RichTextAnchor):
             return self._size
 
     def get_original_size(self):
-        return [self._pixbuf_original.get_width(),
-                self._pixbuf_original.get_height()]
+        return [self._pixbuf_original.get_width(), self._pixbuf_original.get_height()]
 
     def is_size_set(self):
         return self._size[0] is not None or self._size[1] is not None
@@ -483,7 +484,8 @@ class RichTextImage (RichTextAnchor):
                 height = int(factor * height2)
 
             self._pixbuf = self._pixbuf_original.scale_simple(
-                width, height, gtk.gdk.INTERP_BILINEAR)
+                width, height, gtk.gdk.INTERP_BILINEAR
+            )
 
             if set_widget:
                 for widget in self.get_all_widgets().itervalues():
@@ -492,7 +494,7 @@ class RichTextImage (RichTextAnchor):
         if self._buffer is not None:
             self._buffer.set_modified(True)
 
-    #==========================
+    # ==========================
     # GUI callbacks
 
     def _on_image_destroy(self, widget):
@@ -507,7 +509,7 @@ class RichTextImage (RichTextAnchor):
         if event.button == 1:
             # left click selects image
             widget.grab_focus()
-            #self._widgets[None].grab_focus()
+            # self._widgets[None].grab_focus()
             self.emit("selected")
 
             if event.type == gtk.gdk._2BUTTON_PRESS:
@@ -523,10 +525,11 @@ class RichTextImage (RichTextAnchor):
             return True
 
 
-#=============================================================================
+# =============================================================================
 # font
 
-class RichTextFont (RichTextBaseFont):
+
+class RichTextFont(RichTextBaseFont):
     """Class for representing a font in a simple way"""
 
     def __init__(self):
@@ -554,18 +557,18 @@ class RichTextFont (RichTextBaseFont):
             self.family = font.get_family()
 
             # get size in points (get_size() returns pango units)
-            #PIXELS_PER_PANGO_UNIT = 1024
-            #self.size = font.get_size() // PIXELS_PER_PANGO_UNIT
+            # PIXELS_PER_PANGO_UNIT = 1024
+            # self.size = font.get_size() // PIXELS_PER_PANGO_UNIT
             self.size = get_attr_size(attr)
 
-            #weight = font.get_weight()
-            #style = font.get_style()
+            # weight = font.get_weight()
+            # style = font.get_style()
         else:
             # TODO: replace this hard-coding
             self.family = "Sans"
             self.size = 10
-            #weight = pango.WEIGHT_NORMAL
-            #style = pango.STYLE_NORMAL
+            # weight = pango.WEIGHT_NORMAL
+            # style = pango.STYLE_NORMAL
 
         # get colors
         self.fg_color = color_to_string(attr.fg_color)
@@ -578,9 +581,8 @@ class RichTextFont (RichTextBaseFont):
         # set modifications (current tags override)
         self.mods = {}
         for tag in mod_class.tags:
-            self.mods[tag.get_property("name")] = (tag in current_tags or
-                                                   tag in tag_set)
-        self.mods["tt"] = (self.mods["tt"] or self.family == "Monospace")
+            self.mods[tag.get_property("name")] = tag in current_tags or tag in tag_set
+        self.mods["tt"] = self.mods["tt"] or self.family == "Monospace"
 
         # set justification
         self.justify = RichTextJustifyTag.justify2name[attr.justification]
@@ -608,9 +610,10 @@ class RichTextFont (RichTextBaseFont):
                 self.link = tag
 
 
-#=============================================================================
+# =============================================================================
 
-class RichTextBuffer (RichTextBaseBuffer):
+
+class RichTextBuffer(RichTextBaseBuffer):
     """
     TextBuffer specialized for rich text editing
 
@@ -631,20 +634,19 @@ class RichTextBuffer (RichTextBaseBuffer):
 
         # indentation handler
         self._indent = IndentHandler(self)
-        self.connect("ending-user-action",
-                     lambda w: self._indent.update_indentation())
+        self.connect("ending-user-action", lambda w: self._indent.update_indentation())
 
         # font handler
         self.font_handler = FontHandler(self)
         self.font_handler.set_font_class(RichTextFont)
         self.font_handler.connect(
-            "font-change",
-            lambda w, font: self.emit("font-change", font))
+            "font-change", lambda w, font: self.emit("font-change", font)
+        )
 
         # set of all anchors in buffer
         self._anchors = set()
         self._anchors_highlighted = set()
-        #self._child_uninit = set()
+        # self._child_uninit = set()
 
         # anchors that still need to be added,
         # they are defferred because textview was not available at insert-time
@@ -664,11 +666,13 @@ class RichTextBuffer (RichTextBaseBuffer):
             it = self.get_insert_iter()
 
         self.begin_user_action()
-        insert_buffer_contents(self, it,
-                               contents,
-                               add_child_to_buffer,
-                               lookup_tag=lambda name:
-                               self.tag_table.lookup(name))
+        insert_buffer_contents(
+            self,
+            it,
+            contents,
+            add_child_to_buffer,
+            lookup_tag=lambda name: self.tag_table.lookup(name),
+        )
         self.end_user_action()
 
     def copy_contents(self, start, end):
@@ -686,8 +690,7 @@ class RichTextBuffer (RichTextBaseBuffer):
                 while not (item[0] == "end" and item[2] == end_tag):
                     item = contents.next()
 
-                    if item[0] not in ("text", "anchor") and \
-                       item[2] != end_tag:
+                    if item[0] not in ("text", "anchor") and item[2] != end_tag:
                         yield item
 
                 continue
@@ -717,29 +720,27 @@ class RichTextBuffer (RichTextBaseBuffer):
         """Returns True if insertion is allowed at iter 'it'"""
 
         # ask the indentation manager whether the insert is allowed
-        return (self._indent.is_insert_allowed(it, text) and
-                it.can_insert(True))
+        return self._indent.is_insert_allowed(it, text) and it.can_insert(True)
 
     def _on_delete_range(self, textbuffer, start, end):
 
         # TODO: should I add something like this back?
         # let indent manager prepare the delete
-        #if self.is_interactive():
+        # if self.is_interactive():
         #    self._indent.prepare_delete_range(start, end)
 
         # call super class
         RichTextBaseBuffer._on_delete_range(self, textbuffer, start, end)
 
         # deregister any deleted anchors
-        for kind, offset, param in iter_buffer_contents(
-                self, start, end, ignore_tag):
+        for kind, offset, param in iter_buffer_contents(self, start, end, ignore_tag):
             if kind == "anchor":
                 child = param[0]
                 self._anchors.remove(child)
                 if child in self._anchors_highlighted:
                     self._anchors_highlighted.remove(child)
 
-    #=========================================
+    # =========================================
     # indentation interface
 
     def indent(self, start=None, end=None):
@@ -761,7 +762,7 @@ class RichTextBuffer (RichTextBaseBuffer):
     def get_indent(self, it=None):
         return self._indent.get_indent(it)
 
-    #===============================================
+    # ===============================================
     # font handler interface
 
     def update_current_tags(self, action):
@@ -803,7 +804,7 @@ class RichTextBuffer (RichTextBaseBuffer):
     def get_font(self, font=None):
         return self.font_handler.get_font(font)
 
-    #============================================================
+    # ============================================================
     # child actions
 
     def add_child(self, it, child):
@@ -870,7 +871,7 @@ class RichTextBuffer (RichTextBaseBuffer):
 
         self.end_user_action()
 
-    #===================================
+    # ===================================
     # Image management
 
     def get_image_filenames(self):
@@ -887,8 +888,7 @@ class RichTextBuffer (RichTextBaseBuffer):
         if self._is_new_pixbuf(image.get_original_pixbuf()):
             filename, ext = os.path.splitext(image.get_filename())
             filenames = self.get_image_filenames()
-            filename2 = keepnote.get_unique_filename_list(filenames,
-                                                          filename, ext)
+            filename2 = keepnote.get_unique_filename_list(filenames, filename, ext)
             image.set_filename(filename2)
             image.set_save_needed(True)
 
@@ -903,7 +903,7 @@ class RichTextBuffer (RichTextBaseBuffer):
                     return False
         return True
 
-    #=============================================
+    # =============================================
     # links
 
     def get_tag_region(self, it, tag):
@@ -951,13 +951,13 @@ class RichTextBuffer (RichTextBaseBuffer):
             self.font_handler.apply_tag_selected(tag, start, end)
             return tag
 
-    #==============================================
+    # ==============================================
     # Child callbacks
 
     def _on_child_selected(self, child):
         """Callback for when child object is selected
 
-           Make sure buffer knows the selection
+        Make sure buffer knows the selection
         """
         it = self.get_iter_at_child_anchor(child)
         end = it.copy()
@@ -981,8 +981,7 @@ class RichTextBuffer (RichTextBaseBuffer):
         sel = self.get_selection_bounds()
 
         if len(sel) > 0:
-            highlight = {x[2][0] for x in
-                            iter_buffer_anchors(self, sel[0], sel[1])}
+            highlight = {x[2][0] for x in iter_buffer_anchors(self, sel[0], sel[1])}
             for child in self._anchors_highlighted:
                 if child not in highlight:
                     child.unhighlight()
@@ -998,11 +997,23 @@ class RichTextBuffer (RichTextBaseBuffer):
 
 
 gobject.type_register(RichTextBuffer)
-gobject.signal_new("child-added", RichTextBuffer, gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, (object,))
-gobject.signal_new("child-activated", RichTextBuffer, gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, (object,))
-gobject.signal_new("child-menu", RichTextBuffer, gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, (object, object, object))
-gobject.signal_new("font-change", RichTextBuffer, gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, (object,))
+gobject.signal_new(
+    "child-added", RichTextBuffer, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (object,)
+)
+gobject.signal_new(
+    "child-activated",
+    RichTextBuffer,
+    gobject.SIGNAL_RUN_LAST,
+    gobject.TYPE_NONE,
+    (object,),
+)
+gobject.signal_new(
+    "child-menu",
+    RichTextBuffer,
+    gobject.SIGNAL_RUN_LAST,
+    gobject.TYPE_NONE,
+    (object, object, object),
+)
+gobject.signal_new(
+    "font-change", RichTextBuffer, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (object,)
+)

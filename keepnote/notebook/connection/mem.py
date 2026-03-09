@@ -1,10 +1,10 @@
 """
 
-    KeepNote
+KeepNote
 
-    Low-level Create-Read-Update-Delete (CRUD) interface for notebooks.
+Low-level Create-Read-Update-Delete (CRUD) interface for notebooks.
 
-    This module provides a pure-memory implementation of the notebook
+This module provides a pure-memory implementation of the notebook
 
 """
 
@@ -34,15 +34,16 @@ import keepnote.notebook.connection as connlib
 from keepnote.notebook.connection import NoteBookConnection
 
 
-#=============================================================================
+# =============================================================================
 
-class Node :
+
+class Node:
     def __init__(self, attr={}):
         self.attr = dict(attr)
         self.files = {}
 
 
-class File (StringIO):
+class File(StringIO):
     def close(self):
         self.closed = True
 
@@ -57,12 +58,12 @@ class File (StringIO):
         self.close()
 
 
-class NoteBookConnectionMem (NoteBookConnection):
+class NoteBookConnectionMem(NoteBookConnection):
     def __init__(self):
         self._nodes = {}
         self._rootid = None
 
-    #======================
+    # ======================
     # connection API
 
     def connect(self, url):
@@ -77,7 +78,7 @@ class NoteBookConnectionMem (NoteBookConnection):
         """Save any unsynced state"""
         pass
 
-    #======================
+    # ======================
     # Node I/O API
 
     def create_node(self, nodeid, attr):
@@ -117,7 +118,7 @@ class NoteBookConnectionMem (NoteBookConnection):
         """Returns nodeid of notebook root node"""
         return self._rootid
 
-    #===============
+    # ===============
     # file API
 
     def open_file(self, nodeid, filename, mode="r", codec=None):
@@ -138,7 +139,7 @@ class NoteBookConnectionMem (NoteBookConnection):
         if stream is None:
             i = filename.rfind("/")
             if i != -1:
-                self.create_dir(nodeid, filename[:i+1])
+                self.create_dir(nodeid, filename[: i + 1])
             stream = node.files[filename] = File()
         else:
             stream.reopen()
@@ -164,8 +165,8 @@ class NoteBookConnectionMem (NoteBookConnection):
 
         # Create all directory parts.
         parts = filename.split("/")
-        for i in range(len(parts)-1):
-            node.files["/".join(parts[:i+1]) + "/"] = None
+        for i in range(len(parts) - 1):
+            node.files["/".join(parts[: i + 1]) + "/"] = None
 
     def list_dir(self, nodeid, filename="/"):
         """
@@ -180,11 +181,11 @@ class NoteBookConnectionMem (NoteBookConnection):
         seen = set()
         for name in node.files.iterkeys():
             if name.startswith(filename) and name != filename:
-                part = name[len(filename):]
-                index = part.find('/')
+                part = name[len(filename) :]
+                index = part.find("/")
                 if index >= 0:
                     # Do not list files within directory.
-                    part = part[:index+1]
+                    part = part[: index + 1]
                 fullname = filename + part
                 if fullname not in seen:
                     yield fullname
@@ -196,7 +197,7 @@ class NoteBookConnectionMem (NoteBookConnection):
             raise connlib.UnknownNode()
         return filename in node.files
 
-    #---------------------------------
+    # ---------------------------------
     # indexing
 
     def index(self, query):
@@ -217,9 +218,11 @@ class NoteBookConnectionMem (NoteBookConnection):
 
         elif query[0] == "search":
             assert query[1] == "title"
-            return [(nodeid, node.attr["title"])
-                    for nodeid, node in self._nodes.iteritems()
-                    if query[2] in node.attr.get("title", "")]
+            return [
+                (nodeid, node.attr["title"])
+                for nodeid, node in self._nodes.iteritems()
+                if query[2] in node.attr.get("title", "")
+            ]
 
         elif query[0] == "search_fulltext":
             # TODO: could implement brute-force backup

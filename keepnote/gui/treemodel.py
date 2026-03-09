@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Treemodel for treeview and listview
+KeepNote
+Treemodel for treeview and listview
 
 """
 
@@ -25,10 +25,10 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gobject
 import gtk
 
@@ -82,8 +82,7 @@ def get_path_from_node(model, node, node_col):
     return tuple(path)
 
 
-class TreeModelColumn :
-
+class TreeModelColumn:
     def __init__(self, name, datatype, attr=None, get=lambda node: ""):
         self.pos = None
         self.name = name
@@ -101,7 +100,7 @@ def iter_children(model, it):
         node = model.iter_next(node)
 
 
-class BaseTreeModel (gtk.GenericTreeModel):
+class BaseTreeModel(gtk.GenericTreeModel):
     """
     TreeModel that wraps a subset of a NoteBook
 
@@ -124,8 +123,7 @@ class BaseTreeModel (gtk.GenericTreeModel):
         self.set_root_nodes(roots)
 
         # add default node column
-        self.append_column(TreeModelColumn("node", object,
-                                           get=lambda node: node))
+        self.append_column(TreeModelColumn("node", object, get=lambda node: node))
         self.set_node_column(self.get_column_by_name("node"))
 
     def set_notebook(self, notebook):
@@ -144,7 +142,7 @@ class BaseTreeModel (gtk.GenericTreeModel):
         if self._notebook:
             self._notebook.node_changed.add(self._on_node_changed)
 
-    #==========================
+    # ==========================
     # column manipulation
 
     def append_column(self, column):
@@ -197,7 +195,7 @@ class BaseTreeModel (gtk.GenericTreeModel):
         def get_user_data(self, it):
             return self.on_get_iter(self.get_path(it))
 
-    #================================
+    # ================================
     # master nodes and root nodes
 
     def set_master_node(self, node):
@@ -219,7 +217,7 @@ class BaseTreeModel (gtk.GenericTreeModel):
 
     def clear(self):
         """Clear all rows from model"""
-        for i in xrange(len(self._roots)-1, -1, -1):
+        for i in xrange(len(self._roots) - 1, -1, -1):
             self.row_deleted((i,))
 
         self._roots = []
@@ -251,22 +249,22 @@ class BaseTreeModel (gtk.GenericTreeModel):
         self.row_has_child_toggled((index,), rowref)
         self.row_has_child_toggled((index,), rowref)
 
-    #==============================
+    # ==============================
     # notebook callbacks
 
     def _on_node_changed(self, actions):
         """Callback for when a node changes"""
 
         # notify listeners that changes in the model will start to occur
-        nodes = [a[1] for a in actions if a[0] == "changed" or
-                 a[0] == "changed-recurse"]
+        nodes = [
+            a[1] for a in actions if a[0] == "changed" or a[0] == "changed-recurse"
+        ]
         self.emit("node-changed-start", nodes)
 
         for action in actions:
             act = action[0]
 
-            if (act == "changed" or act == "changed-recurse" or
-                    act == "added"):
+            if act == "changed" or act == "changed-recurse" or act == "added":
                 node = action[1]
             else:
                 node = None
@@ -319,7 +317,7 @@ class BaseTreeModel (gtk.GenericTreeModel):
         # notify listeners that changes in the model have ended
         self.emit("node-changed-end", nodes)
 
-    #=====================================
+    # =====================================
     # gtk.GenericTreeModel implementation
 
     def on_get_flags(self):
@@ -378,7 +376,7 @@ class BaseTreeModel (gtk.GenericTreeModel):
             if n >= len(self._roots) - 1:
                 return None
             else:
-                return self._roots[n+1]
+                return self._roots[n + 1]
 
         children = parent.get_children()
         order = rowref.get_attr("order")
@@ -387,7 +385,7 @@ class BaseTreeModel (gtk.GenericTreeModel):
         if order == len(children) - 1:
             return None
         else:
-            return children[order+1]
+            return children[order + 1]
 
     def on_iter_children(self, parent):
         """Returns the first child of a treeiter"""
@@ -441,71 +439,80 @@ class BaseTreeModel (gtk.GenericTreeModel):
 
 
 gobject.type_register(BaseTreeModel)
-gobject.signal_new("node-changed-start", BaseTreeModel,
-                   gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, (object,))
-gobject.signal_new("node-changed-end", BaseTreeModel,
-                   gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, (object,))
+gobject.signal_new(
+    "node-changed-start",
+    BaseTreeModel,
+    gobject.SIGNAL_RUN_LAST,
+    gobject.TYPE_NONE,
+    (object,),
+)
+gobject.signal_new(
+    "node-changed-end",
+    BaseTreeModel,
+    gobject.SIGNAL_RUN_LAST,
+    gobject.TYPE_NONE,
+    (object,),
+)
 
 
-class KeepNoteTreeModel (BaseTreeModel):
+class KeepNoteTreeModel(BaseTreeModel):
     """
     TreeModel that wraps a subset of a NoteBook
 
     The subset is defined by the self._roots list.
     """
+
     def __init__(self, roots=[]):
         BaseTreeModel.__init__(self, roots)
 
         self.fades = set()
 
         # add default node column
-        #self.append_column(TreeModelColumn("node", object,
+        # self.append_column(TreeModelColumn("node", object,
         #                                   get=lambda node: node))
-        #self.set_node_column(self.get_column_by_name("node"))
+        # self.set_node_column(self.get_column_by_name("node"))
 
         # TODO: move to treeviewer
         # init default columns
-        #self.append_column(
+        # self.append_column(
         #    TreeModelColumn(
         #        "icon", gdk.Pixbuf,
         #        get=lambda node: get_node_icon(node, False,
         #                                       node in self.fades)))
-        #self.append_column(
+        # self.append_column(
         #    TreeModelColumn(
         #        "icon_open", gdk.Pixbuf,
         #        get=lambda node: get_node_icon(node, True,
         #                                       node in self.fades)))
-        #self.append_column(
+        # self.append_column(
         #    TreeModelColumn("title", str,
         #                    attr="title",
         #                    get=lambda node: node.get_attr("title")))
-        #self.append_column(
+        # self.append_column(
         #    TreeModelColumn("title_sort", str,
         #                    attr="title",
         #                    get=lambda node: node.get_title().lower()))
-        #self.append_column(
+        # self.append_column(
         #    TreeModelColumn("created_time2", str,
         #                    attr="created_time",
         #                    get=lambda node: self.get_time_text(node,
         #                                                    "created_time")))
-        #self.append_column(
+        # self.append_column(
         #    TreeModelColumn("created_time2_sort", int,
         #                    attr="created_time",
         #                    get=lambda node: node.get_attr(
         #                        "created_time", 0)))
-        #self.append_column(
+        # self.append_column(
         #    TreeModelColumn("modified_time", str,
         #                    attr="modified_time",
         #                    get=lambda node: self.get_time_text(node,
         #                                                 "modified_time")))
-        #self.append_column(
+        # self.append_column(
         #    TreeModelColumn(
         #        "modified_time_sort", int,
         #        attr="modified_time",
         #        get=lambda node: node.get_attr("modified_time", 0)))
-        #self.append_column(
+        # self.append_column(
         #    TreeModelColumn("order", int,
         #                    attr="order",
         #                    get=lambda node: node.get_attr("order")))

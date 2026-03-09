@@ -1,6 +1,7 @@
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gtk
 import gobject
 
@@ -9,8 +10,7 @@ from keepnote import unicode_gtk
 from keepnote.gui.popupwindow import PopupWindow
 
 
-class LinkPicker (gtk.TreeView):
-
+class LinkPicker(gtk.TreeView):
     def __init__(self, maxwidth=450):
         gtk.TreeView.__init__(self)
         self._maxwidth = maxwidth
@@ -30,8 +30,8 @@ class LinkPicker (gtk.TreeView):
         self.column.pack_start(self.cell_text, True)
 
         # map cells to columns in treestore
-        self.column.add_attribute(self.cell_icon, 'pixbuf', 0)
-        self.column.add_attribute(self.cell_text, 'text', 1)
+        self.column.add_attribute(self.cell_icon, "pixbuf", 0)
+        self.column.add_attribute(self.cell_text, "text", 1)
 
         self.list = gtk.ListStore(gtk.gdk.Pixbuf, str, object)
         self.set_model(self.list)
@@ -40,7 +40,7 @@ class LinkPicker (gtk.TreeView):
 
     def set_links(self, urls):
         self.list.clear()
-        for nodeid, url, icon in urls[:self.maxlinks]:
+        for nodeid, url, icon in urls[: self.maxlinks]:
             self.list.append([icon, url, nodeid])
 
         self.column.queue_resize()
@@ -52,16 +52,14 @@ class LinkPicker (gtk.TreeView):
             self.set_size_request(-1, -1)
 
 
-class LinkPickerPopup (PopupWindow):
-
+class LinkPickerPopup(PopupWindow):
     def __init__(self, parent, maxwidth=100):
         PopupWindow.__init__(self, parent)
         self._maxwidth = maxwidth
 
         self._link_picker = LinkPicker()
         self._link_picker.show()
-        self._link_picker.get_selection().connect(
-            "changed", self.on_select_changed)
+        self._link_picker.get_selection().connect("changed", self.on_select_changed)
         self._cursor_move = False
 
         self._shown = False
@@ -102,7 +100,7 @@ class LinkPickerPopup (PopupWindow):
                 i = model.get_path(sel)[0]
                 n = model.iter_n_children(None)
                 if i < n - 1:
-                    self._link_picker.set_cursor((i+1,))
+                    self._link_picker.set_cursor((i + 1,))
 
             return True
 
@@ -112,11 +110,11 @@ class LinkPickerPopup (PopupWindow):
 
             if sel is None:
                 n = model.iter_n_children(None)
-                self._link_picker.set_cursor((n-1,))
+                self._link_picker.set_cursor((n - 1,))
             else:
                 i = model.get_path(sel)[0]
                 if i > 0:
-                    self._link_picker.set_cursor((i-1,))
+                    self._link_picker.set_cursor((i - 1,))
 
             return True
 
@@ -143,12 +141,17 @@ class LinkPickerPopup (PopupWindow):
 
         self._cursor_move = False
 
-        #model, paths = treeselect.get_selected_rows()
-        #self.__sel_nodes = [self.model.get_value(self.model.get_iter(path),
+        # model, paths = treeselect.get_selected_rows()
+        # self.__sel_nodes = [self.model.get_value(self.model.get_iter(path),
         #                                         self._node_col)
         #                    for path in paths]
 
 
 gobject.type_register(LinkPickerPopup)
-gobject.signal_new("pick-link", LinkPickerPopup, gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, (str, object))
+gobject.signal_new(
+    "pick-link",
+    LinkPickerPopup,
+    gobject.SIGNAL_RUN_LAST,
+    gobject.TYPE_NONE,
+    (str, object),
+)

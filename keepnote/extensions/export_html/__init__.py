@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Export HTML Extension
+KeepNote
+Export HTML Extension
 
 """
 
@@ -23,7 +23,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
-
 
 # python imports
 import codecs
@@ -53,7 +52,8 @@ from keepnote.gui import extension, FileChooserDialog
 # pygtk imports
 try:
     import pygtk
-    pygtk.require('2.0')
+
+    pygtk.require("2.0")
     from gtk import gdk
     import gtk.glade
     import gobject
@@ -63,29 +63,29 @@ except ImportError:
     pass
 
 
-
-class Extension (extension.Extension):
-    
+class Extension(extension.Extension):
     def __init__(self, app):
         """Initialize extension"""
-        
+
         extension.Extension.__init__(self, app)
         self.app = app
-
 
     def get_depends(self):
         return [("keepnote", ">=", (0, 7, 1))]
 
-
     def on_add_ui(self, window):
         """Initialize extension for a particular window"""
-        
+
         # add menu options
-        self.add_action(window, "Export HTML", "_HTML...",
-                        lambda w: self.on_export_notebook(
-                window, window.get_notebook()))
-        
-        self.add_ui(window,
+        self.add_action(
+            window,
+            "Export HTML",
+            "_HTML...",
+            lambda w: self.on_export_notebook(window, window.get_notebook()),
+        )
+
+        self.add_ui(
+            window,
             """
             <ui>
             <menubar name="main_menu_bar">
@@ -96,34 +96,33 @@ class Extension (extension.Extension):
                </menu>
             </menubar>
             </ui>
-            """)
-
+            """,
+        )
 
     def on_export_notebook(self, window, notebook):
         """Callback from gui for exporting a notebook"""
-        
+
         if notebook is None:
             return
 
-        dialog = FileChooserDialog("Export Notebook", window, 
+        dialog = FileChooserDialog(
+            "Export Notebook",
+            window,
             action=gtk.FILE_CHOOSER_ACTION_SAVE,
-            buttons=("Cancel", gtk.RESPONSE_CANCEL,
-                     "Export", gtk.RESPONSE_OK),
+            buttons=("Cancel", gtk.RESPONSE_CANCEL, "Export", gtk.RESPONSE_OK),
             app=self.app,
-            persistent_path="archive_notebook_path")
+            persistent_path="archive_notebook_path",
+        )
 
-
-        basename = time.strftime(os.path.basename(notebook.get_path()) +
-                                 "-%Y-%m-%d")
+        basename = time.strftime(os.path.basename(notebook.get_path()) + "-%Y-%m-%d")
 
         path = self.app.get_default_path("archive_notebook_path")
         if path and os.path.exists(path):
-            filename = notebooklib.get_unique_filename(
-                path, basename, "", ".")
+            filename = notebooklib.get_unique_filename(path, basename, "", ".")
         else:
             filename = basename
         dialog.set_current_name(os.path.basename(filename))
-        
+
         response = dialog.run()
 
         if response == gtk.RESPONSE_OK and dialog.get_filename():
@@ -133,20 +132,19 @@ class Extension (extension.Extension):
         else:
             dialog.destroy()
 
-
     def export_notebook(self, notebook, filename, window=None):
-        
+
         if notebook is None:
             return
 
         if window:
+            task = tasklib.Task(lambda task: export_notebook(notebook, filename, task))
 
-            task = tasklib.Task(lambda task:
-                                export_notebook(notebook, filename, task))
-
-            window.wait_dialog(f"Exporting to '{os.path.basename(filename)}'...",
-                               "Beginning export...",
-                               task)
+            window.wait_dialog(
+                f"Exporting to '{os.path.basename(filename)}'...",
+                "Beginning export...",
+                task,
+            )
 
             # check exceptions
             try:
@@ -158,8 +156,7 @@ class Extension (extension.Extension):
 
             except NoteBookError as e:
                 window.set_status("")
-                window.error(f"Error while exporting notebook:\n{e.msg}", e,
-                             tracebk)
+                window.error(f"Error while exporting notebook:\n{e.msg}", e, tracebk)
                 return False
 
             except Exception as e:
@@ -168,13 +165,12 @@ class Extension (extension.Extension):
                 return False
 
         else:
-            
             export_notebook(notebook, filename, None)
 
 
 def truncate_filename(filename, maxsize=100):
     if len(filename) > maxsize:
-        filename = "..." + filename[-(maxsize-3):]
+        filename = "..." + filename[-(maxsize - 3) :]
     return filename
 
 
@@ -195,7 +191,7 @@ def relpath(path, start):
 
     rel2.extend(reversed(rel))
     return "/".join(rel2)
-        
+
 
 def nodeid2html_link(notebook, path, nodeid):
     note = notebook.get_node_by_id(nodeid)
@@ -224,7 +220,6 @@ def translate_links(notebook, path, node):
                 if url2 != "":
                     node.setAttribute("href", url2)
 
-        
         # recurse
         for child in node.childNodes:
             walk(child)
@@ -239,7 +234,7 @@ def write_index(notebook, node, path):
     tree_file = os.path.join(path, "tree.html")
 
     out = codecs.open(index_file, "wb", "utf-8")
-    #out = open(index_file, "wb")
+    # out = open(index_file, "wb")
     out.write(f"""<html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -253,8 +248,7 @@ def write_index(notebook, node, path):
 """)
     out.close()
 
-
-    # write tree file    
+    # write tree file
     out = codecs.open(tree_file, "wb", "utf-8")
     out.write("""<html>
 <head>
@@ -362,36 +356,43 @@ font-weight: bold;
         expand = node.get_attr("expanded", False)
 
         if len(node.get_children()) > 0:
-            out.write("""<nobr><tt><a href='javascript: toggleDivName("{0}", {1})'>+</a>&nbsp;</tt>""".format(
-                      nodeid, ["false", "true"][int(expand)]))
+            out.write(
+                """<nobr><tt><a href='javascript: toggleDivName("{0}", {1})'>+</a>&nbsp;</tt>""".format(
+                    nodeid, ["false", "true"][int(expand)]
+                )
+            )
         else:
             out.write("<nobr><tt>&nbsp;&nbsp;</tt>")
-
 
         if node.get_attr("content_type") == notebooklib.CONTENT_TYPE_DIR:
             out.write(f"{escape(node.get_title())}</nobr><br/>\n")
         else:
-            out.write(f"<a href='{nodeid2html_link(notebook, rootpath, nodeid)}' target='viewer'>{escape(node.get_title())}</a></nobr><br/>\n")
+            out.write(
+                f"<a href='{nodeid2html_link(notebook, rootpath, nodeid)}' target='viewer'>{escape(node.get_title())}</a></nobr><br/>\n"
+            )
 
         if len(node.get_children()) > 0:
-            out.write("<div id='{0}' class='node{1}'>".format(
-                      nodeid, ["_collapsed", ""][int(expand)]))
+            out.write(
+                "<div id='{0}' class='node{1}'>".format(
+                    nodeid, ["_collapsed", ""][int(expand)]
+                )
+            )
 
             for child in node.get_children():
                 walk(child)
 
             out.write("</div>\n")
+
     walk(node)
 
     out.write("""</body></html>""")
     out.close()
 
 
-
 def export_notebook(notebook, filename, task):
     """Export notebook to HTML
 
-       filename -- filename of export to create
+    filename -- filename of export to create
     """
 
     if task is None:
@@ -407,43 +408,41 @@ def export_notebook(notebook, filename, task):
     except Exception as e:
         raise NoteBookError("Could not save notebook before archiving", e)
 
-
     # first count # of files
     nnodes = [0]
+
     def walk(node):
         nnodes[0] += 1
         for child in node.get_children():
             walk(child)
+
     walk(notebook)
 
     task.set_message(("text", f"Exporting {nnodes[0]:d} notes..."))
     nnodes2 = [0]
 
-
     def export_page(node, path, arcname):
 
         filename = os.path.join(path, "page.html")
         filename2 = os.path.join(arcname, "page.html")
-        
+
         try:
             dom = minidom.parse(filename)
-                        
+
         except Exception as e:
             # error parsing file, use simple file export
             export_files(filename, filename2)
-            
+
         else:
             translate_links(notebook, path, dom.documentElement)
-            
-            # avoid writing <?xml> header 
+
+            # avoid writing <?xml> header
             # (provides compatiability with browsers)
             out = codecs.open(filename2, "wb", "utf-8")
             if dom.doctype:
-                dom.doctype.writexml(out)        
+                dom.doctype.writexml(out)
             dom.documentElement.writexml(out)
             out.close()
-
-
 
     def export_node(node, path, arcname, index=False):
 
@@ -456,15 +455,13 @@ def export_notebook(notebook, filename, task):
         task.set_message(("detail", truncate_filename(path)))
         task.set_percent(nnodes2[0] / float(nnodes[0]))
 
-        skipfiles = set(child.get_basename()
-                        for child in node.get_children())
+        skipfiles = set(child.get_basename() for child in node.get_children())
 
         # make node directory
         os.mkdir(arcname)
 
         if index:
             write_index(notebook, node, arcname)
-
 
         if node.get_attr("content_type") == "text/xhtml+xml":
             skipfiles.add("page.html")
@@ -474,44 +471,35 @@ def export_notebook(notebook, filename, task):
         # recurse files
         for f in os.listdir(path):
             if not os.path.islink(f) and f not in skipfiles:
-                export_files(os.path.join(path, f),
-                             os.path.join(arcname, f))
+                export_files(os.path.join(path, f), os.path.join(arcname, f))
 
         # recurse nodes
         for child in node.get_children():
             f = child.get_basename()
-            export_node(child,
-                        os.path.join(path, f),
-                        os.path.join(arcname, f))
+            export_node(child, os.path.join(path, f), os.path.join(arcname, f))
 
     def export_files(path, arcname):
         # look for aborted export
         if task.aborted():
             raise NoteBookError("Backup canceled")
-        
+
         if os.path.isfile(path):
-            # copy files            
+            # copy files
             shutil.copy(path, arcname)
 
-        if os.path.isdir(path):            
+        if os.path.isdir(path):
             # export directory
             os.mkdir(arcname)
 
             # recurse
             for f in os.listdir(path):
                 if not os.path.islink(f):
-                    export_files(os.path.join(path, f),
-                                 os.path.join(arcname, f))
-    
+                    export_files(os.path.join(path, f), os.path.join(arcname, f))
+
     export_node(notebook, notebook.get_path(), filename, True)
 
     task.set_message(("text", "Closing export..."))
     task.set_message(("detail", ""))
-    
+
     if task:
         task.finish()
-
-
-
-
-

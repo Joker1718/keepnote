@@ -1,7 +1,7 @@
 """
-    KeepNote
+KeepNote
 
-    MaskDict model.  Mask certain keys from an underlying dictionary
+MaskDict model.  Mask certain keys from an underlying dictionary
 
 """
 
@@ -25,7 +25,7 @@
 #
 
 
-class MaskDict (dict):
+class MaskDict(dict):
     """
     A dict with some keys masked
     """
@@ -86,12 +86,10 @@ class MaskDict (dict):
         return (self._dict[key] for key in self._dict if key not in self._mask)
 
     def items(self):
-        return [(key, self._dict[key]) for key in self._dict
-                if key not in self._mask]
+        return [(key, self._dict[key]) for key in self._dict if key not in self._mask]
 
     def iteritems(self):
-        return ((key, self._dict[key]) for key in self._dict
-                if key not in self._mask)
+        return ((key, self._dict[key]) for key in self._dict if key not in self._mask)
 
     def __iter__(self):
         return (key for key in self._dict if key not in self._mask)

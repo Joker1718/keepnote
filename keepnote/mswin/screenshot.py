@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Screenshot utility for MS Windows
+KeepNote
+Screenshot utility for MS Windows
 
 """
 
@@ -62,17 +62,20 @@ def capture_screen(filename, x, y, x2, y2):
     shot_bitmap.SaveBitmapFile(shot_dc, filename)
 
 
-class Window :
+class Window:
     """Class for basic MS Windows window"""
 
-    def __init__(self, title="Untitled",
-                 style=None,
-                 exstyle=None,
-                 pos=(0, 0),
-                 size=(400, 400),
-                 background=None,
-                 message_map = {},
-                 cursor=None):
+    def __init__(
+        self,
+        title="Untitled",
+        style=None,
+        exstyle=None,
+        pos=(0, 0),
+        size=(400, 400),
+        background=None,
+        message_map={},
+        cursor=None,
+    ):
         global _g_class_num
 
         if style is None:
@@ -105,18 +108,23 @@ class Window :
 
         # C code:
         # wc.cbWndExtra = DLGWINDOWEXTRA + sizeof(HBRUSH) + (sizeof(COLORREF));
-        #wc.cbWndExtra = win32con.DLGWINDOWEXTRA + struct.calcsize("Pi")
-        #wc.hIconSm = 0
+        # wc.cbWndExtra = win32con.DLGWINDOWEXTRA + struct.calcsize("Pi")
+        # wc.hIconSm = 0
 
         self._handle = win32gui.CreateWindowEx(
             exstyle,
-            class_atom, title,
+            class_atom,
+            title,
             style,  # win32con.WS_POPUP, # | win32con.WS_EX_TRANSPARENT,
-            pos[0], pos[1], size[0], size[1],
+            pos[0],
+            pos[1],
+            size[0],
+            size[1],
             0,  # no parent
             0,  # no menu
             self._instance,
-            None)
+            None,
+        )
 
     def show(self, enabled=True):
         if enabled:
@@ -136,11 +144,11 @@ class Window :
         return True
 
     def close(self):
-        #win32gui.PostQuitMessage(0)
+        # win32gui.PostQuitMessage(0)
         win32gui.DestroyWindow(self._handle)
 
 
-class WinLoop :
+class WinLoop:
     def __init__(self):
         self._running = True
 
@@ -156,7 +164,7 @@ class WinLoop :
         self._running = False
 
 
-class ScreenShotWindow (Window):
+class ScreenShotWindow(Window):
     """ScreenShot Window"""
 
     def __init__(self, filename, shot_callback=None):
@@ -164,16 +172,19 @@ class ScreenShotWindow (Window):
 
         Window.__init__(
             self,
-            "Screenshot", pos=(x, y), size=(w, h),
-            style = win32con.WS_POPUP,
-            exstyle = win32con.WS_EX_TRANSPARENT,
-            background = 0,
-            message_map = {
+            "Screenshot",
+            pos=(x, y),
+            size=(w, h),
+            style=win32con.WS_POPUP,
+            exstyle=win32con.WS_EX_TRANSPARENT,
+            background=0,
+            message_map={
                 win32con.WM_MOUSEMOVE: self._on_mouse_move,
                 win32con.WM_LBUTTONDOWN: self._on_mouse_down,
-                win32con.WM_LBUTTONUP: self._on_mouse_up
+                win32con.WM_LBUTTONUP: self._on_mouse_up,
             },
-            cursor=win32con.IDC_CROSS)
+            cursor=win32con.IDC_CROSS,
+        )
 
         self._filename = filename
         self._shot_callback = shot_callback
@@ -197,12 +208,18 @@ class ScreenShotWindow (Window):
             pycdc = win32ui.CreateDCFromHandle(hdc)
             pycdc.SetROP2(win32con.R2_NOTXORPEN)
 
-            win32gui.Rectangle(hdc, self._start[0], self._start[1],
-                               self._end[0], self._end[1])
+            win32gui.Rectangle(
+                hdc, self._start[0], self._start[1], self._end[0], self._end[1]
+            )
 
             # save bitmap
-            capture_screen(self._filename, self._start[0], self._start[1],
-                           self._end[0], self._end[1])
+            capture_screen(
+                self._filename,
+                self._start[0],
+                self._start[1],
+                self._end[0],
+                self._end[1],
+            )
 
         self.close()
 
@@ -216,22 +233,22 @@ class ScreenShotWindow (Window):
         x, y = win32api.GetCursorPos()
 
         if self._drag:
-
             hdc = win32gui.CreateDC("DISPLAY", None, None)
             pycdc = win32ui.CreateDCFromHandle(hdc)
             pycdc.SetROP2(win32con.R2_NOTXORPEN)
 
             # erase old rectangle
             if self._draw:
-                win32gui.Rectangle(hdc, self._start[0], self._start[1],
-                                   self._end[0], self._end[1])
+                win32gui.Rectangle(
+                    hdc, self._start[0], self._start[1], self._end[0], self._end[1]
+                )
 
             # draw new rectangle
             self._draw = True
             win32gui.Rectangle(hdc, self._start[0], self._start[1], x, y)
             self._end = (x, y)
 
-            #DeleteDC ( hdc);
+            # DeleteDC ( hdc);
 
 
 def take_screenshot(filename):
@@ -246,7 +263,7 @@ def take_screenshot(filename):
     win.activate()
     loop.start()
 
-    #win32gui.PumpMessages()
+    # win32gui.PumpMessages()
 
 
 def main(argv):

@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Editor widget in main window
+KeepNote
+Editor widget in main window
 
 """
 
@@ -26,49 +26,50 @@
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gtk.glade
 import gobject
 
 # keepnote imports
 import keepnote
-from keepnote import \
-    KeepNoteError, unicode_gtk
-from keepnote.notebook import \
-    NoteBookError, \
-    parse_node_url, \
-    is_node_url
-from keepnote.gui.richtext import \
-    RichTextView, RichTextBuffer, \
-    RichTextIO, RichTextError
-from keepnote.gui import \
-    CONTEXT_MENU_ACCEL_PATH, \
-    Action, \
-    ToggleAction, \
-    add_actions, \
-    dialog_find
+from keepnote import KeepNoteError, unicode_gtk
+from keepnote.notebook import NoteBookError, parse_node_url, is_node_url
+from keepnote.gui.richtext import (
+    RichTextView,
+    RichTextBuffer,
+    RichTextIO,
+    RichTextError,
+)
+from keepnote.gui import (
+    CONTEXT_MENU_ACCEL_PATH,
+    Action,
+    ToggleAction,
+    add_actions,
+    dialog_find,
+)
 from keepnote.gui.editor import KeepNoteEditor
 
 
 _ = keepnote.translate
 
 
-class TextEditor (KeepNoteEditor):
-
+class TextEditor(KeepNoteEditor):
     def __init__(self, app):
         KeepNoteEditor.__init__(self, app)
         self._app = app
         self._notebook = None
 
         # state
-        self._page = None                  # current NoteBookPage
-        self._page_scrolls = {}            # remember scroll in each page
+        self._page = None  # current NoteBookPage
+        self._page_scrolls = {}  # remember scroll in each page
         self._page_cursors = {}
         self._textview_io = RichTextIO()
 
         # textview and its callbacks
-        self._textview = RichTextView(RichTextBuffer(
-            self._app.get_richtext_tag_table()))  # textview
+        self._textview = RichTextView(
+            RichTextBuffer(self._app.get_richtext_tag_table())
+        )  # textview
         self._textview.disable()
         self._textview.connect("modified", self._on_modified_callback)
         self._textview.connect("visit-url", self._on_visit_url)
@@ -80,8 +81,8 @@ class TextEditor (KeepNoteEditor):
         self._sw.add(self._textview)
         self.pack_start(self._sw)
 
-        #self._socket = gtk.Socket()
-        #self.pack_start(self._socket)
+        # self._socket = gtk.Socket()
+        # self.pack_start(self._socket)
 
         # menus
         self.editor_menus = EditorMenus(self._app, self)
@@ -106,16 +107,17 @@ class TextEditor (KeepNoteEditor):
     def load_preferences(self, app_pref, first_open=False):
         """Load application preferences"""
         self.editor_menus.enable_spell_check(
-            self._app.pref.get("editors", "general", "spell_check",
-                               default=True))
+            self._app.pref.get("editors", "general", "spell_check", default=True)
+        )
 
         self._textview.set_default_font("Monospace 10")
 
     def save_preferences(self, app_pref):
         """Save application preferences"""
         # record state in preferences
-        app_pref.set("editors", "general", "spell_check",
-                     self._textview.is_spell_check_enabled())
+        app_pref.set(
+            "editors", "general", "spell_check", self._textview.is_spell_check_enabled()
+        )
 
     def get_textview(self):
         """Return the textview"""
@@ -165,7 +167,8 @@ class TextEditor (KeepNoteEditor):
             try:
                 if page.has_attr("payload_filename"):
                     infile = page.open_file(
-                        page.get_attr("payload_filename"), "r", "utf-8")
+                        page.get_attr("payload_filename"), "r", "utf-8"
+                    )
                     text = infile.read()
                     infile.close()
                     self._textview.get_buffer().set_text(text)
@@ -190,11 +193,11 @@ class TextEditor (KeepNoteEditor):
     def _save_cursor(self):
         if self._page is not None:
             it = self._textview.get_buffer().get_iter_at_mark(
-                self._textview.get_buffer().get_insert())
+                self._textview.get_buffer().get_insert()
+            )
             self._page_cursors[self._page] = it.get_offset()
 
-            x, y = self._textview.window_to_buffer_coords(
-                gtk.TEXT_WINDOW_TEXT, 0, 0)
+            x, y = self._textview.window_to_buffer_coords(gtk.TEXT_WINDOW_TEXT, 0, 0)
             it = self._textview.get_iter_at_location(x, y)
             self._page_scrolls[self._page] = it.get_offset()
 
@@ -211,23 +214,25 @@ class TextEditor (KeepNoteEditor):
             buf = self._textview.get_buffer()
             it = buf.get_iter_at_offset(offset)
             mark = buf.create_mark(None, it, True)
-            self._textview.scroll_to_mark(
-                mark, 0.49, use_align=True, xalign=0.0)
+            self._textview.scroll_to_mark(mark, 0.49, use_align=True, xalign=0.0)
             buf.delete_mark(mark)
 
     def save(self):
         """Save the loaded page"""
-        if self._page is not None and \
-           self._page.is_valid() and \
-           self._textview.is_modified():
-
+        if (
+            self._page is not None
+            and self._page.is_valid()
+            and self._textview.is_modified()
+        ):
             try:
                 # save text data
                 buf = self._textview.get_buffer()
-                text = unicode_gtk(buf.get_text(buf.get_start_iter(),
-                                                buf.get_end_iter()))
+                text = unicode_gtk(
+                    buf.get_text(buf.get_start_iter(), buf.get_end_iter())
+                )
                 out = self._page.open_file(
-                    self._page.get_attr("payload_filename"), "w", "utf-8")
+                    self._page.get_attr("payload_filename"), "w", "utf-8"
+                )
                 out.write(text)
                 out.close()
 
@@ -257,7 +262,7 @@ class TextEditor (KeepNoteEditor):
     def remove_ui(self, window):
         self.editor_menus.remove_ui(window)
 
-    #===========================================
+    # ===========================================
     # callbacks for textview
 
     def _on_modified_callback(self, textview, modified):
@@ -284,8 +289,7 @@ class TextEditor (KeepNoteEditor):
                 self.emit("error", e.msg, e)
 
 
-class EditorMenus (gobject.GObject):
-
+class EditorMenus(gobject.GObject):
     def __init__(self, app, editor):
         gobject.GObject.__init__(self)
 
@@ -297,7 +301,7 @@ class EditorMenus (gobject.GObject):
 
         self._removed_widgets = []
 
-    #=======================================================
+    # =======================================================
     # spellcheck
 
     def enable_spell_check(self, enabled):
@@ -317,15 +321,14 @@ class EditorMenus (gobject.GObject):
         """Toggle spell checker"""
         self.enable_spell_check(widget.get_active())
 
-    #=====================================================
+    # =====================================================
     # toolbar and menus
 
     def add_ui(self, window):
         self._action_group = gtk.ActionGroup("Editor")
         self._uis = []
         add_actions(self._action_group, self.get_actions())
-        window.get_uimanager().insert_action_group(
-            self._action_group, 0)
+        window.get_uimanager().insert_action_group(self._action_group, 0)
 
         for s in self.get_ui():
             self._uis.append(window.get_uimanager().add_ui_from_string(s))
@@ -349,36 +352,58 @@ class EditorMenus (gobject.GObject):
         def BothAction(name1, *args):
             return [Action(name1, *args), ToggleAction(name1 + " Tool", *args)]
 
-        return (map(lambda x: Action(*x), [
-            # finding
-            ("Find In Page", gtk.STOCK_FIND, _("_Find In Page..."),
-             "<control>F", None,
-             lambda w: self._editor.find_dialog.on_find(False)),
-
-            ("Find Next In Page", gtk.STOCK_FIND, _("Find _Next In Page..."),
-             "<control>G", None,
-             lambda w: self._editor.find_dialog.on_find(False, forward=True)),
-
-            ("Find Previous In Page", gtk.STOCK_FIND,
-             _("Find Pre_vious In Page..."),
-             "<control><shift>G", None,
-             lambda w: self._editor.find_dialog.on_find(False, forward=False)),
-
-            ("Replace In Page", gtk.STOCK_FIND_AND_REPLACE,
-             _("_Replace In Page..."),
-             "<control>R", None,
-             lambda w: self._editor.find_dialog.on_find(True)),
-
-            ]) +
-
-            [ToggleAction("Spell Check", None, _("_Spell Check"),
-                          "", None,
-                          self.on_spell_check_toggle)]
-        )
+        return map(
+            lambda x: Action(*x),
+            [
+                # finding
+                (
+                    "Find In Page",
+                    gtk.STOCK_FIND,
+                    _("_Find In Page..."),
+                    "<control>F",
+                    None,
+                    lambda w: self._editor.find_dialog.on_find(False),
+                ),
+                (
+                    "Find Next In Page",
+                    gtk.STOCK_FIND,
+                    _("Find _Next In Page..."),
+                    "<control>G",
+                    None,
+                    lambda w: self._editor.find_dialog.on_find(False, forward=True),
+                ),
+                (
+                    "Find Previous In Page",
+                    gtk.STOCK_FIND,
+                    _("Find Pre_vious In Page..."),
+                    "<control><shift>G",
+                    None,
+                    lambda w: self._editor.find_dialog.on_find(False, forward=False),
+                ),
+                (
+                    "Replace In Page",
+                    gtk.STOCK_FIND_AND_REPLACE,
+                    _("_Replace In Page..."),
+                    "<control>R",
+                    None,
+                    lambda w: self._editor.find_dialog.on_find(True),
+                ),
+            ],
+        ) + [
+            ToggleAction(
+                "Spell Check",
+                None,
+                _("_Spell Check"),
+                "",
+                None,
+                self.on_spell_check_toggle,
+            )
+        ]
 
     def get_ui(self):
 
-        ui = ["""
+        ui = [
+            """
         <ui>
         <menubar name="main_menu_bar">
           <menu action="Edit">
@@ -417,7 +442,8 @@ class EditorMenus (gobject.GObject):
           </menu>
         </menubar>
      </ui>
-        """]
+        """
+        ]
 
         ui.append("""
         <ui>
@@ -435,9 +461,12 @@ class EditorMenus (gobject.GObject):
 
     def setup_menu(self, window, uimanager):
         # get spell check toggle
-        self.spell_check_toggle = \
-            uimanager.get_widget("/main_menu_bar/Tools/Viewer/Spell Check")
+        self.spell_check_toggle = uimanager.get_widget(
+            "/main_menu_bar/Tools/Viewer/Spell Check"
+        )
         self.spell_check_toggle.set_sensitive(
-            self._editor.get_textview().can_spell_check())
-        self.spell_check_toggle.set_active(window.get_app().pref.get(
-            "editors", "general", "spell_check", default=True))
+            self._editor.get_textview().can_spell_check()
+        )
+        self.spell_check_toggle.set_active(
+            window.get_app().pref.get("editors", "general", "spell_check", default=True)
+        )

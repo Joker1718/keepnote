@@ -1,10 +1,11 @@
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gtk
 
 
-class PopupWindow (gtk.Window):
+class PopupWindow(gtk.Window):
     """A customizable popup window"""
 
     def __init__(self, parent):
@@ -12,12 +13,10 @@ class PopupWindow (gtk.Window):
         self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_MENU)
         self.set_transient_for(parent.get_toplevel())
         self.set_flags(gtk.CAN_FOCUS)
-        self.add_events(gtk.gdk.KEY_PRESS_MASK |
-                        gtk.gdk.KEY_RELEASE_MASK)
+        self.add_events(gtk.gdk.KEY_PRESS_MASK | gtk.gdk.KEY_RELEASE_MASK)
 
         self._parent = parent
-        self._parent.get_toplevel().connect("configure-event",
-                                            self._on_configure_event)
+        self._parent.get_toplevel().connect("configure-event", self._on_configure_event)
 
         # coordinates of popup
         self._x = 0

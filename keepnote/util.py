@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    utilities
+KeepNote
+utilities
 
 """
 
@@ -25,11 +25,12 @@
 #
 
 
-class PushIter :
+class PushIter:
     """
     Wrap an iterator in another iterator that allows one to push new
     items onto the front of the iteration stream
     """
+
     def __init__(self, it):
         self._it = iter(it)
         self._queue = []
@@ -60,8 +61,8 @@ def compose2(f, g):
 def compose(*funcs):
     """Composes two or more functions into one function
 
-       example:
-       compose(f,g)(x) <==> f(g(x))
+    example:
+    compose(f,g)(x) <==> f(g(x))
     """
     funcs = reversed(funcs)
     f = funcs.next()

@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    updating notebooks
+KeepNote
+updating notebooks
 
 """
 
@@ -24,7 +24,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-import os,sys
+import os, sys
 import keepnote
 from keepnote import safefile, plist
 from keepnote.timestamp import get_timestamp
@@ -47,7 +47,7 @@ def iter_child_node_paths(path):
             yield child_path
 
 
-class AttrDef :
+class AttrDef:
     """
     A AttrDef is a metadata attribute that can be associated to
     nodes in a NoteBook.
@@ -78,7 +78,7 @@ class AttrDef :
             self.read = datatype
 
 
-class UnknownAttr :
+class UnknownAttr:
     """A value that belongs to an unknown AttrDef"""
 
     def __init__(self, value):
@@ -87,8 +87,7 @@ class UnknownAttr :
 
 g_default_attr_defs = [
     AttrDef("nodeid", unicode, "Node ID", default=new_nodeid),
-    AttrDef("content_type", unicode, "Content type",
-            default=lambda: CONTENT_TYPE_DIR),
+    AttrDef("content_type", unicode, "Content type", default=lambda: CONTENT_TYPE_DIR),
     AttrDef("title", unicode, "Title"),
     AttrDef("order", int, "Order", default=lambda: sys.maxint),
     AttrDef("created_time", int, "Created time", default=get_timestamp),
@@ -100,7 +99,7 @@ g_default_attr_defs = [
     AttrDef("icon", unicode, "Icon"),
     AttrDef("icon_open", unicode, "Icon open"),
     AttrDef("payload_filename", unicode, "Filename"),
-    AttrDef("duplicate_of", unicode, "Duplicate of")
+    AttrDef("duplicate_of", unicode, "Duplicate of"),
 ]
 
 g_attr_defs_lookup = dict((attr.key, attr) for attr in g_default_attr_defs)
@@ -143,11 +142,13 @@ def read_attr_v5(filename, attr_defs=g_attr_defs_lookup):
 
 def write_attr_v6(filename, attr):
     out = safefile.open(filename, "w", codec="utf-8")
-    out.write('<?xml version="1.0" encoding="UTF-8"?>\n'
-              '<node>\n'
-              '<version>{0:d}</version>\n'.format(attr["version"]))
+    out.write(
+        '<?xml version="1.0" encoding="UTF-8"?>\n'
+        "<node>\n"
+        f"<version>{attr['version']:d}</version>\n"
+    )
     plist.dump(attr, out, indent=2, depth=0)
-    out.write('</node>\n')
+    out.write("</node>\n")
     out.close()
 
 
@@ -161,10 +162,7 @@ def convert_node_attr(filename, filename2, attr_defs=g_attr_defs_lookup):
         attr["version"] = 6
         write_attr_v6(filename2, attr)
     except Exception as e:
-        keepnote.log_error(f"cannot convert {filename}: {str(e)}\n",
-                           sys.exc_info()[2])
-
-
+        keepnote.log_error(f"cannot convert {filename}: {str(e)}\n", sys.exc_info()[2])
 
 
 def update(filename):
@@ -183,7 +181,3 @@ def update(filename):
     root = etree.getroot()
     root.find("version").text = "6"
     etree.write(preffile, encoding="utf-8")
-
-
-
-

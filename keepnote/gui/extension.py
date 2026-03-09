@@ -1,6 +1,6 @@
 """
-    KeepNote
-    Extension system with GUI relevant functions
+KeepNote
+Extension system with GUI relevant functions
 """
 
 #
@@ -33,11 +33,11 @@ import keepnote
 from keepnote import extension
 
 
-#=============================================================================
+# =============================================================================
 # extension functions
 
 
-class Extension (extension.Extension):
+class Extension(extension.Extension):
     """KeepNote Extension"""
 
     def __init__(self, app):
@@ -47,12 +47,12 @@ class Extension (extension.Extension):
         self.__uis = set()
 
         # UI interface
-        self.__ui_ids = {}         # toolbar/menu ids (per window)
+        self.__ui_ids = {}  # toolbar/menu ids (per window)
         self.__action_groups = {}  # ui actions (per window)
 
         self.enabled.add(self._on_enable_ui)
 
-    #================================
+    # ================================
     # window interactions
 
     def _on_enable_ui(self, enabled):
@@ -93,7 +93,7 @@ class Extension (extension.Extension):
         """Returns windows associated with extension"""
         return self.__windows
 
-    #===============================
+    # ===============================
     # UI interaction
 
     def on_add_ui(self, window):
@@ -112,12 +112,19 @@ class Extension (extension.Extension):
     def on_remove_options_ui(self, dialog):
         pass
 
-    #===============================
+    # ===============================
     # helper functions
 
-    def add_action(self, window, action_name, menu_text,
-                   callback=lambda w: None,
-                   stock_id=None, accel="", tooltip=None):
+    def add_action(
+        self,
+        window,
+        action_name,
+        menu_text,
+        callback=lambda w: None,
+        stock_id=None,
+        accel="",
+        tooltip=None,
+    ):
         # init action group
         if window not in self.__action_groups:
             group = gtk.ActionGroup("MainWindow")
@@ -125,8 +132,9 @@ class Extension (extension.Extension):
             window.get_uimanager().insert_action_group(group, 0)
 
         # add action
-        self.__action_groups[window].add_actions([
-            (action_name, stock_id, menu_text, accel, tooltip, callback)])
+        self.__action_groups[window].add_actions(
+            [(action_name, stock_id, menu_text, accel, tooltip, callback)]
+        )
 
     def remove_action(self, window, action_name):
         group = self.__action_groups.get(window, None)

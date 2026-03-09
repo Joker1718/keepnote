@@ -199,7 +199,7 @@ def make_config_dir(dirname, config_dirs=None,
     config_dir = os.path.join(config_dirs[0], dirname)
 
     if not os.path.exists(config_dir):
-        os.makedirs(config_dir, mode=0700)
+        os.makedirs(config_dir, mode=0o700)
 
 
 def make_data_dir(dirname, data_dirs=None,
@@ -212,4 +212,4 @@ def make_data_dir(dirname, data_dirs=None,
     data_dir = os.path.join(data_dirs[0], dirname)
 
     if not os.path.exists(data_dir):
-        os.makedirs(data_dir, mode=0700)
+        os.makedirs(data_dir, mode=0o700)

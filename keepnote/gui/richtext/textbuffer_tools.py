@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Functions for iterating and inserting into textbuffers
+KeepNote
+Functions for iterating and inserting into textbuffers
 
 """
 
@@ -30,11 +30,10 @@ from keepnote.util import PushIter
 
 
 # TextBuffer uses this char for anchors and pixbufs
-ANCHOR_CHAR = '\ufffc'
+ANCHOR_CHAR = "\ufffc"
 
 
-def iter_buffer_contents(textbuffer, start=None, end=None,
-                         ignore_tag=lambda x: False):
+def iter_buffer_contents(textbuffer, start=None, end=None, ignore_tag=lambda x: False):
     """Iterate over the items of a textbuffer
 
     textbuffer -- buffer to iterate over
@@ -48,7 +47,7 @@ def iter_buffer_contents(textbuffer, start=None, end=None,
         it = textbuffer.get_start_iter()
     else:
         it = start.copy()
-    #last = it.copy()
+    # last = it.copy()
 
     if end is None:
         end = textbuffer.get_end_iter()
@@ -113,7 +112,7 @@ def iter_buffer_contents(textbuffer, start=None, end=None,
             if not ignore_tag(tag):
                 yield ("begin", it, tag)
 
-        #last = it.copy()
+        # last = it.copy()
 
         if it.equal(end):
             break
@@ -167,14 +166,14 @@ def buffer_contents_iter_to_offset(contents):
 
 def _normalize_close(open_stack, closing_tags):
     """Close the tags in closing_tags and reopen any tags that did not need
-       to be closed
+    to be closed
 
-       <z><b><x><c><y><d> </d></c></b> ...
-       open               closing tags
-       stack
+    <z><b><x><c><y><d> </d></c></b> ...
+    open               closing tags
+    stack
 
-       <z><b><x><c><y><d> </d></y></c></x></b> <x><y>
-                          closing              reopen
+    <z><b><x><c><y><d> </d></y></c></x></b> <x><y>
+                       closing              reopen
 
     """
     closing_tags = set(closing_tags)
@@ -199,15 +198,15 @@ def _normalize_close(open_stack, closing_tags):
 
 def normalize_tags(contents, is_stable_tag=lambda tag: False):
     """Normalize open and close tags to ensure proper nesting
-       This is especially useful for saving to HTML
+    This is especially useful for saving to HTML
 
-       is_stable_tag -- a function that returns True iff a tag should not
-       be touched (``stable'').
+    is_stable_tag -- a function that returns True iff a tag should not
+    be touched (``stable'').
 
-       NOTE: All iterators will be turned to None's.  Since were are changing
-       tag order, iterators no longer make sense
+    NOTE: All iterators will be turned to None's.  Since were are changing
+    tag order, iterators no longer make sense
 
-       NOTE: assumes we do not have any 'beginstr' and 'endstr' items
+    NOTE: assumes we do not have any 'beginstr' and 'endstr' items
     """
 
     open_stack = []
@@ -217,7 +216,6 @@ def normalize_tags(contents, is_stable_tag=lambda tag: False):
         kind, it, param = item
 
         if kind == "begin":
-
             if is_stable_tag(param):
                 # if stable tag, skim ahead to see its closing tag
                 stable_span = LinkedList()
@@ -266,7 +264,6 @@ def normalize_tags(contents, is_stable_tag=lambda tag: False):
                 yield ("begin", None, param)
 
         elif kind == "end":
-
             for item2 in _normalize_close(open_stack, [param]):
                 yield item2
 
@@ -274,7 +271,7 @@ def normalize_tags(contents, is_stable_tag=lambda tag: False):
             yield (kind, None, param)
 
 
-#def remove_empty_text(contents):
+# def remove_empty_text(contents):
 #    """Remove spurious text items that are empty"""
 
 
@@ -286,15 +283,17 @@ def normalize_tags(contents, is_stable_tag=lambda tag: False):
 # new tags and I don't want to make that assumption with this function.
 # 'textbuffer' should have a class of simply TextBuffer (not RichTextBuffer)
 
-def insert_buffer_contents(textbuffer, pos, contents, add_child,
-                           lookup_tag=lambda tagstr: None):
+
+def insert_buffer_contents(
+    textbuffer, pos, contents, add_child, lookup_tag=lambda tagstr: None
+):
     """Insert a content list into a RichTextBuffer"""
 
     # make sure all inserts are treated as one action
     textbuffer.begin_user_action()
 
     insert_mark = textbuffer.get_insert()
-    #lookup_tag = textbuffer.get_tag_table().lookup
+    # lookup_tag = textbuffer.get_tag_table().lookup
 
     textbuffer.place_cursor(pos)
     tags = {}
@@ -332,8 +331,7 @@ def insert_buffer_contents(textbuffer, pos, contents, add_child,
 
         elif kind == "begin":
             # remember the starting position of a tag
-            tags[param] = textbuffer.get_iter_at_mark(
-                insert_mark).get_offset()
+            tags[param] = textbuffer.get_iter_at_mark(insert_mark).get_offset()
 
         elif kind == "end":
             # apply tag
@@ -350,8 +348,7 @@ def insert_buffer_contents(textbuffer, pos, contents, add_child,
             if lst is None:
                 lst = []
                 tagstrs[param] = lst
-            lst.append(textbuffer.get_iter_at_mark(
-                insert_mark).get_offset())
+            lst.append(textbuffer.get_iter_at_mark(insert_mark).get_offset())
 
         elif kind == "endstr":
             # apply tag referred to by a string
@@ -390,7 +387,7 @@ def sanitize_text(text):
         return text
 
 
-#=============================================================================
+# =============================================================================
 # buffer paragraph navigation
 
 
@@ -422,7 +419,7 @@ def get_paragraph(it):
     return start, end
 
 
-class paragraph_iter :
+class paragraph_iter:
     """Iterate through the paragraphs of a TextBuffer"""
 
     def __init__(self, buf, start, end):
@@ -472,11 +469,11 @@ def get_paragraphs_selected(buf):
     return start, end
 
 
-#=============================================================================
+# =============================================================================
 # Document Object Model (DOM) for TextBuffers
 
 
-class Dom (LinkedTreeNode):
+class Dom(LinkedTreeNode):
     """Basic Document Object Model class"""
 
     def __init__(self):
@@ -488,7 +485,7 @@ class Dom (LinkedTreeNode):
     def display(self, indent=0):
         self.display_indent(indent, "Dom")
         for child in self:
-            child.display(indent+1)
+            child.display(indent + 1)
 
     def visit_contents(self, visit):
         pass
@@ -514,8 +511,9 @@ class Dom (LinkedTreeNode):
                     return
 
 
-class TextDom (Dom):
+class TextDom(Dom):
     """A text object in a DOM"""
+
     def __init__(self, text):
         Dom.__init__(self)
         self.lst = [text]
@@ -535,14 +533,15 @@ class TextDom (Dom):
         self.lst = [text]
 
     def display(self, indent=0):
-        self.display_indent(indent, "TextDom '%s'" % self.get())
+        self.display_indent(indent, f"TextDom '{self.get()}'")
 
     def visit_contents(self, visit):
         visit("text", None, self.get())
 
 
-class AnchorDom (Dom):
+class AnchorDom(Dom):
     """An anchor object in a DOM"""
+
     def __init__(self, anchor):
         Dom.__init__(self)
         self.anchor = anchor
@@ -554,7 +553,7 @@ class AnchorDom (Dom):
         visit("anchor", None, (self.anchor, []))
 
 
-class TagDom (Dom):
+class TagDom(Dom):
     """A TextTag object in a DOM"""
 
     def __init__(self, tag, contents=None):
@@ -565,9 +564,9 @@ class TagDom (Dom):
             self.build(contents)
 
     def display(self, indent=0):
-        self.display_indent(indent, "TagDom", self.tag.get_property('name'))
+        self.display_indent(indent, "TagDom", self.tag.get_property("name"))
         for child in self:
-            child.display(indent+1)
+            child.display(indent + 1)
 
     def visit_contents(self, visit):
         visit("begin", None, self.tag)
@@ -576,7 +575,7 @@ class TagDom (Dom):
         visit("end", None, self.tag)
 
 
-class TagNameDom (Dom):
+class TagNameDom(Dom):
     """A name for a TextTag object in a DOM"""
 
     def __init__(self, tagname, contents=None):
@@ -589,7 +588,7 @@ class TagNameDom (Dom):
     def display(self, indent=0):
         self.display_indent(indent, "TagNameDom", self.tagname)
         for child in self:
-            child.display(indent+1)
+            child.display(indent + 1)
 
     def visit_contents(self, visit):
         visit("beginstr", None, self.tagname)
@@ -598,7 +597,7 @@ class TagNameDom (Dom):
         visit("endstr", None, self.tagname)
 
 
-class TextBufferDom (Dom):
+class TextBufferDom(Dom):
     """Document Object Model for TextBuffers"""
 
     def __init__(self, contents=None):
@@ -612,11 +611,12 @@ class TextBufferDom (Dom):
 
     def get_contents(self):
         contents = []
-        self.visit_contents(lambda kind, pos, param:
-                            contents.append((kind, pos, param)))
+        self.visit_contents(
+            lambda kind, pos, param: contents.append((kind, pos, param))
+        )
         return contents
 
     def display(self, indent=0):
         self.display_indent(indent, "TextBufferDom")
         for child in self:
-            child.display(indent+1)
+            child.display(indent + 1)

@@ -1,10 +1,10 @@
 """
 
-    KeepNote
-    MultiEditor widget in main window
+KeepNote
+MultiEditor widget in main window
 
-    This editor contain multiple editors that can be switched based on
-    the content-type of the node.
+This editor contain multiple editors that can be switched based on
+the content-type of the node.
 
 """
 
@@ -29,7 +29,8 @@
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 
 # keepnote imports
 import keepnote
@@ -39,7 +40,7 @@ from keepnote.gui.editor import KeepNoteEditor
 _ = keepnote.translate
 
 
-class MultiEditor (KeepNoteEditor):
+class MultiEditor(KeepNoteEditor):
     """
     Manager for switching between multiple editors
     """
@@ -53,14 +54,16 @@ class MultiEditor (KeepNoteEditor):
         self._editor = None
         self._window = None
 
-        self._signals = ["view-node",
-                         "visit-node",
-                         "modified",
-                         "font-change",
-                         "error",
-                         "child-activated",
-                         "window-request",
-                         "make-link"]
+        self._signals = [
+            "view-node",
+            "visit-node",
+            "modified",
+            "font-change",
+            "error",
+            "child-activated",
+            "window-request",
+            "make-link",
+        ]
         self._signal_ids = []
 
     def set_editor(self, editor):
@@ -99,12 +102,12 @@ class MultiEditor (KeepNoteEditor):
 
     def _connect_signals(self, editor):
         """Connect all signals for child editor"""
+
         def make_callback(sig):
             return lambda *args: self.emit(sig, *args[1:])
 
         for sig in self._signals:
-            self._signal_ids.append(
-                editor.connect(sig, make_callback(sig)))
+            self._signal_ids.append(editor.connect(sig, make_callback(sig)))
 
     def _disconnect_signals(self, editor):
         """Disconnect al signals for child editor"""
@@ -112,7 +115,7 @@ class MultiEditor (KeepNoteEditor):
             editor.disconnect(sigid)
         self._signal_ids = []
 
-    #========================================
+    # ========================================
     # Editor Interface
 
     def set_notebook(self, notebook):
@@ -193,7 +196,7 @@ class MultiEditor (KeepNoteEditor):
             return self._editor.redo()
 
 
-class ContentEditor (MultiEditor):
+class ContentEditor(MultiEditor):
     """
     Register multiple editors depending on the content type
     """
@@ -220,7 +223,7 @@ class ContentEditor (MultiEditor):
         """Set the default editor"""
         self._default_editor = editor
 
-    #=============================
+    # =============================
     # Editor Interface
 
     def view_nodes(self, nodes):

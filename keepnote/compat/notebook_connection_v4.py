@@ -1,8 +1,8 @@
 """
 
-    KeepNote    
-    
-    Low-level Create-Read-Update-Delete (CRUD) interface for notebooks.
+KeepNote
+
+Low-level Create-Read-Update-Delete (CRUD) interface for notebooks.
 
 """
 
@@ -26,11 +26,11 @@
 #
 
 
-#=============================================================================
+# =============================================================================
 # errors
 
 
-class ConnectionError (StandardError):
+class ConnectionError(StandardError):
     def __init__(self, msg, error=None):
         StandardError.__init__(self, msg)
         self.error = error
@@ -41,24 +41,28 @@ class ConnectionError (StandardError):
         else:
             return StandardError.repr(self)
 
-class UnknownNode (ConnectionError):
+
+class UnknownNode(ConnectionError):
     def __init__(self, msg="unknown node"):
         ConnectionError.__init__(self, msg)
 
-class NodeExists (ConnectionError):
+
+class NodeExists(ConnectionError):
     def __init__(self, msg="node exists"):
         ConnectionError.__init__(self, msg)
 
-class UnknownFile (ConnectionError):
+
+class UnknownFile(ConnectionError):
     def __init__(self, msg="unknown file"):
         ConnectionError.__init__(self, msg)
 
-class CorruptIndex (ConnectionError):
+
+class CorruptIndex(ConnectionError):
     def __init__(self, msg="index error", error=None):
         ConnectionError.__init__(self, msg, error)
 
 
-#=============================================================================
+# =============================================================================
 
 
 def path_join(*parts):
@@ -70,7 +74,7 @@ def path_join(*parts):
     # skip initial empty strings
     i = 0
     while parts[i] == "":
-        i +=1
+        i += 1
     return "/".join(parts[i:])
 
 
@@ -94,37 +98,36 @@ def path_basename(filename):
         return filename[i:]
 
 
+# =============================================================================
 
-#=============================================================================
 
-class NoteBookConnection :
+class NoteBookConnection:
     def __init__(self):
         pass
 
-    #================================
+    # ================================
     # Filesystem-specific API (may not be supported by some connections)
-    
+
     def get_node_path(self, nodeid):
         """Returns the path of the node"""
         pass
-    
+
     def get_node_basename(self, nodeid):
         """Returns the basename of the node"""
         pass
 
     # TODO: returning a fullpath to a file is not fully portable
-    # will eventually need some kind of fetching mechanism    
+    # will eventually need some kind of fetching mechanism
     def get_file(self, nodeid, filename, _path=None):
         pass
 
-
-    #======================
+    # ======================
     # connection API
 
     def connect(self, filename):
         """Make a new connection"""
         pass
-        
+
     def close(self):
         """Close connection"""
         pass
@@ -133,7 +136,7 @@ class NoteBookConnection :
         """Save any unsynced state"""
         pass
 
-    #======================
+    # ======================
     # Node I/O API
 
     def create_root(self, nodeid, attr):
@@ -143,7 +146,7 @@ class NoteBookConnection :
     def create_node(self, nodeid, attr):
         """Create a node"""
         pass
-            
+
     def read_node(self, nodeid):
         """Read a node attr"""
         pass
@@ -164,9 +167,8 @@ class NoteBookConnection :
     def get_rootid(self):
         """Returns nodeid of notebook root node"""
         pass
-    
 
-    #===============
+    # ===============
     # file API
 
     def open_file(self, nodeid, filename, mode="r", codec=None):
@@ -188,7 +190,7 @@ class NoteBookConnection :
         List data files in node
         """
         pass
-    
+
     def file_exists(self, nodeid, filename):
         pass
 
@@ -206,26 +208,32 @@ class NoteBookConnection :
         """
         pass
 
-
     # Is this needed inside the connection?  Can it be support outside?
-    def new_filename(self, nodeid, new_filename, ext="", sep=" ", number=2, 
-                     return_number=False, use_number=False, ensure_valid=True):
+    def new_filename(
+        self,
+        nodeid,
+        new_filename,
+        ext="",
+        sep=" ",
+        number=2,
+        return_number=False,
+        use_number=False,
+        ensure_valid=True,
+    ):
         pass
-
 
     # TODO: can this be removed some how?
     def read_data_as_plain_text(self, nodeid):
         """Iterates over the lines of the data file as plain text"""
         pass
 
-
-    #---------------------------------
+    # ---------------------------------
     # index management
 
     def init_index(self):
         """Initialize the index"""
         pass
-    
+
     def index_needed(self):
         pass
 
@@ -235,8 +243,7 @@ class NoteBookConnection :
     def index_all(self):
         pass
 
-
-    #---------------------------------
+    # ---------------------------------
     # indexing/querying
 
     def index_attr(self, key, index_value=False):
@@ -257,16 +264,13 @@ class NoteBookConnection :
     def update_index_node(self, nodeid, attr):
         """Update a node in the index"""
         pass
-    
+
     def get_node_path_by_id(self, nodeid):
         """Lookup node path by nodeid"""
         pass
 
     def get_attr_by_id(self, nodeid, key):
         pass
-
-
-
 
 
 # TODO: need to keep namespace of files and node directories spearate.

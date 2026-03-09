@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    UndoStack for maintaining undo and redo actions
+KeepNote
+UndoStack for maintaining undo and redo actions
 
 """
 
@@ -31,7 +31,7 @@ from keepnote.linked_list import LinkedList
 
 def cat_funcs(funcs):
     """Concatenate a list of functions [f,g,h,...] that take no arguments
-       into one function: cat = { lambda: f(); g(); h(); }
+    into one function: cat = { lambda: f(); g(); h(); }
     """
 
     funcs = list(funcs)
@@ -42,10 +42,11 @@ def cat_funcs(funcs):
     def f():
         for func in funcs:
             func()
+
     return f
 
 
-class UndoStack :
+class UndoStack:
     """UndoStack for maintaining undo and redo actions"""
 
     def __init__(self, maxsize=sys.maxint):
@@ -69,7 +70,7 @@ class UndoStack :
 
     def do(self, action, undo, execute=True):
         """Perform action() (if execute=True) and place (action,undo) pair
-           on stack"""
+        on stack"""
 
         if self._suppress_counter > 0:
             return
@@ -131,7 +132,7 @@ class UndoStack :
 
     def end_action(self):
         """Stop grouping actions
-           Can be called recursively.
+        Can be called recursively.
         """
         self._group_counter -= 1
         assert self._group_counter >= 0
@@ -140,8 +141,9 @@ class UndoStack :
             if len(self._pending_actions) > 0:
                 actions, undos = zip(*self._pending_actions)
 
-                self._undo_actions.append((cat_funcs(actions),
-                                           cat_funcs(reversed(undos))))
+                self._undo_actions.append(
+                    (cat_funcs(actions), cat_funcs(reversed(undos)))
+                )
                 self._pending_actions = []
 
                 while len(self._undo_actions) > self._maxsize:
@@ -157,12 +159,12 @@ class UndoStack :
 
     def suppress(self):
         """Suppress pushing actions on stack
-           Can be called recursively.  Must have corresponding resume() call"""
+        Can be called recursively.  Must have corresponding resume() call"""
         self._suppress_counter += 1
 
     def resume(self):
         """Resume pushing actions on stack
-           Can be called recursively.
+        Can be called recursively.
         """
         self._suppress_counter -= 1
         assert self._suppress_counter >= 0

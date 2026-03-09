@@ -1,8 +1,8 @@
 """
-    KeepNote Extension 
-    new_file
+KeepNote Extension
+new_file
 
-    Extension allows adding new filetypes to a notebook
+Extension allows adding new filetypes to a notebook
 """
 
 #
@@ -47,7 +47,8 @@ from keepnote.gui import dialog_app_options
 # pygtk imports
 try:
     import pygtk
-    pygtk.require('2.0')
+
+    pygtk.require("2.0")
     from gtk import gdk
     import gtk.glade
     import gobject
@@ -57,12 +58,10 @@ except ImportError:
     pass
 
 
-
-class Extension (extension.Extension):
-    
+class Extension(extension.Extension):
     def __init__(self, app):
         """Initialize extension"""
-        
+
         extension.Extension.__init__(self, app)
         self.app = app
 
@@ -70,27 +69,22 @@ class Extension (extension.Extension):
         self._default_file_types = [
             FileType("Text File (txt)", "untitled.txt", "plain_text.txt"),
             FileType("Spreadsheet (xls)", "untitled.xls", "spreadsheet.xls"),
-            FileType("Word Document (doc)", "untitled.doc", "document.doc")
-            ]
+            FileType("Word Document (doc)", "untitled.doc", "document.doc"),
+        ]
 
         self.enabled.add(self.on_enabled)
 
-
     def get_filetypes(self):
         return self._file_types
-
 
     def on_enabled(self, enabled):
         if enabled:
             self.load_config()
 
-
     def get_depends(self):
         return [("keepnote", ">=", (0, 7, 1))]
 
-
-
-    #===============================
+    # ===============================
     # config handling
 
     def get_config_file(self):
@@ -103,8 +97,7 @@ class Extension (extension.Extension):
             self.save_default_example_files()
             self.save_config()
 
-
-        try:        
+        try:
             tree = etree.ElementTree(file=config)
 
             # check root
@@ -133,13 +126,11 @@ class Extension (extension.Extension):
             self.set_default_file_types()
 
         self.save_config()
-        
 
     def save_config(self):
         config = self.get_config_file()
 
-        tree = etree.ElementTree(
-            etree.Element("file_types"))
+        tree = etree.ElementTree(etree.Element("file_types"))
         root = tree.getroot()
 
         for file_type in self._file_types:
@@ -153,13 +144,12 @@ class Extension (extension.Extension):
 
         tree.write(open(config, "w"), "UTF-8")
 
-
     def set_default_file_types(self):
 
         self._file_types = list(self._default_file_types)
 
     def save_default_example_files(self):
-        
+
         base = self.get_base_dir()
         data_dir = self.get_data_dir()
 
@@ -167,22 +157,22 @@ class Extension (extension.Extension):
             fn = file_type.example_file
             shutil.copy(os.path.join(base, fn), os.path.join(data_dir, fn))
 
-
     def update_all_menus(self):
         for window in self.get_windows():
             self.set_new_file_menus(window)
 
-    #==============================
+    # ==============================
     # UI
 
     def on_add_ui(self, window):
         """Initialize extension for a particular window"""
-        
+
         # add menu options
         self.add_action(window, "New File", "New _File")
-        #("treeview_popup", None, None),
-        
-        self.add_ui(window,
+        # ("treeview_popup", None, None),
+
+        self.add_ui(
+            window,
             """
             <ui>
             <menubar name="main_menu_bar">
@@ -204,29 +194,25 @@ class Extension (extension.Extension):
             -->
 
             </ui>
-            """)
+            """,
+        )
 
         self.set_new_file_menus(window)
 
-
-    #=================================
+    # =================================
     # Options UI setup
 
     def on_add_options_ui(self, dialog):
-        
-        dialog.add_section(NewFileSection("new_file", 
-                                          dialog, self._app,
-                                          self),
-                           "extensions")
 
-
+        dialog.add_section(
+            NewFileSection("new_file", dialog, self._app, self), "extensions"
+        )
 
     def on_remove_options_ui(self, dialog):
-        
+
         dialog.remove_section("new_file")
 
-
-    #======================================
+    # ======================================
     # callbacks
 
     def on_new_file(self, window, file_type):
@@ -255,14 +241,11 @@ class Extension (extension.Extension):
         except Exception as e:
             window.error(f"Error while attaching file '{uri}'.", e)
 
-
     def on_new_file_type(self, window):
         """Callback from gui for adding a new file type"""
         self.app.app_options_dialog.show(window, "new_file")
 
-
-
-    #==========================================
+    # ==========================================
     # menu setup
 
     def set_new_file_menus(self, window):
@@ -272,11 +255,11 @@ class Extension (extension.Extension):
         if menu:
             self.set_new_file_menu(window, menu)
 
-
-        menu = window.get_uimanager().get_widget("/popup_menus/treeview_popup/New/New File")
+        menu = window.get_uimanager().get_widget(
+            "/popup_menus/treeview_popup/New/New File"
+        )
         if menu:
             self.set_new_file_menu(window, menu)
-
 
     def set_new_file_menu(self, window, menu):
         """Set the recent notebooks in the file menu"""
@@ -312,9 +295,7 @@ class Extension (extension.Extension):
         item.show()
         menu.append(item)
 
-
-
-    #===============================
+    # ===============================
     # actions
 
     def install_example_file(self, filename):
@@ -323,14 +304,14 @@ class Extension (extension.Extension):
         newpath = self.get_data_dir()
         newfilename = os.path.basename(filename)
         newfilename, ext = os.path.splitext(newfilename)
-        newfilename = notebooklib.get_unique_filename(newpath, newfilename, 
-                                                      ext=ext, sep="", 
-                                                      number=2)
+        newfilename = notebooklib.get_unique_filename(
+            newpath, newfilename, ext=ext, sep="", number=2
+        )
         shutil.copy(filename, newfilename)
         return os.path.basename(newfilename)
 
 
-class FileType :
+class FileType:
     """Class containing information about a filetype"""
 
     def __init__(self, name, filename, example_file):
@@ -342,20 +323,15 @@ class FileType :
         return FileType(self.name, self.filename, self.example_file)
 
 
-
-
-class NewFileSection (dialog_app_options.Section):
+class NewFileSection(dialog_app_options.Section):
     """A Section in the Options Dialog"""
 
-    def __init__(self, key, dialog, app, ext,
-                 label="New File Types", 
-                 icon=None):
+    def __init__(self, key, dialog, app, ext, label="New File Types", icon=None):
         dialog_app_options.Section.__init__(self, key, dialog, app, label, icon)
 
         self.ext = ext
         self._filetypes = []
         self._current_filetype = None
-
 
         # setup UI
         w = self.get_default_widget()
@@ -369,8 +345,9 @@ class NewFileSection (dialog_app_options.Section):
         self.filetype_store = gtk.ListStore(str, object)
         self.filetype_listview = gtk.TreeView(self.filetype_store)
         self.filetype_listview.set_headers_visible(False)
-        self.filetype_listview.get_selection().connect("changed", 
-                                                       self.on_listview_select)
+        self.filetype_listview.get_selection().connect(
+            "changed", self.on_listview_select
+        )
 
         sw = gtk.ScrolledWindow()
         sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
@@ -378,14 +355,13 @@ class NewFileSection (dialog_app_options.Section):
         sw.add(self.filetype_listview)
         sw.set_size_request(160, 200)
         v.pack_start(sw, False, True, 0)
-        
 
         # create the treeview column
         column = gtk.TreeViewColumn()
         self.filetype_listview.append_column(column)
         cell_text = gtk.CellRendererText()
         column.pack_start(cell_text, True)
-        column.add_attribute(cell_text, 'text', 0)
+        column.add_attribute(cell_text, "text", 0)
 
         # add/del buttons
         h2 = gtk.HBox(False, 5)
@@ -399,9 +375,6 @@ class NewFileSection (dialog_app_options.Section):
         button.connect("clicked", self.on_delete_filetype)
         h2.pack_start(button, True, True, 0)
 
-
-
-
         # right column (file type editor)
         v = gtk.VBox(False, 5)
         h.pack_start(v, False, True, 0)
@@ -410,80 +383,88 @@ class NewFileSection (dialog_app_options.Section):
         self.filetype_editor = table
         v.pack_start(table, False, True, 0)
 
-
         # file type name
         label = gtk.Label("File type name:")
-        table.attach(label, 0, 1, 0, 1,
-                     xoptions=0, yoptions=0,
-                     xpadding=2, ypadding=2)
+        table.attach(label, 0, 1, 0, 1, xoptions=0, yoptions=0, xpadding=2, ypadding=2)
 
         self.filetype = gtk.Entry()
-        table.attach(self.filetype, 1, 2, 0, 1,
-                     xoptions=gtk.FILL, yoptions=0,
-                     xpadding=2, ypadding=2)
-
+        table.attach(
+            self.filetype,
+            1,
+            2,
+            0,
+            1,
+            xoptions=gtk.FILL,
+            yoptions=0,
+            xpadding=2,
+            ypadding=2,
+        )
 
         # default filename
         label = gtk.Label("Default filename:")
-        table.attach(label, 0, 1, 1, 2,
-                     xoptions=0, yoptions=0,
-                     xpadding=2, ypadding=2)
+        table.attach(label, 0, 1, 1, 2, xoptions=0, yoptions=0, xpadding=2, ypadding=2)
 
         self.filename = gtk.Entry()
-        table.attach(self.filename, 1, 2, 1, 2,
-                     xoptions=gtk.FILL, yoptions=0,
-                     xpadding=2, ypadding=2)
-
+        table.attach(
+            self.filename,
+            1,
+            2,
+            1,
+            2,
+            xoptions=gtk.FILL,
+            yoptions=0,
+            xpadding=2,
+            ypadding=2,
+        )
 
         # example new file
         label = gtk.Label("Example new file:")
-        table.attach(label, 0, 1, 2, 3,
-                     xoptions=0, yoptions=0,
-                     xpadding=2, ypadding=2)
+        table.attach(label, 0, 1, 2, 3, xoptions=0, yoptions=0, xpadding=2, ypadding=2)
 
         self.example_file = gtk.Entry()
-        table.attach(self.example_file, 1, 2, 2, 3,
-                     xoptions=gtk.FILL, yoptions=0,
-                     xpadding=2, ypadding=2)
-        
+        table.attach(
+            self.example_file,
+            1,
+            2,
+            2,
+            3,
+            xoptions=gtk.FILL,
+            yoptions=0,
+            xpadding=2,
+            ypadding=2,
+        )
 
         # browse button
         button = gtk.Button(_("Browse..."))
         button.set_image(
-            gtk.image_new_from_stock(gtk.STOCK_OPEN,
-                                     gtk.ICON_SIZE_SMALL_TOOLBAR))
+            gtk.image_new_from_stock(gtk.STOCK_OPEN, gtk.ICON_SIZE_SMALL_TOOLBAR)
+        )
         button.show()
-        button.connect("clicked", lambda w: 
-                       dialog_app_options.on_browse(
-                w.get_toplevel(), "Choose Example New File", "", 
-                self.example_file))
-        table.attach(button, 1, 2, 3, 4,
-                     xoptions=gtk.FILL, yoptions=0,
-                     xpadding=2, ypadding=2)
-
-
+        button.connect(
+            "clicked",
+            lambda w: dialog_app_options.on_browse(
+                w.get_toplevel(), "Choose Example New File", "", self.example_file
+            ),
+        )
+        table.attach(
+            button, 1, 2, 3, 4, xoptions=gtk.FILL, yoptions=0, xpadding=2, ypadding=2
+        )
 
         w.show_all()
-
 
         self.set_filetypes()
         self.set_filetype_editor(None)
 
-        
-
-
-
     def load_options(self, app):
         """Load options from app to UI"""
-        
+
         self._filetypes = [x.copy() for x in self.ext.get_filetypes()]
         self.set_filetypes()
         self.filetype_listview.get_selection().unselect_all()
 
-
     def save_options(self, app):
         """Save options to the app"""
-        
+
         self.save_current_filetype()
 
         # install example files
@@ -493,24 +474,26 @@ class NewFileSection (dialog_app_options.Section):
                 # copy new file into extension data dir
                 try:
                     filetype.example_file = self.ext.install_example_file(
-                        filetype.example_file)
+                        filetype.example_file
+                    )
                 except Exception as e:
-                    app.error(f"Cannot install example file '{filetype.example_file}'", e)
+                    app.error(
+                        f"Cannot install example file '{filetype.example_file}'", e
+                    )
                     bad.append(filetype)
 
         # update extension state
-        self.ext.get_filetypes()[:] = [x.copy() for x in self._filetypes
-                                       if x not in bad]
+        self.ext.get_filetypes()[:] = [
+            x.copy() for x in self._filetypes if x not in bad
+        ]
         self.ext.save_config()
         self.ext.update_all_menus()
-
 
     def set_filetypes(self):
         """Initialize the lisview to the loaded filetypes"""
         self.filetype_store.clear()
         for filetype in self._filetypes:
             self.filetype_store.append([filetype.name, filetype])
-
 
     def set_filetype_editor(self, filetype):
         """Update editor with current filetype"""
@@ -527,8 +510,6 @@ class NewFileSection (dialog_app_options.Section):
             self.filename.set_text(filetype.filename)
             self.example_file.set_text(filetype.example_file)
             self.filetype_editor.set_sensitive(True)
-            
-            
 
     def save_current_filetype(self):
         """Save the contents of the editor into the current filetype object"""
@@ -543,7 +524,6 @@ class NewFileSection (dialog_app_options.Section):
                 if row[1] == self._current_filetype:
                     row[0] = self._current_filetype.name
 
-
     def on_listview_select(self, selection):
         """Callback for when listview selection changes"""
 
@@ -557,21 +537,17 @@ class NewFileSection (dialog_app_options.Section):
         else:
             self.set_filetype_editor(None)
 
-
     def on_new_filetype(self, button):
         """Callback for adding a new filetype"""
 
         self._filetypes.append(FileType("New File Type", "untitled", ""))
         self.set_filetypes()
-        self.filetype_listview.set_cursor((len(self._filetypes)-1,))
-
+        self.filetype_listview.set_cursor((len(self._filetypes) - 1,))
 
     def on_delete_filetype(self, button):
-        
+
         model, it = self.filetype_listview.get_selection().get_selected()
         if it is not None:
             filetype = self.filetype_store[it][1]
             self._filetypes.remove(filetype)
             self.set_filetypes()
-            
-    

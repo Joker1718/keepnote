@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Richtext buffer base class
+KeepNote
+Richtext buffer base class
 
 """
 
@@ -26,33 +26,28 @@
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gtk
 import gobject
 
 # import textbuffer tools
-from .textbuffer_tools import \
-    get_paragraph
+from .textbuffer_tools import get_paragraph
 
-from .undo_handler import \
-    UndoHandler, \
-    InsertAction, \
-    DeleteAction, \
-    InsertChildAction
+from .undo_handler import UndoHandler, InsertAction, DeleteAction, InsertChildAction
 
 # richtext imports
-from .richtextbase_tags import \
-    RichTextBaseTagTable, \
-    RichTextTag
+from .richtextbase_tags import RichTextBaseTagTable, RichTextTag
 
 
 def add_child_to_buffer(textbuffer, it, anchor):
     textbuffer.add_child(it, anchor)
 
 
-#=============================================================================
+# =============================================================================
 
-class RichTextAnchor (gtk.TextChildAnchor):
+
+class RichTextAnchor(gtk.TextChildAnchor):
     """Base class of all anchor objects in a RichTextView"""
 
     def __init__(self):
@@ -97,20 +92,28 @@ class RichTextAnchor (gtk.TextChildAnchor):
 
 
 gobject.type_register(RichTextAnchor)
-gobject.signal_new("selected", RichTextAnchor, gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, ())
-gobject.signal_new("activated", RichTextAnchor, gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, ())
-gobject.signal_new("popup-menu", RichTextAnchor, gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, (int, object))
-gobject.signal_new("init", RichTextAnchor, gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, ())
+gobject.signal_new(
+    "selected", RichTextAnchor, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()
+)
+gobject.signal_new(
+    "activated", RichTextAnchor, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()
+)
+gobject.signal_new(
+    "popup-menu",
+    RichTextAnchor,
+    gobject.SIGNAL_RUN_LAST,
+    gobject.TYPE_NONE,
+    (int, object),
+)
+gobject.signal_new(
+    "init", RichTextAnchor, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()
+)
 
 
-class RichTextBaseBuffer (gtk.TextBuffer):
+class RichTextBaseBuffer(gtk.TextBuffer):
     """Basic RichTextBuffer with the following features
 
-        - maintains undo/redo stacks
+    - maintains undo/redo stacks
     """
 
     def __init__(self, tag_table=RichTextBaseTagTable()):
@@ -125,7 +128,8 @@ class RichTextBaseBuffer (gtk.TextBuffer):
         # insert mark tracking
         self._insert_mark = self.get_insert()
         self._old_insert_mark = self.create_mark(
-            None, self.get_iter_at_mark(self._insert_mark), True)
+            None, self.get_iter_at_mark(self._insert_mark), True
+        )
 
         self._user_action_ending = False
         self._noninteractive = 0
@@ -141,16 +145,16 @@ class RichTextBaseBuffer (gtk.TextBuffer):
             self.connect("apply-tag", self._on_apply_tag),
             self.connect("remove-tag", self._on_remove_tag),
             self.connect("delete-range", self._on_delete_range),
-
             # undo handler events
             self.connect("insert-text", self._undo_handler.on_insert_text),
             self.connect("delete-range", self._undo_handler.on_delete_range),
             self.connect("insert-pixbuf", self._undo_handler.on_insert_pixbuf),
-            self.connect("insert-child-anchor",
-                         self._undo_handler.on_insert_child_anchor),
+            self.connect(
+                "insert-child-anchor", self._undo_handler.on_insert_child_anchor
+            ),
             self.connect("apply-tag", self._undo_handler.on_apply_tag),
             self.connect("remove-tag", self._undo_handler.on_remove_tag),
-            self.connect("changed", self._undo_handler.on_changed)
+            self.connect("changed", self._undo_handler.on_changed),
         ]
 
     def block_signals(self):
@@ -187,7 +191,7 @@ class RichTextBaseBuffer (gtk.TextBuffer):
         """Return TextIter for insert point"""
         return self.get_iter_at_mark(self.get_insert())
 
-    #==========================================================
+    # ==========================================================
     # restrict cursor and insert
 
     def is_insert_allowed(self, it, text=""):
@@ -198,7 +202,7 @@ class RichTextBaseBuffer (gtk.TextBuffer):
         """Returns True if cursor is allowed at TextIter 'it'"""
         return True
 
-    #======================================
+    # ======================================
     # child widgets
 
     def add_child(self, it, child):
@@ -210,13 +214,13 @@ class RichTextBaseBuffer (gtk.TextBuffer):
             # set buffer of child
             action.child.set_buffer(self)
 
-    #======================================
+    # ======================================
     # selection callbacks
 
     def on_selection_changed(self):
         pass
 
-    #=========================================================
+    # =========================================================
     # paragraph change callbacks
 
     def on_paragraph_split(self, start, end):
@@ -230,7 +234,6 @@ class RichTextBaseBuffer (gtk.TextBuffer):
 
     def update_paragraphs(self, action):
         if isinstance(action, InsertAction):
-
             # detect paragraph spliting
             if "\n" in action.text:
                 par_start = self.get_iter_at_offset(action.pos)
@@ -241,40 +244,40 @@ class RichTextBaseBuffer (gtk.TextBuffer):
                 self.on_paragraph_split(par_start, par_end)
 
         elif isinstance(action, DeleteAction):
-
             # detect paragraph merging
             if "\n" in action.text:
                 par_start, par_end = get_paragraph(
-                    self.get_iter_at_offset(action.start_offset))
+                    self.get_iter_at_offset(action.start_offset)
+                )
                 self.on_paragraph_merge(par_start, par_end)
 
-    #==================================
+    # ==================================
     # tag apply/remove
 
-    '''
+    """
     def apply_tag(self, tag, start, end):
         if isinstance(tag, RichTextTag):
             tag.on_apply()
         gtk.TextBuffer.apply_tag(self, tag, start, end)
 
-        '''
+        """
 
     def remove_tag(self, tag, start, end):
-        #assert self.get_tag_table().lookup(
-        #tag.get_property("name")) is not None, tag.get_property("name")
+        # assert self.get_tag_table().lookup(
+        # tag.get_property("name")) is not None, tag.get_property("name")
         gtk.TextBuffer.remove_tag(self, tag, start, end)
 
-    #===========================================================
+    # ===========================================================
     # callbacks
 
     def _on_mark_set(self, textbuffer, it, mark):
         """Callback for mark movement"""
         if mark is self._insert_mark:
-
             # if cursor is not allowed here, move it back
             old_insert = self.get_iter_at_mark(self._old_insert_mark)
-            if not self.get_iter_at_mark(mark).equal(old_insert) and \
-               not self.is_cursor_allowed(it):
+            if not self.get_iter_at_mark(mark).equal(
+                old_insert
+            ) and not self.is_cursor_allowed(it):
                 self.place_cursor(old_insert)
                 return
 
@@ -291,8 +294,7 @@ class RichTextBaseBuffer (gtk.TextBuffer):
         text = unicode(text, "utf_8")
 
         # check to see if insert is allowed
-        if textbuffer.is_interactive() and \
-           not self.is_insert_allowed(it, text):
+        if textbuffer.is_interactive() and not self.is_insert_allowed(it, text):
             textbuffer.stop_emission("insert_text")
 
     def _on_insert_child_anchor(self, textbuffer, it, anchor):
@@ -338,7 +340,7 @@ class RichTextBaseBuffer (gtk.TextBuffer):
 
         self.end_user_action()
 
-    #==================================================================
+    # ==================================================================
     # records whether text insert is currently user interactive, or is
     # automated
 
@@ -354,7 +356,7 @@ class RichTextBaseBuffer (gtk.TextBuffer):
         """Returns True when insert is currently interactive"""
         return self._noninteractive == 0
 
-    #=====================================================================
+    # =====================================================================
     # undo/redo methods
 
     def undo(self):
@@ -375,8 +377,7 @@ class RichTextBaseBuffer (gtk.TextBuffer):
 
     def _on_end_user_action(self, textbuffer):
         """End a composite undo/redo action"""
-        if not self.undo_stack.is_in_progress() and \
-           not self._user_action_ending:
+        if not self.undo_stack.is_in_progress() and not self._user_action_ending:
             self._user_action_ending = True
             self.emit("ending-user-action")
             self._user_action_ending = False
@@ -384,6 +385,10 @@ class RichTextBaseBuffer (gtk.TextBuffer):
 
 
 gobject.type_register(RichTextBaseBuffer)
-gobject.signal_new("ending-user-action", RichTextBaseBuffer,
-                   gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, ())
+gobject.signal_new(
+    "ending-user-action",
+    RichTextBaseBuffer,
+    gobject.SIGNAL_RUN_LAST,
+    gobject.TYPE_NONE,
+    (),
+)

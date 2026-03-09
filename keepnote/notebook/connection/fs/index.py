@@ -380,15 +380,14 @@ class NoteBookIndex (NodeIndex):
                 # walk up
                 nodeid = parentid
 
-                        path.reverse()
-                        return path
-            
-                    except sqlite.DatabaseError as e:
-                        self._on_corrupt(e, sys.exc_info()[2])
-                        raise
-            
-            
-                def get_node_filepath(self, nodeid):
+            path.reverse()
+            return path
+
+        except sqlite.DatabaseError as e:
+            self._on_corrupt(e, sys.exc_info()[2])
+            raise
+
+    def get_node_filepath(self, nodeid):
         """Get node path for a nodeid"""
 
         # TODO: handle multiple parents
@@ -422,15 +421,14 @@ class NoteBookIndex (NodeIndex):
                 # walk up
                 nodeid = parentid
 
-                        path.reverse()
-                        return path
-            
-                    except sqlite.DatabaseError as e:
-                        self._on_corrupt(e, sys.exc_info()[2])
-                        raise
-            
-            
-                def get_node(self, nodeid):
+            path.reverse()
+            return path
+
+        except sqlite.DatabaseError as e:
+            self._on_corrupt(e, sys.exc_info()[2])
+            raise
+
+    def get_node(self, nodeid):
         """Get node data for a nodeid"""
 
         # TODO: handle multiple parents

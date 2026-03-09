@@ -1,8 +1,8 @@
 """
 
-    KeepNote
+KeepNote
 
-    Low-level Create-Read-Update-Delete (CRUD) interface for notebooks.
+Low-level Create-Read-Update-Delete (CRUD) interface for notebooks.
 
 """
 
@@ -45,7 +45,7 @@ from keepnote.notebook.connection.fs import write_attr
 _ = trans.translate
 
 
-logging.getLogger('sqlitedict').setLevel(level=logging.WARNING)
+logging.getLogger("sqlitedict").setLevel(level=logging.WARNING)
 
 
 # constants
@@ -86,15 +86,15 @@ class NodeFSSimple:
         """Return True if nodeid requires storing in others directory."""
         return not (
             # Contains invalid characters
-            not re.match(self.VALID_REGEX, nodeid) or
-
+            not re.match(self.VALID_REGEX, nodeid)
+            or
             # Less than or equal to fansize
-            len(nodeid) <= self._fansize or
-
+            len(nodeid) <= self._fansize
+            or
             # Greater than fansize and ends with dots
-            (len(nodeid) == self._fansize + 1 and nodeid.endswith('.')) or
-
-            (len(nodeid) == self._fansize + 2 and nodeid.endswith('..')))
+            (len(nodeid) == self._fansize + 1 and nodeid.endswith("."))
+            or (len(nodeid) == self._fansize + 2 and nodeid.endswith(".."))
+        )
 
     def get_nodedir(self, nodeid):
         """Return directory of nodeid."""
@@ -161,24 +161,24 @@ class NodeFSStandard(NodeFSSimple):
     - nodeids cannot be '.' or '..'
     """
 
-    BANNED_NODEIDS = ['.', '..']
+    BANNED_NODEIDS = [".", ".."]
 
-    def __init__(self, rootpath, others='00_extra'):
+    def __init__(self, rootpath, others="00_extra"):
         super().__init__(rootpath)
         self._othersdir = others
-        assert(len(self._othersdir) > self._fansize)
+        assert len(self._othersdir) > self._fansize
 
     def _is_other(self, nodeid):
         """Return True if nodeid requires storing in others directory."""
 
         return (
             # Less than or equal to fansize
-            len(nodeid) <= self._fansize or
-
+            len(nodeid) <= self._fansize
+            or
             # Greater than fansize and ends with dots
-            (len(nodeid) == self._fansize + 1 and nodeid.endswith('.')) or
-
-            (len(nodeid) == self._fansize + 2 and nodeid.endswith('..')))
+            (len(nodeid) == self._fansize + 1 and nodeid.endswith("."))
+            or (len(nodeid) == self._fansize + 2 and nodeid.endswith(".."))
+        )
 
     def get_nodedir(self, nodeid):
         """Return directory of nodeid."""
@@ -193,13 +193,12 @@ class NodeFSStandard(NodeFSSimple):
 
         # Contains invalid characters
         if not re.match(self.VALID_REGEX, nodeid):
-            raise Exception(
-                f'Nodeid contains invalid characters: "{nodeid}"')
+            raise Exception(f'Nodeid contains invalid characters: "{nodeid}"')
 
         if not self._is_other(nodeid):
-            return os.path.join(self._rootpath,
-                                nodeid[:self._fansize],
-                                nodeid[self._fansize:])
+            return os.path.join(
+                self._rootpath, nodeid[: self._fansize], nodeid[self._fansize :]
+            )
         else:
             # Shorter nodeids go directly in the otherdir.
             return os.path.join(self._rootpath, self._othersdir, nodeid)
@@ -221,29 +220,35 @@ class NodeFS(NodeFSStandard):
     Builds off of NodeFSStandard to support any non-empty nodeid.
     """
 
-    BANNED_NODEIDS = ['.', '..']
+    BANNED_NODEIDS = [".", ".."]
 
-    def __init__(self, rootpath, others='00_extra',
-                 index='00_index.db', tablename='nodes',
-                 alt_tablename='alt_nodes'):
+    def __init__(
+        self,
+        rootpath,
+        others="00_extra",
+        index="00_index.db",
+        tablename="nodes",
+        alt_tablename="alt_nodes",
+    ):
         super().__init__(rootpath, others=others)
         self._indexfile = os.path.join(self._rootpath, index)
-        self._index = sqlitedict.open(self._indexfile, tablename,
-                                      flag='c', autocommit=True)
-        self._index_alt = sqlitedict.open(self._indexfile, alt_tablename,
-                                          flag='c')
+        self._index = sqlitedict.open(
+            self._indexfile, tablename, flag="c", autocommit=True
+        )
+        self._index_alt = sqlitedict.open(self._indexfile, alt_tablename, flag="c")
 
     def _is_nonstandard(self, nodeid):
         """Return True if nodeid requires special indexing."""
-        return(
+        return (
             # Long nodeids.
-            len(nodeid) > 255 or
-
+            len(nodeid) > 255
+            or
             # BANNED nodeids.
-            nodeid in self.BANNED_NODEIDS or
-
+            nodeid in self.BANNED_NODEIDS
+            or
             # Contains invalid characters.
-            not re.match(self.VALID_REGEX, nodeid))
+            not re.match(self.VALID_REGEX, nodeid)
+        )
 
     def _get_alt_nodeid(self, nodeid):
         # Determine alternate nodeid for this nonstandard nodeid.
@@ -262,23 +267,23 @@ class NodeFS(NodeFSStandard):
             return self._rootpath
 
         if nodeid == "":
-            raise Exception('Nodeid cannot not be zero-length.')
+            raise Exception("Nodeid cannot not be zero-length.")
 
         if self._is_nonstandard(nodeid):
             # Use alt_nodeid to lookup in general node pool.
             alt_nodeid = self._get_alt_nodeid(nodeid)
-            return os.path.join(self._rootpath,
-                                alt_nodeid[:self._fansize],
-                                alt_nodeid[self._fansize:])
+            return os.path.join(
+                self._rootpath, alt_nodeid[: self._fansize], alt_nodeid[self._fansize :]
+            )
 
         elif self._is_other(nodeid):
             # Shorter nodeids go directly in the otherdir.
             return os.path.join(self._rootpath, self._othersdir, nodeid)
         else:
             # Simple nodeids.
-            return os.path.join(self._rootpath,
-                                nodeid[:self._fansize],
-                                nodeid[self._fansize:])
+            return os.path.join(
+                self._rootpath, nodeid[: self._fansize], nodeid[self._fansize :]
+            )
 
     def delete_nodedir(self, nodeid):
         """Delete directory of nodeid."""
@@ -316,7 +321,7 @@ class NodeFS(NodeFSStandard):
             yield nodeid
 
 
-class NoteBookConnectionFSRaw (NoteBookConnection):
+class NoteBookConnectionFSRaw(NoteBookConnection):
     """
     Provides a NoteBookConnection using NodeFS as a backing.
     """
@@ -337,7 +342,7 @@ class NoteBookConnectionFSRaw (NoteBookConnection):
     def _get_node_attr_file(self, nodepath):
         return os.path.join(nodepath, NODE_META_FILE)
 
-    #======================
+    # ======================
     # connection API
 
     def connect(self, url):
@@ -355,7 +360,7 @@ class NoteBookConnectionFSRaw (NoteBookConnection):
         """Save any unsynced state."""
         pass
 
-    #======================
+    # ======================
     # Node I/O API
 
     def create_node(self, nodeid, attr):
@@ -396,13 +401,14 @@ class NoteBookConnectionFSRaw (NoteBookConnection):
         """Returns nodeid of notebook root node."""
         return self._rootid
 
-    #===============
+    # ===============
     # file API
 
     def open_file(self, nodeid, filename, mode="r", codec=None, _path=None):
         """Open a node file."""
         return self._filefs.open_file(
-            nodeid, filename, mode=mode, codec=codec, _path=_path)
+            nodeid, filename, mode=mode, codec=codec, _path=_path
+        )
 
     def delete_file(self, nodeid, filename, _path=None):
         """Delete a node file."""
@@ -420,7 +426,7 @@ class NoteBookConnectionFSRaw (NoteBookConnection):
         """Return True if file exists."""
         return self._filefs.has_file(nodeid, filename, _path)
 
-    #---------------------------------
+    # ---------------------------------
     # indexing
 
     def index(self, query):
@@ -446,8 +452,10 @@ class NoteBookConnectionFSRaw (NoteBookConnection):
                 (nodeid, node["title"])
                 for nodeid, node in (
                     (nodeid, self.read_node(nodeid))
-                    for nodeid in self._nodefs.iter_nodeids())
-                if query[2] in node.get("title", "")]
+                    for nodeid in self._nodefs.iter_nodeids()
+                )
+                if query[2] in node.get("title", "")
+            ]
 
         elif query[0] == "search_fulltext":
             # TODO: could implement brute-force backup

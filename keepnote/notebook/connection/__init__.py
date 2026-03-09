@@ -1,8 +1,8 @@
 """
 
-    KeepNote
+KeepNote
 
-    Low-level Create-Read-Update-Delete (CRUD) interface for notebooks.
+Low-level Create-Read-Update-Delete (CRUD) interface for notebooks.
 
 """
 
@@ -28,11 +28,11 @@
 import urlparse
 
 
-#=============================================================================
+# =============================================================================
 # errors
 
 
-class ConnectionError (StandardError):
+class ConnectionError(StandardError):
     def __init__(self, msg="", error=None):
         StandardError.__init__(self, msg)
         self.error = error
@@ -44,32 +44,32 @@ class ConnectionError (StandardError):
             return StandardError.repr(self)
 
 
-class UnknownNode (ConnectionError):
+class UnknownNode(ConnectionError):
     def __init__(self, msg="unknown node"):
         ConnectionError.__init__(self, msg)
 
 
-class NodeExists (ConnectionError):
+class NodeExists(ConnectionError):
     def __init__(self, msg="node exists"):
         ConnectionError.__init__(self, msg)
 
 
-class FileError (ConnectionError):
+class FileError(ConnectionError):
     def __init__(self, msg="file error", error=None):
         ConnectionError.__init__(self, msg, error)
 
 
-class UnknownFile (FileError):
+class UnknownFile(FileError):
     def __init__(self, msg="unknown file"):
         FileError.__init__(self, msg)
 
 
-class CorruptIndex (ConnectionError):
+class CorruptIndex(ConnectionError):
     def __init__(self, msg="index error", error=None):
         ConnectionError.__init__(self, msg, error)
 
 
-#=============================================================================
+# =============================================================================
 # file path functions
 
 
@@ -80,9 +80,10 @@ def path_join(*parts):
     Node files always use '/' for path separator.
     """
     # skip empty strings
-    parts = [(part[:-1] if part.endswith("/") and i < len(parts) - 1
-              else part)
-             for i, part in enumerate(parts)]
+    parts = [
+        (part[:-1] if part.endswith("/") and i < len(parts) - 1 else part)
+        for i, part in enumerate(parts)
+    ]
     return "/".join(part for part in parts if part != "")
 
 
@@ -110,16 +111,17 @@ def is_dir(filename):
     """
     Returns True if node filename represents a directory.
     """
-    return filename.endswith('/')
+    return filename.endswith("/")
 
 
-#=============================================================================
+# =============================================================================
 
-class NoteBookConnection :
+
+class NoteBookConnection:
     def __init__(self):
         pass
 
-    #======================
+    # ======================
     # connection API
 
     def connect(self, url):
@@ -134,7 +136,7 @@ class NoteBookConnection :
         """Save any unsynced state"""
         pass
 
-    #======================
+    # ======================
     # Node I/O API
 
     def create_node(self, nodeid, attr):
@@ -166,7 +168,7 @@ class NoteBookConnection :
         """Returns nodeid of notebook root node"""
         raise NotImplementedError("get_rootid")
 
-    #===============
+    # ===============
     # file API
 
     def open_file(self, nodeid, filename, mode="r", codec=None):
@@ -225,8 +227,12 @@ class NoteBookConnection :
             self.create_dir(nodeid2, filename2)
 
             for filename in self.list_dir(nodeid1):
-                self.copy_file(nodeid1, path_join(filename1, filename),
-                               nodeid2, path_join(filename2, filename))
+                self.copy_file(
+                    nodeid1,
+                    path_join(filename1, filename),
+                    nodeid2,
+                    path_join(filename2, filename),
+                )
 
         else:
             # copy file
@@ -244,7 +250,7 @@ class NoteBookConnection :
                 stream2 = open(filename2, "w")
 
             while True:
-                data = stream1.read(1024*4)
+                data = stream1.read(1024 * 4)
                 if len(data) == 0:
                     break
                 stream2.write(data)
@@ -252,7 +258,7 @@ class NoteBookConnection :
             stream1.close()
             stream2.close()
 
-    #---------------------------------
+    # ---------------------------------
     # indexing
 
     def index(self, query):
@@ -300,7 +306,7 @@ class NoteBookConnection :
         elif query[0] == "index_all":
             return self.index_all()
 
-    #---------------------------------
+    # ---------------------------------
     # indexing/querying
     # TODO: perhaps deprecate this for generic index() calls
 
@@ -323,7 +329,7 @@ class NoteBookConnection :
     def get_attr_by_id(self, nodeid, key):
         return self.index(["get_attr", nodeid, key])
 
-    #---------------------------------------
+    # ---------------------------------------
     # FS-specific index management
     # TODO: try to deprecate
 
@@ -340,7 +346,7 @@ class NoteBookConnection :
     def index_all(self):
         return self.index(["index_all"])
 
-    #================================
+    # ================================
     # Filesystem-specific API (may not be supported by some connections)
 
     def get_node_path(self, nodeid):
@@ -357,11 +363,11 @@ class NoteBookConnection :
         raise NotImplementedError("get_file")
 
 
-#=============================================================================
+# =============================================================================
 # Connection registration
 
-class NoteBookConnections :
 
+class NoteBookConnections:
     def __init__(self):
         self._protos = {}
 

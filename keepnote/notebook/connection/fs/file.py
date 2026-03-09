@@ -58,8 +58,7 @@ class FileFS:
             # Window-specific line ending conversion
             stream = safefile.open(fullname, mode + "b", codec=codec)
         except Exception as e:
-            raise FileError(
-                f"cannot open file '{nodeid}' '{filename}': {str(e)}", e)
+            raise FileError(f"cannot open file '{nodeid}' '{filename}': {str(e)}", e)
 
         return stream
 
@@ -71,7 +70,7 @@ class FileFS:
         try:
             if os.path.isfile(filepath):
                 os.remove(filepath)
-            elif filename.endswith('/') and os.path.isdir(filepath):
+            elif filename.endswith("/") and os.path.isdir(filepath):
                 shutil.rmtree(filepath)
             else:
                 # filename may not exist, delete is successful by default
@@ -91,8 +90,7 @@ class FileFS:
             if not os.path.isdir(fullname):
                 os.makedirs(fullname)
         except Exception as e:
-            raise FileError(
-                f"cannot create dir '{nodeid}' '{filename}'", e)
+            raise FileError(f"cannot create dir '{nodeid}' '{filename}'", e)
 
     def list_dir(self, nodeid, filename="/", _path=None):
         """List data files in node."""
@@ -109,8 +107,7 @@ class FileFS:
 
         for name in filenames:
             # TODO: extract this as a documented method.
-            if (name != NODE_META_FILE and
-                    not name.startswith("__")):
+            if name != NODE_META_FILE and not name.startswith("__"):
                 fullname = os.path.join(path, name)
                 node_fullname = path_join(filename, name)
                 if not os.path.exists(get_node_meta_file(fullname)):
@@ -128,8 +125,9 @@ class FileFS:
         else:
             return os.path.isfile(get_node_filename(path, filename))
 
-    def move_file(self, nodeid1, filename1, nodeid2, filename2,
-                  _path1=None, _path2=None):
+    def move_file(
+        self, nodeid1, filename1, nodeid2, filename2, _path1=None, _path2=None
+    ):
         """Rename a node file."""
         path1 = self.get_node_path(nodeid1) if _path1 is None else _path1
         path2 = self.get_node_path(nodeid2) if _path2 is None else _path2
@@ -147,8 +145,9 @@ class FileFS:
         except Exception as e:
             raise FileError(f"could not move file '{nodeid1}' '{filename1}'", e)
 
-    def copy_file(self, nodeid1, filename1, nodeid2, filename2,
-                  _path1=None, _path2=None):
+    def copy_file(
+        self, nodeid1, filename1, nodeid2, filename2, _path1=None, _path2=None
+    ):
         """
         Copy a file between two nodes.
 
@@ -175,5 +174,4 @@ class FileFS:
                 # filename2 could be an existing directory
                 shutil.copytree(fullname1, fullname2)
         except Exception as e:
-            raise FileError(
-                f"unable to copy file '{nodeid1}' '{filename1}'", e)
+            raise FileError(f"unable to copy file '{nodeid1}' '{filename1}'", e)

@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Task object for threading
+KeepNote
+Task object for threading
 
 """
 
@@ -32,7 +32,7 @@ from heapq import heappop
 NULL = object()
 
 
-class LRUDict (dict):
+class LRUDict(dict):
     """A Least Recently Used (LRU) dict-based cache"""
 
     def __init__(self, limit=1000):
@@ -67,8 +67,7 @@ class LRUDict (dict):
         return val
 
 
-class DictCache :
-
+class DictCache:
     def __init__(self, func, cache_dict):
         self._func = func
         self._cache_dict = cache_dict
@@ -80,7 +79,6 @@ class DictCache :
         return val
 
 
-class LRUCache (DictCache):
-
+class LRUCache(DictCache):
     def __init__(self, func, limit=1000):
         DictCache.__init__(self, func, LRUDict(limit))

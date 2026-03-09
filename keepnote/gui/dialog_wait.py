@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    General Wait Dialog
+KeepNote
+General Wait Dialog
 
 """
 
@@ -29,7 +29,8 @@ import time
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gtk.glade
 import gobject
 
@@ -38,7 +39,7 @@ import keepnote
 from keepnote import get_resource
 
 
-class WaitDialog :
+class WaitDialog:
     """General dialog for background tasks"""
 
     def __init__(self, parent_window):
@@ -46,8 +47,9 @@ class WaitDialog :
         self._task = None
 
     def show(self, title, message, task, cancel=True):
-        self.xml = gtk.glade.XML(get_resource("rc", "keepnote.glade"),
-                                 "wait_dialog", keepnote.GETTEXT_DOMAIN)
+        self.xml = gtk.glade.XML(
+            get_resource("rc", "keepnote.glade"), "wait_dialog", keepnote.GETTEXT_DOMAIN
+        )
         self.dialog = self.xml.get_widget("wait_dialog")
         self.xml.signal_autoconnect(self)
         self.dialog.connect("close", self._on_close)
@@ -91,15 +93,17 @@ class WaitDialog :
                 t = time.time()
                 timestep = t - lasttime[0]
                 lasttime[0] = t
-                step = max(min(timestep / pulse_rate, .1), .001)
+                step = max(min(timestep / pulse_rate, 0.1), 0.001)
                 self.progressbar.set_pulse_step(step)
                 self.progressbar.pulse()
             else:
                 self.progressbar.set_fraction(percent)
 
             # filter for messages we process
-            messages = filter(lambda x: isinstance(x, tuple) and len(x) == 2,
-                              self._task.get_messages())
+            messages = filter(
+                lambda x: isinstance(x, tuple) and len(x) == 2,
+                self._task.get_messages(),
+            )
             texts = filter(lambda ab: ab[0] == "text", messages)
             details = filter(lambda ab: ab[0] == "detail", messages)
 

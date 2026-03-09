@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Command processing for KeepNote
+KeepNote
+Command processing for KeepNote
 
 """
 
@@ -38,8 +38,8 @@ import keepnote
 
 # constants
 KEEPNOTE_HEADER = "keepnote\n"
-#KEEPNOTE_EOF = "\x00"
-#KEEPNOTE_ESCAPE = "\xff"
+# KEEPNOTE_EOF = "\x00"
+# KEEPNOTE_ESCAPE = "\xff"
 
 
 # TODO: add unicode support
@@ -47,8 +47,9 @@ KEEPNOTE_HEADER = "keepnote\n"
 # TODO: ensure commands are executed in order, but don't allow malicious
 # process to DOS main process (may be minor issue)
 
-#=============================================================================
+# =============================================================================
 # lock file
+
 
 def get_lock_file(lockfile):
     """
@@ -92,7 +93,7 @@ def get_lock_file(lockfile):
 
 def write_lock_file(fd, port, passwd):
     """Write a KeepNote lock file"""
-    os.write(fd, "%d:%s" % (port, passwd))
+    os.write(fd, f"{port}:{passwd}")
 
 
 def read_lock_file(fd):
@@ -108,8 +109,9 @@ def make_passwd():
     return str(random.randint(0, 1000000))
 
 
-#=============================================================================
+# =============================================================================
 # sockets
+
 
 def open_socket(port=None, start_port=4000, end_port=10000, tries=10):
     """
@@ -188,7 +190,7 @@ def process_connection(conn, addr, passwd, execfunc):
             stdout = sys.stdout
             sys.stdout = connfile
             execfunc(parse_command(command))
-            #connfile.write(KEEPNOTE_EOF)
+            # connfile.write(KEEPNOTE_EOF)
             connfile.flush()
         except:
             keepnote.log_error()
@@ -207,7 +209,7 @@ def process_connection(conn, addr, passwd, execfunc):
         conn.close()
 
 
-#=============================================================================
+# =============================================================================
 # commands read/write
 
 
@@ -217,12 +219,12 @@ def unescape(text):
     i = 0
     while i < len(text):
         if text[i] == "\\" and i + 1 < len(text):
-            if text[i+1] == "n":
+            if text[i + 1] == "n":
                 # newline
                 text2.append("\n")
             else:
                 # literal
-                text2.append(text[i+1])
+                text2.append(text[i + 1])
             i += 1
         else:
             text2.append(text[i])
@@ -252,7 +254,7 @@ def split_args(text):
     args = []
     last = 0
     for i in xrange(len(text)):
-        if text[i] == " " and (i == 0 or text[i-1] != "\\"):
+        if text[i] == " " and (i == 0 or text[i - 1] != "\\"):
             args.append(text[last:i])
             last = i + 1
     args.append(text[last:])
@@ -269,8 +271,7 @@ def format_command(argv):
     return " ".join(escape(x) for x in argv)
 
 
-class CommandExecutor :
-
+class CommandExecutor:
     def __init__(self):
         self._execfunc = None
         self._app = None
@@ -297,9 +298,9 @@ class CommandExecutor :
         self._execfunc = execfunc
 
         # start listening to socket for remote commands
-        thread.start_new_thread(listen_commands,
-                                (sock, process_connection, (passwd,
-                                                            self.execute)))
+        thread.start_new_thread(
+            listen_commands, (sock, process_connection, (passwd, self.execute))
+        )
 
     def _connect(self, fd):
         """Connect to the main process"""
@@ -319,7 +320,7 @@ class CommandExecutor :
 
         # send password
         connfile = s.makefile()
-        connfile.write("%s\n" % passwd)
+        connfile.write(f"{passwd}\n")
         connfile.flush()
 
         def execute(app, argv):
@@ -330,7 +331,7 @@ class CommandExecutor :
             # display return
             try:
                 while 1:
-                    c = s.recv(1024*4)
+                    c = s.recv(1024 * 4)
                     if len(c) == 0:
                         break
                     sys.stdout.write(c)
@@ -341,6 +342,7 @@ class CommandExecutor :
             # close socket
             connfile.close()
             s.close()
+
         self._execfunc = execute
 
     def setup(self, execfunc):
@@ -403,7 +405,7 @@ def get_command_executor(func, port=None):
     return main_proc, cmd_exec
 
 
-#=============================================================================
+# =============================================================================
 # old code
 
 '''
@@ -469,7 +471,7 @@ def parse_result(result):
 '''
 
 
-'''
+"""
 # dbus
 try:
     import dbus
@@ -536,4 +538,4 @@ def get_command_executor(listen, exec_func):
         obj = bus.get_object(APP_NAME, "/")
         ce = dbus.Interface(obj, APP_NAME)
         return False, ce
-'''
+"""

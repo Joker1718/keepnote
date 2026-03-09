@@ -1,6 +1,6 @@
 """
-    KeepNote
-    Extension system
+KeepNote
+Extension system
 """
 
 #
@@ -22,9 +22,9 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-
 import imp
 import os
+
 try:
     import xml.etree.ElementTree as ET
 except ImportError:
@@ -40,18 +40,18 @@ EXTENSION_EXT = ".kne"  # filename extension for KeepNote Extensions
 INFO_FILE = "info.xml"
 
 
-class DependencyError (StandardError):
+class DependencyError(StandardError):
     """Exception for dependency error"""
+
     def __init__(self, ext, dep):
         self.ext = ext
         self.dep = dep
 
     def __str__(self):
-        return "Extension '%s' has failed dependency %s" % \
-            (self.ext.key, self.dep)
+        return "Extension '%s' has failed dependency %s" % (self.ext.key, self.dep)
 
 
-#=============================================================================
+# =============================================================================
 # extension functions
 
 
@@ -92,8 +92,7 @@ def import_extension(app, name, filename):
         raise keepnote.KeepNotePreferenceError(f"cannot load extension '{filename}'", e)
 
     try:
-        mod = imp.load_module(name, infile, filename2,
-                              (".py", "rb", imp.PY_SOURCE))
+        mod = imp.load_module(name, infile, filename2, (".py", "rb", imp.PY_SOURCE))
         ext = mod.Extension(app)
         ext.key = name
         ext.read_info()
@@ -136,7 +135,7 @@ def dependency_satisfied(ext, dep):
     name, rel, version = dep
 
     if ext is None:
-        return (rel == "no")
+        return rel == "no"
 
     if rel == ">":
         if not (ext.version > version):
@@ -175,7 +174,7 @@ def is_extension_install_file(filename):
     return filename.endswith(EXTENSION_EXT)
 
 
-class Extension :
+class Extension:
     """KeepNote Extension"""
 
     version = (1, 0)
@@ -267,7 +266,7 @@ class Extension :
         """
         return [("keepnote", ">=", (0, 6, 1))]
 
-    #===============================
+    # ===============================
     # filesystem paths
 
     def get_base_dir(self, exist=True):

@@ -1,9 +1,9 @@
 """
 
-    KeepNote
-    Tee File Streams
+KeepNote
+Tee File Streams
 
-    Allow one file stream to multiplex for multiple file streams
+Allow one file stream to multiplex for multiple file streams
 
 """
 
@@ -27,7 +27,7 @@
 #
 
 
-class TeeFileStream :
+class TeeFileStream:
     """Create a file stream that forwards writes to multiple streams"""
 
     def __init__(self, streams, autoflush=False):

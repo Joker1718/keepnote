@@ -55,7 +55,7 @@ def decode(obj):
     return loads(str(obj))
 
 
-class SqliteDict(object, DictMixin):
+class SqliteDict(DictMixin):
     def __init__(self, filename=None, tablename='unnamed', flag='c',
                  autocommit=False, journal_mode="DELETE"):
         """
@@ -89,8 +89,8 @@ class SqliteDict(object, DictMixin):
         self.filename = filename
         self.tablename = tablename
 
-        logger.info("opening Sqlite table %r in %s" % (tablename, filename))
-        MAKE_TABLE = 'CREATE TABLE IF NOT EXISTS %s (key TEXT PRIMARY KEY, value BLOB)' % self.tablename
+        logger.info(f"opening Sqlite table {tablename!r} in {filename}")
+        MAKE_TABLE = f'CREATE TABLE IF NOT EXISTS {self.tablename} (key TEXT PRIMARY KEY, value BLOB)'
         self.conn = SqliteMultithread(filename, autocommit=autocommit, journal_mode=journal_mode)
         self.conn.execute(MAKE_TABLE)
         self.conn.commit()
@@ -105,7 +105,7 @@ class SqliteDict(object, DictMixin):
 
     def __str__(self):
 #        return "SqliteDict(%i items in %s)" % (len(self), self.conn.filename)
-        return "SqliteDict(%s)" % (self.conn.filename)
+        return f"SqliteDict({self.conn.filename})"
 
     def __len__(self):
         # `select count (*)` is super slow in sqlite (does a linear scan!!)
@@ -113,35 +113,35 @@ class SqliteDict(object, DictMixin):
         # We could keep the total count of rows ourselves, by means of triggers,
         # but that seems too complicated and would slow down normal operation
         # (insert/delete etc).
-        GET_LEN = 'SELECT COUNT(*) FROM %s' % self.tablename
+        GET_LEN = f'SELECT COUNT(*) FROM {self.tablename}'
         rows = self.conn.select_one(GET_LEN)[0]
         return rows if rows is not None else 0
 
     def __bool__(self):
-        GET_LEN = 'SELECT MAX(ROWID) FROM %s' % self.tablename
+        GET_LEN = f'SELECT MAX(ROWID) FROM {self.tablename}'
         return self.conn.select_one(GET_LEN) is not None
 
     def iterkeys(self):
-        GET_KEYS = 'SELECT key FROM %s ORDER BY rowid' % self.tablename
+        GET_KEYS = f'SELECT key FROM {self.tablename} ORDER BY rowid'
         for key in self.conn.select(GET_KEYS):
             yield key[0]
 
     def itervalues(self):
-        GET_VALUES = 'SELECT value FROM %s ORDER BY rowid' % self.tablename
+        GET_VALUES = f'SELECT value FROM {self.tablename} ORDER BY rowid'
         for value in self.conn.select(GET_VALUES):
             yield decode(value[0])
 
     def iteritems(self):
-        GET_ITEMS = 'SELECT key, value FROM %s ORDER BY rowid' % self.tablename
+        GET_ITEMS = f'SELECT key, value FROM {self.tablename} ORDER BY rowid'
         for key, value in self.conn.select(GET_ITEMS):
             yield key, decode(value)
 
     def __contains__(self, key):
-        HAS_ITEM = 'SELECT 1 FROM %s WHERE key = ?' % self.tablename
+        HAS_ITEM = f'SELECT 1 FROM {self.tablename} WHERE key = ?'
         return self.conn.select_one(HAS_ITEM, (key,)) is not None
 
     def __getitem__(self, key):
-        GET_ITEM = 'SELECT value FROM %s WHERE key = ?' % self.tablename
+        GET_ITEM = f'SELECT value FROM {self.tablename} WHERE key = ?'
         item = self.conn.select_one(GET_ITEM, (key,))
         if item is None:
             raise KeyError(key)
@@ -149,13 +149,13 @@ class SqliteDict(object, DictMixin):
         return decode(item[0])
 
     def __setitem__(self, key, value):
-        ADD_ITEM = 'REPLACE INTO %s (key, value) VALUES (?,?)' % self.tablename
+        ADD_ITEM = f'REPLACE INTO {self.tablename} (key, value) VALUES (?,?)'
         self.conn.execute(ADD_ITEM, (key, encode(value)))
 
     def __delitem__(self, key):
         if key not in self:
             raise KeyError(key)
-        DEL_ITEM = 'DELETE FROM %s WHERE key = ?' % self.tablename
+        DEL_ITEM = f'DELETE FROM {self.tablename} WHERE key = ?'
         self.conn.execute(DEL_ITEM, (key,))
 
     def update(self, items=(), **kwds):
@@ -164,7 +164,7 @@ class SqliteDict(object, DictMixin):
         except AttributeError:
             pass
 
-        UPDATE_ITEMS = 'REPLACE INTO %s (key, value) VALUES (?, ?)' % self.tablename
+        UPDATE_ITEMS = f'REPLACE INTO {self.tablename} (key, value) VALUES (?, ?)'
         self.conn.executemany(UPDATE_ITEMS, items)
         if kwds:
             self.update(kwds)
@@ -182,7 +182,7 @@ class SqliteDict(object, DictMixin):
         return self.iterkeys()
 
     def clear(self):
-        CLEAR_ALL = 'DELETE FROM %s;' % self.tablename # avoid VACUUM, as it gives "OperationalError: database schema has changed"
+        CLEAR_ALL = f'DELETE FROM {self.tablename};' # avoid VACUUM, as it gives "OperationalError: database schema has changed"
         self.conn.commit()
         self.conn.execute(CLEAR_ALL)
         self.conn.commit()
@@ -193,7 +193,7 @@ class SqliteDict(object, DictMixin):
     sync = commit
 
     def close(self):
-        logger.debug("closing %s" % self)
+        logger.debug(f"closing {self}")
         if self.conn is not None:
             if self.conn.autocommit:
                 self.conn.commit()
@@ -208,11 +208,11 @@ class SqliteDict(object, DictMixin):
     def terminate(self):
         """Delete the underlying database file. Use with care."""
         self.close()
-        logger.info("deleting %s" % self.filename)
+        logger.info(f"deleting {self.filename}")
         try:
             os.remove(self.filename)
-        except IOError, e:
-            logger.warning("failed to delete %s: %s" % (self.filename, e))
+        except OSError as e:
+            logger.warning(f"failed to delete {self.filename}: {e}")
 
     def __del__(self):
         # like close(), but assume globals are gone by now (such as the logger)
@@ -239,7 +239,7 @@ class SqliteMultithread(Thread):
 
     """
     def __init__(self, filename, autocommit, journal_mode):
-        super(SqliteMultithread, self).__init__()
+        super().__init__()
         self.filename = filename
         self.autocommit = autocommit
         self.journal_mode = journal_mode
@@ -252,7 +252,7 @@ class SqliteMultithread(Thread):
             conn = sqlite3.connect(self.filename, isolation_level=None, check_same_thread=False)
         else:
             conn = sqlite3.connect(self.filename, check_same_thread=False)
-        conn.execute('PRAGMA journal_mode = %s' % self.journal_mode)
+        conn.execute(f'PRAGMA journal_mode = {self.journal_mode}')
         conn.text_factory = str
         cursor = conn.cursor()
         cursor.execute('PRAGMA synchronous=OFF')
@@ -366,4 +366,4 @@ if __name__ in '__main___':
         d.clear()
         assert not d
         d.close()
-    print 'all tests passed :-)'
+    print('all tests passed :-)')

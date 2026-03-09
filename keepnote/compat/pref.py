@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Backward compatiability for configuration information
+KeepNote
+Backward compatiability for configuration information
 
 """
 
@@ -52,7 +52,7 @@ XDG_USER_EXTENSIONS_DIR = "keepnote/extensions"
 XDG_USER_EXTENSIONS_DATA_DIR = "keepnote/extensions_data"
 
 
-#=============================================================================
+# =============================================================================
 # preference directory compatibility
 
 
@@ -70,7 +70,6 @@ def get_old_pref_dir2(home):
     $HOME/.config/takenote
     """
     return os.path.join(home, ".config", OLD_USER_PREF_DIR)
-
 
 
 def get_new_pref_dir(home):
@@ -91,10 +90,9 @@ def get_home():
 
 def get_old_user_pref_dir(home=None):
     """Returns the directory of the application preference file"""
-    
+
     p = keepnote.get_platform()
     if p == "unix" or p == "darwin":
-        
         if home is None:
             home = get_home()
         old_dir = get_old_pref_dir1(home)
@@ -116,10 +114,9 @@ def get_old_user_pref_dir(home=None):
 
 def get_new_user_pref_dir(home=None):
     """Returns the directory of the application preference file"""
-    
+
     p = keepnote.get_platform()
     if p == "unix" or p == "darwin":
-        
         if home is None:
             home = get_home()
         return xdg.get_config_file(USER_PREF_DIR, default=True)
@@ -138,7 +135,7 @@ def upgrade_user_pref_dir(old_user_pref_dir, new_user_pref_dir):
     """Moves preference data from old location to new one"""
 
     import sys
-    
+
     # move user preference directory
     shutil.copytree(old_user_pref_dir, new_user_pref_dir)
 
@@ -148,7 +145,7 @@ def upgrade_user_pref_dir(old_user_pref_dir, new_user_pref_dir):
 
     if os.path.exists(oldfile):
         os.rename(oldfile, newfile)
-    
+
         # rename root xml tag
         tree = ElementTree.ElementTree(file=newfile)
         elm = tree.getroot()
@@ -158,18 +155,16 @@ def upgrade_user_pref_dir(old_user_pref_dir, new_user_pref_dir):
     # move over data files from .local/share/takenote
     if keepnote.get_platform() in ("unix", "darwin"):
         datadir = os.path.join(get_home(), ".local", "share", "takenote")
-        
+
         old_ext_dir = os.path.join(datadir, "extensions")
-        new_ext_dir = os.path.join(new_user_pref_dir, "extensions")    
+        new_ext_dir = os.path.join(new_user_pref_dir, "extensions")
         if not os.path.exists(new_ext_dir) and os.path.exists(old_ext_dir):
             shutil.copytree(old_ext_dir, new_ext_dir)
 
         old_ext_dir = os.path.join(datadir, "extensions_data")
-        new_ext_dir = os.path.join(new_user_pref_dir, "extensions_data")    
+        new_ext_dir = os.path.join(new_user_pref_dir, "extensions_data")
         if not os.path.exists(new_ext_dir) and os.path.exists(old_ext_dir):
             shutil.copytree(old_ext_dir, new_ext_dir)
-            
-        
 
 
 def check_old_user_pref_dir(home=None):
@@ -179,12 +174,10 @@ def check_old_user_pref_dir(home=None):
     new_pref_dir = get_new_user_pref_dir(home)
     if not os.path.exists(new_pref_dir) and os.path.exists(old_pref_dir):
         upgrade_user_pref_dir(old_pref_dir, new_pref_dir)
-        
 
 
-#=============================================================================
+# =============================================================================
 # XML config compatibility
-
 
 
 DEFAULT_WINDOW_SIZE = (1024, 600)
@@ -192,9 +185,10 @@ DEFAULT_WINDOW_POS = (-1, -1)
 DEFAULT_VSASH_POS = 200
 DEFAULT_HSASH_POS = 200
 DEFAULT_VIEW_MODE = "vertical"
-DEFAULT_AUTOSAVE_TIME = 10 * 1000 # 10 sec (in msec)
+DEFAULT_AUTOSAVE_TIME = 10 * 1000  # 10 sec (in msec)
 
-class ExternalApp :
+
+class ExternalApp:
     """Class represents the information needed for calling an external application"""
 
     def __init__(self, key, title, prog, args=[]):
@@ -204,9 +198,9 @@ class ExternalApp :
         self.args = args
 
 
-class KeepNotePreferences :
+class KeepNotePreferences:
     """Preference data structure for the KeepNote application"""
-    
+
     def __init__(self):
 
         # external apps
@@ -225,7 +219,7 @@ class KeepNotePreferences :
         self.vsash_pos = DEFAULT_VSASH_POS
         self.hsash_pos = DEFAULT_HSASH_POS
         self.view_mode = DEFAULT_VIEW_MODE
-        
+
         # look and feel
         self.treeview_lines = True
         self.listview_rules = True
@@ -235,7 +229,7 @@ class KeepNotePreferences :
         # autosave
         self.autosave = True
         self.autosave_time = DEFAULT_AUTOSAVE_TIME
-        
+
         self.default_notebook = ""
         self.use_last_notebook = True
         self.timestamp_formats = dict(keepnote.timestamp.DEFAULT_TIMESTAMP_FORMATS)
@@ -255,37 +249,33 @@ class KeepNotePreferences :
         self.insert_image_path = docs
         self.save_image_path = docs
         self.attach_file_path = docs
-        
-        
 
         # temp variables for parsing
         self._last_timestamp_name = ""
         self._last_timestamp_format = ""
-
-
 
     def _get_data(self, data=None):
 
         if data is None:
             data = orderdict.OrderDict()
 
-        
         data["id"] = self.id
 
         # language
         data["language"] = self.language
 
         # window presentation options
-        data["window"] = {"window_size": self.window_size,
-                          "window_maximized": self.window_maximized,
-                          "use_systray": self.use_systray,
-                          "skip_taskbar": self.skip_taskbar
-                          }
+        data["window"] = {
+            "window_size": self.window_size,
+            "window_maximized": self.window_maximized,
+            "use_systray": self.use_systray,
+            "skip_taskbar": self.skip_taskbar,
+        }
 
         # autosave
         data["autosave"] = self.autosave
         data["autosave_time"] = self.autosave_time
-        
+
         data["default_notebook"] = self.default_notebook
         data["use_last_notebook"] = self.use_last_notebook
         data["recent_notebooks"] = self.recent_notebooks
@@ -296,27 +286,26 @@ class KeepNotePreferences :
             "general": {
                 "spell_check": self.spell_check,
                 "image_size_snap": self.image_size_snap,
-                "image_size_snap_amount": self.image_size_snap_amount
-                }
+                "image_size_snap_amount": self.image_size_snap_amount,
             }
-        
+        }
 
         # viewer
         data["viewers"] = {
             "three_pane_viewer": {
                 "vsash_pos": self.vsash_pos,
                 "hsash_pos": self.hsash_pos,
-                "view_mode": self.view_mode
-                }
+                "view_mode": self.view_mode,
             }
-        
+        }
+
         # look and feel
         data["look_and_feel"] = {
             "treeview_lines": self.treeview_lines,
             "listview_rules": self.listview_rules,
             "use_stock_icons": self.use_stock_icons,
-            "use_minitoolbar": self.use_minitoolbar
-            }
+            "use_minitoolbar": self.use_minitoolbar,
+        }
 
         # dialog chooser paths
         data["default_paths"] = {
@@ -324,27 +313,21 @@ class KeepNotePreferences :
             "archive_notebook_path": self.archive_notebook_path,
             "insert_image_path": self.insert_image_path,
             "save_image_path": self.save_image_path,
-            "attach_file_path": self.attach_file_path
-            }
+            "attach_file_path": self.attach_file_path,
+        }
 
         # external apps
         data["external_apps"] = [
-            {"key": app.key,
-             "title": app.title,
-             "prog": app.prog,
-             "args": app.args}
-            for app in self.external_apps]
+            {"key": app.key, "title": app.title, "prog": app.prog, "args": app.args}
+            for app in self.external_apps
+        ]
 
         # extensions
-        data["extension_info"] = {
-            "disabled": self.disabled_extensions
-            }
+        data["extension_info"] = {"disabled": self.disabled_extensions}
         data["extensions"] = {}
-
 
         return data
 
-    
     def read(self, filename):
         """Read preferences from file"""
 
@@ -355,138 +338,173 @@ class KeepNotePreferences :
         # read xml preference file
         g_keepnote_pref_parser.read(self, filename)
 
-        
 
 g_keepnote_pref_parser = xmlo.XmlObject(
-    xmlo.Tag("keepnote", tags=[
-        xmlo.Tag("id", attr=("id", None, None)),
-        xmlo.Tag("language", attr=("language", None, None)),
-
-        xmlo.Tag("default_notebook",
-                 attr=("default_notebook", None, None)),
-        xmlo.Tag("use_last_notebook",
-                 attr=("use_last_notebook", xmlo.str2bool, xmlo.bool2str)),
-
-        # window presentation options
-        xmlo.Tag("view_mode",
-                 attr=("view_mode", None, None)),
-        xmlo.Tag("window_size",
-                 attr=("window_size",
-                       lambda x: tuple(map(int, x.split(","))),
-                       lambda x: "%d,%d" % x)),
-        xmlo.Tag("window_maximized",
-                 attr=("window_maximized", xmlo.str2bool, xmlo.bool2str)), 
-        xmlo.Tag("vsash_pos",
-                 attr=("vsash_pos", int, compose(str, int))),
-        xmlo.Tag("hsash_pos",
-                 attr=("hsash_pos", int, compose(str, int))),
-
-        
-        xmlo.Tag("treeview_lines",
-                 attr=("treeview_lines", xmlo.str2bool, xmlo.bool2str)),
-        xmlo.Tag("listview_rules",
-                 attr=("listview_rules", xmlo.str2bool, xmlo.bool2str)),
-        xmlo.Tag("use_stock_icons",
-                 attr=("use_stock_icons", xmlo.str2bool, xmlo.bool2str)),
-        xmlo.Tag("use_minitoolbar",
-                 attr=("use_minitoolbar", xmlo.str2bool, xmlo.bool2str)),
-
-
-        # image resize
-        xmlo.Tag("image_size_snap",
-                 attr=("image_size_snap", xmlo.str2bool, xmlo.bool2str)),
-        xmlo.Tag("image_size_snap_amount",
-                 attr=("image_size_snap_amount", int, compose(str, int))),
-
-        xmlo.Tag("use_systray",
-                 attr=("use_systray", xmlo.str2bool, xmlo.bool2str)),
-        xmlo.Tag("skip_taskbar",
-                 attr=("skip_taskbar", xmlo.str2bool, xmlo.bool2str)),
-                 
-        # misc options
-        xmlo.Tag("spell_check",
-                 attr=("spell_check", xmlo.str2bool, xmlo.bool2str)),
-
-        xmlo.Tag("autosave",
-                 attr=("autosave", xmlo.str2bool, xmlo.bool2str)),
-        xmlo.Tag("autosave_time",
-                 attr=("autosave_time", int, compose(str, int))),
-                 
-        # default paths
-        xmlo.Tag("new_notebook_path",
-                 attr=("new_notebook_path", None, None)),        
-        xmlo.Tag("archive_notebook_path",
-                 attr=("archive_notebook_path", None, None)),
-        xmlo.Tag("insert_image_path",
-                 attr=("insert_image_path", None, None)),
-        xmlo.Tag("save_image_path",
-                 attr=("save_image_path", None, None)),
-        xmlo.Tag("attach_file_path",
-                 attr=("attach_file_path", None, None)),
-        
-
-        # recent notebooks
-        xmlo.Tag("recent_notebooks", tags=[
-           xmlo.TagMany("notebook",
-                iterfunc=lambda s: range(len(s.recent_notebooks)),
-                get=lambda si, x: si[0].recent_notebooks.append(x),
-                set=lambda si: si[0].recent_notebooks[si[1]]
-                        )
-           ]),
-
-        # disabled extensions
-        xmlo.Tag("extensions", tags=[
-            xmlo.Tag("disabled", tags=[
-                xmlo.TagMany("extension",
-                iterfunc=lambda s: range(len(s.disabled_extensions)),
-                get=lambda si, x: si[0].disabled_extensions.append(x),
-                set=lambda si: si[0].disabled_extensions[si[1]]
-                        )
-                ]),
-            ]),
-
-
-        xmlo.Tag("external_apps", tags=[
-
-           xmlo.TagMany("app",
-                iterfunc=lambda s: range(len(s.external_apps)),
-                before=lambda si:
-                        si[0].external_apps.append(ExternalApp("", "", "")),
+    xmlo.Tag(
+        "keepnote",
+        tags=[
+            xmlo.Tag("id", attr=("id", None, None)),
+            xmlo.Tag("language", attr=("language", None, None)),
+            xmlo.Tag("default_notebook", attr=("default_notebook", None, None)),
+            xmlo.Tag(
+                "use_last_notebook",
+                attr=("use_last_notebook", xmlo.str2bool, xmlo.bool2str),
+            ),
+            # window presentation options
+            xmlo.Tag("view_mode", attr=("view_mode", None, None)),
+            xmlo.Tag(
+                "window_size",
+                attr=(
+                    "window_size",
+                    lambda x: tuple(map(int, x.split(","))),
+                    lambda x: "%d,%d" % x,
+                ),
+            ),
+            xmlo.Tag(
+                "window_maximized",
+                attr=("window_maximized", xmlo.str2bool, xmlo.bool2str),
+            ),
+            xmlo.Tag("vsash_pos", attr=("vsash_pos", int, compose(str, int))),
+            xmlo.Tag("hsash_pos", attr=("hsash_pos", int, compose(str, int))),
+            xmlo.Tag(
+                "treeview_lines", attr=("treeview_lines", xmlo.str2bool, xmlo.bool2str)
+            ),
+            xmlo.Tag(
+                "listview_rules", attr=("listview_rules", xmlo.str2bool, xmlo.bool2str)
+            ),
+            xmlo.Tag(
+                "use_stock_icons",
+                attr=("use_stock_icons", xmlo.str2bool, xmlo.bool2str),
+            ),
+            xmlo.Tag(
+                "use_minitoolbar",
+                attr=("use_minitoolbar", xmlo.str2bool, xmlo.bool2str),
+            ),
+            # image resize
+            xmlo.Tag(
+                "image_size_snap",
+                attr=("image_size_snap", xmlo.str2bool, xmlo.bool2str),
+            ),
+            xmlo.Tag(
+                "image_size_snap_amount",
+                attr=("image_size_snap_amount", int, compose(str, int)),
+            ),
+            xmlo.Tag("use_systray", attr=("use_systray", xmlo.str2bool, xmlo.bool2str)),
+            xmlo.Tag(
+                "skip_taskbar", attr=("skip_taskbar", xmlo.str2bool, xmlo.bool2str)
+            ),
+            # misc options
+            xmlo.Tag("spell_check", attr=("spell_check", xmlo.str2bool, xmlo.bool2str)),
+            xmlo.Tag("autosave", attr=("autosave", xmlo.str2bool, xmlo.bool2str)),
+            xmlo.Tag("autosave_time", attr=("autosave_time", int, compose(str, int))),
+            # default paths
+            xmlo.Tag("new_notebook_path", attr=("new_notebook_path", None, None)),
+            xmlo.Tag(
+                "archive_notebook_path", attr=("archive_notebook_path", None, None)
+            ),
+            xmlo.Tag("insert_image_path", attr=("insert_image_path", None, None)),
+            xmlo.Tag("save_image_path", attr=("save_image_path", None, None)),
+            xmlo.Tag("attach_file_path", attr=("attach_file_path", None, None)),
+            # recent notebooks
+            xmlo.Tag(
+                "recent_notebooks",
                 tags=[
-                    xmlo.Tag("title",
-                        get=lambda si,x:
-                             setattr(si[0].external_apps[si[1]], "title", x),
-                        set=lambda si: si[0].external_apps[si[1]].title),
-                    xmlo.Tag("name",
-                        get=lambda si,x:
-                             setattr(si[0].external_apps[si[1]], "key", x),
-                        set=lambda si: si[0].external_apps[si[1]].key),
-                    xmlo.Tag("program",                             
-                        get=lambda si,x:
-                             setattr(si[0].external_apps[si[1]], "prog", x),
-                        set=lambda si: si[0].external_apps[si[1]].prog)]
-           )]
-          
-        ),
-        xmlo.Tag("timestamp_formats", tags=[
-            xmlo.TagMany("timestamp_format",
-                iterfunc=lambda s: range(len(s.timestamp_formats)),
-                before=lambda si: setattr(si[0], "_last_timestamp_name", "") or
-                                     setattr(si[0], "_last_timestamp_format", ""),
-                after=lambda si:
-                    si[0].timestamp_formats.__setitem__(
-                        si[0]._last_timestamp_name,
-                        si[0]._last_timestamp_format),
+                    xmlo.TagMany(
+                        "notebook",
+                        iterfunc=lambda s: range(len(s.recent_notebooks)),
+                        get=lambda si, x: si[0].recent_notebooks.append(x),
+                        set=lambda si: si[0].recent_notebooks[si[1]],
+                    )
+                ],
+            ),
+            # disabled extensions
+            xmlo.Tag(
+                "extensions",
                 tags=[
-                    xmlo.Tag("name",
-                        get=lambda si,x: setattr(si[0], "_last_timestamp_name", x),
-                        set=lambda si: list(si[0].timestamp_formats.keys())[si[1]]),
-                    xmlo.Tag("format",
-                        get=lambda si,x: setattr(si[0], "_last_timestamp_format", x),
-                        set=lambda si: list(si[0].timestamp_formats.values())[si[1]])
-                    ]
-            )]
-        )
-    ]))
-
-
+                    xmlo.Tag(
+                        "disabled",
+                        tags=[
+                            xmlo.TagMany(
+                                "extension",
+                                iterfunc=lambda s: range(len(s.disabled_extensions)),
+                                get=lambda si, x: si[0].disabled_extensions.append(x),
+                                set=lambda si: si[0].disabled_extensions[si[1]],
+                            )
+                        ],
+                    ),
+                ],
+            ),
+            xmlo.Tag(
+                "external_apps",
+                tags=[
+                    xmlo.TagMany(
+                        "app",
+                        iterfunc=lambda s: range(len(s.external_apps)),
+                        before=lambda si: si[0].external_apps.append(
+                            ExternalApp("", "", "")
+                        ),
+                        tags=[
+                            xmlo.Tag(
+                                "title",
+                                get=lambda si, x: setattr(
+                                    si[0].external_apps[si[1]], "title", x
+                                ),
+                                set=lambda si: si[0].external_apps[si[1]].title,
+                            ),
+                            xmlo.Tag(
+                                "name",
+                                get=lambda si, x: setattr(
+                                    si[0].external_apps[si[1]], "key", x
+                                ),
+                                set=lambda si: si[0].external_apps[si[1]].key,
+                            ),
+                            xmlo.Tag(
+                                "program",
+                                get=lambda si, x: setattr(
+                                    si[0].external_apps[si[1]], "prog", x
+                                ),
+                                set=lambda si: si[0].external_apps[si[1]].prog,
+                            ),
+                        ],
+                    )
+                ],
+            ),
+            xmlo.Tag(
+                "timestamp_formats",
+                tags=[
+                    xmlo.TagMany(
+                        "timestamp_format",
+                        iterfunc=lambda s: range(len(s.timestamp_formats)),
+                        before=lambda si: (
+                            setattr(si[0], "_last_timestamp_name", "")
+                            or setattr(si[0], "_last_timestamp_format", "")
+                        ),
+                        after=lambda si: si[0].timestamp_formats.__setitem__(
+                            si[0]._last_timestamp_name, si[0]._last_timestamp_format
+                        ),
+                        tags=[
+                            xmlo.Tag(
+                                "name",
+                                get=lambda si, x: setattr(
+                                    si[0], "_last_timestamp_name", x
+                                ),
+                                set=lambda si: list(si[0].timestamp_formats.keys())[
+                                    si[1]
+                                ],
+                            ),
+                            xmlo.Tag(
+                                "format",
+                                get=lambda si, x: setattr(
+                                    si[0], "_last_timestamp_format", x
+                                ),
+                                set=lambda si: list(si[0].timestamp_formats.values())[
+                                    si[1]
+                                ],
+                            ),
+                        ],
+                    )
+                ],
+            ),
+        ],
+    )
+)

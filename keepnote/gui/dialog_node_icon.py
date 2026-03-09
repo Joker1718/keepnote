@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Update notebook dialog
+KeepNote
+Update notebook dialog
 
 """
 
@@ -29,7 +29,8 @@ import os
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gobject
 import gtk
 import gtk.glade
@@ -38,11 +39,12 @@ import gtk.glade
 import keepnote
 from keepnote import unicode_gtk
 import keepnote.gui
-from keepnote.gui.icons import \
-    guess_open_icon_filename, \
-    lookup_icon_filename, \
-    builtin_icons, \
-    get_node_icon_filenames
+from keepnote.gui.icons import (
+    guess_open_icon_filename,
+    lookup_icon_filename,
+    builtin_icons,
+    get_node_icon_filenames,
+)
 
 _ = keepnote.translate
 
@@ -51,10 +53,11 @@ def browse_file(parent, title, filename=None):
     """Callback for selecting file browser"""
 
     dialog = gtk.FileChooserDialog(
-        title, parent,
+        title,
+        parent,
         action=gtk.FILE_CHOOSER_ACTION_OPEN,
-        buttons=(_("Cancel"), gtk.RESPONSE_CANCEL,
-                 _("Open"), gtk.RESPONSE_OK))
+        buttons=(_("Cancel"), gtk.RESPONSE_CANCEL, _("Open"), gtk.RESPONSE_OK),
+    )
     dialog.set_transient_for(parent)
     dialog.set_modal(True)
 
@@ -74,7 +77,7 @@ def browse_file(parent, title, filename=None):
     return filename
 
 
-class NodeIconDialog :
+class NodeIconDialog:
     """Updates a notebook"""
 
     def __init__(self, app):
@@ -91,11 +94,13 @@ class NodeIconDialog :
         self.xml = gtk.glade.XML(
             keepnote.gui.get_resource("rc", "keepnote.glade"),
             "node_icon_dialog",
-            keepnote.GETTEXT_DOMAIN)
+            keepnote.GETTEXT_DOMAIN,
+        )
         self.dialog = self.xml.get_widget("node_icon_dialog")
         self.xml.signal_autoconnect(self)
-        self.dialog.connect("close", lambda w:
-                            self.dialog.response(gtk.RESPONSE_CANCEL))
+        self.dialog.connect(
+            "close", lambda w: self.dialog.response(gtk.RESPONSE_CANCEL)
+        )
         self.dialog.set_transient_for(self.main_window)
 
         self.icon_entry = self.xml.get_widget("icon_entry")
@@ -114,21 +119,24 @@ class NodeIconDialog :
         self.iconviews = [
             self.standard_iconview,
             self.notebook_iconview,
-            self.quick_iconview]
+            self.quick_iconview,
+        ]
 
         self.iconlists = [
             self.standard_iconlist,
             self.notebook_iconlist,
-            self.quick_iconlist]
+            self.quick_iconlist,
+        ]
 
         self.iconview_signals = {}
         for iconview in self.iconviews:
-            self.iconview_signals[iconview] = \
-                iconview.connect("selection-changed",
-                                 self.on_iconview_selection_changed)
+            self.iconview_signals[iconview] = iconview.connect(
+                "selection-changed", self.on_iconview_selection_changed
+            )
 
-            iconview.connect("item-activated", lambda w, it:
-                             self.on_set_icon_button_clicked(w))
+            iconview.connect(
+                "item-activated", lambda w, it: self.on_set_icon_button_clicked(w)
+            )
 
         if node:
             self.set_icon("icon", node.get_attr("icon", ""))
@@ -180,8 +188,7 @@ class NodeIconDialog :
 
     def populate_iconlist(self, list, icons):
         for iconfile in icons:
-            filename = lookup_icon_filename(
-                self.main_window.get_notebook(), iconfile)
+            filename = lookup_icon_filename(self.main_window.get_notebook(), iconfile)
             if filename:
                 try:
                     pixbuf = keepnote.gui.get_pixbuf(filename)
@@ -197,15 +204,17 @@ class NodeIconDialog :
         self.standard_iconview.set_pixbuf_column(0)
 
         # populate notebook
-        self.populate_iconlist(self.notebook_iconlist,
-                               self.main_window.get_notebook().get_icons())
+        self.populate_iconlist(
+            self.notebook_iconlist, self.main_window.get_notebook().get_icons()
+        )
         self.notebook_iconview.set_model(self.notebook_iconlist)
         self.notebook_iconview.set_pixbuf_column(0)
 
         # populate quick pick icons
         self.populate_iconlist(
             self.quick_iconlist,
-            self.main_window.get_notebook().pref.get_quick_pick_icons())
+            self.main_window.get_notebook().pref.get_quick_pick_icons(),
+        )
         self.quick_iconview.set_model(self.quick_iconlist)
         self.quick_iconview.set_pixbuf_column(0)
 
@@ -265,14 +274,14 @@ class NodeIconDialog :
             if self.icon_open_entry.get_text().strip() == "":
                 open_filename = guess_open_icon_filename(filename)
 
-                if os.path.isabs(open_filename) and \
-                   os.path.exists(open_filename):
+                if os.path.isabs(open_filename) and os.path.exists(open_filename):
                     # do a full set
                     self.set_icon("icon_open", open_filename)
                 else:
                     # just do preview
-                    if lookup_icon_filename(self.main_window.get_notebook(),
-                                            open_filename):
+                    if lookup_icon_filename(
+                        self.main_window.get_notebook(), open_filename
+                    ):
                         self.set_preview("icon_open", open_filename)
                     else:
                         self.set_preview("icon_open", filename)
@@ -281,8 +290,7 @@ class NodeIconDialog :
         if os.path.isabs(filename):
             filename2 = filename
         else:
-            filename2 = lookup_icon_filename(self.main_window.get_notebook(),
-                                             filename)
+            filename2 = lookup_icon_filename(self.main_window.get_notebook(), filename)
 
         if kind == "icon":
             self.icon_image.set_from_file(filename2)

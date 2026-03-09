@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    RichText base classes for tags
+KeepNote
+RichText base classes for tags
 
 """
 
@@ -27,15 +27,16 @@
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gtk
 
 
-#=============================================================================
+# =============================================================================
 # tags and tag table
 
 
-class RichTextBaseTagTable (gtk.TextTagTable):
+class RichTextBaseTagTable(gtk.TextTagTable):
     """A tag table for a RichTextBuffer"""
 
     # Class Tags:
@@ -92,7 +93,7 @@ class RichTextBaseTagTable (gtk.TextTagTable):
 
     def get_class_of_tag(self, tag):
         """Returns the exclusive class of tag,
-           or None if not an exclusive tag"""
+        or None if not an exclusive tag"""
         return self._tag2class.get(tag, None)
 
     def lookup(self, name):
@@ -122,14 +123,12 @@ class RichTextBaseTagTable (gtk.TextTagTable):
         """Garbage collect"""
 
         if self.get_size() > self._next_gc_size:
-
-            #print "before", self.get_size()
+            # print "before", self.get_size()
 
             saved = set()
 
             # test to see if any expiring texttags have completely expired
             for buf in self._buffers:
-
                 # scan buffer for all present tags
                 it = buf.get_start_iter()
                 o = it.get_offset()
@@ -138,8 +137,7 @@ class RichTextBaseTagTable (gtk.TextTagTable):
                         if tag in self._expiring_tags:
                             saved.add(tag)
 
-                    if (not it.forward_to_tag_toggle(None) or
-                            it.get_offset() == o):
+                    if not it.forward_to_tag_toggle(None) or it.get_offset() == o:
                         break
                     o = it.get_offset()
 
@@ -153,14 +151,14 @@ class RichTextBaseTagTable (gtk.TextTagTable):
 
             self._next_gc_size = self.get_size() + self._gc_size_step
 
-            #def func(x, data):
+            # def func(x, data):
             #    print "tab", x.get_property("name")
-            #self.foreach(func)
+            # self.foreach(func)
 
-            #print "after", self.get_size()
+            # print "after", self.get_size()
 
 
-class RichTextTagClass :
+class RichTextTagClass:
     """
     A class of tags that specify the same attribute
 
@@ -182,8 +180,9 @@ class RichTextTagClass :
         self.exclusive = exclusive
 
 
-class RichTextTag (gtk.TextTag):
+class RichTextTag(gtk.TextTag):
     """A TextTag in a RichTextBuffer"""
+
     def __init__(self, name, **kargs):
         gtk.TextTag.__init__(self, name)
         self._count = 0

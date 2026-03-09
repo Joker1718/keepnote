@@ -1,6 +1,6 @@
 """
-    KeepNote
-    OrderDict module
+KeepNote
+OrderDict module
 """
 
 #
@@ -23,7 +23,7 @@
 #
 
 
-class OrderDict (dict):
+class OrderDict(dict):
     """
     An ordered dict
     """

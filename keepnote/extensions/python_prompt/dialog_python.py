@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Python Shell Dialog
+KeepNote
+Python Shell Dialog
 
 """
 
@@ -31,7 +31,8 @@ import StringIO
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gtk
 import gtk.gdk
 import pango
@@ -44,7 +45,7 @@ from keepnote.gui import Action
 
 def move_to_start_of_line(it):
     """Move a TextIter it to the start of a paragraph"""
-    
+
     if not it.starts_line():
         if it.get_line() > 0:
             it.backward_line()
@@ -53,14 +54,14 @@ def move_to_start_of_line(it):
             it = it.get_buffer().get_start_iter()
     return it
 
+
 def move_to_end_of_line(it):
     """Move a TextIter it to the start of a paragraph"""
     it.forward_line()
     return it
 
 
-class Stream :
-
+class Stream:
     def __init__(self, callback):
         self._callback = callback
 
@@ -71,10 +72,9 @@ class Stream :
         pass
 
 
-
-class PythonDialog :
+class PythonDialog:
     """Python dialog"""
-    
+
     def __init__(self, main_window):
         self.main_window = main_window
         self.app = main_window.get_app()
@@ -90,25 +90,26 @@ class PythonDialog :
         self.info_tag.set_property("foreground", "blue")
         self.info_tag.set_property("weight", pango.WEIGHT_BOLD)
 
-    
     def show(self):
 
         # setup environment
-        self.env = {"app": self.app,
-                    "window": self.main_window,
-                    "info": self.print_info}
+        self.env = {
+            "app": self.app,
+            "window": self.main_window,
+            "info": self.print_info,
+        }
 
         # create dialog
         self.dialog = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        self.dialog.connect("delete-event", lambda d,r: self.dialog.destroy())
+        self.dialog.connect("delete-event", lambda d, r: self.dialog.destroy())
         self.dialog.ptr = self
-        
+
         self.dialog.set_default_size(400, 400)
 
         self.vpaned = gtk.VPaned()
         self.dialog.add(self.vpaned)
         self.vpaned.set_position(200)
-        
+
         # editor buffer
         self.editor = gtk.TextView()
         self.editor.connect("key-press-event", self.on_key_press_event)
@@ -119,7 +120,7 @@ class PythonDialog :
         sw.set_shadow_type(gtk.SHADOW_IN)
         sw.add(self.editor)
         self.vpaned.add1(sw)
-        
+
         # output buffer
         self.output = gtk.TextView()
         self.output.set_wrap_mode(gtk.WRAP_WORD)
@@ -130,21 +131,18 @@ class PythonDialog :
         sw.set_shadow_type(gtk.SHADOW_IN)
         sw.add(self.output)
         self.vpaned.add2(sw)
-        
+
         self.output.get_buffer().tag_table.add(self.error_tag)
         self.output.get_buffer().tag_table.add(self.info_tag)
 
         self.dialog.show_all()
 
-
         self.output_text("Press Ctrl+Enter to execute. Ready...\n", "info")
-    
 
     def on_key_press_event(self, textview, event):
         """Callback from key press event"""
-        
-        if (event.keyval == gtk.keysyms.Return and
-            event.state & gtk.gdk.CONTROL_MASK):
+
+        if event.keyval == gtk.keysyms.Return and event.state & gtk.gdk.CONTROL_MASK:
             # execute
             self.execute_buffer()
             return True
@@ -153,7 +151,6 @@ class PythonDialog :
             # new line indenting
             self.newline_indent()
             return True
-
 
     def newline_indent(self):
         """Insert a newline and indent"""
@@ -171,7 +168,6 @@ class PythonDialog :
             else:
                 break
         buf.insert_at_cursor("\n" + "".join(indent))
-        
 
     def execute_buffer(self):
         """Execute code in buffer"""
@@ -195,10 +191,9 @@ class PythonDialog :
         # execute code
         execute(text, self.env, self.outfile, self.errfile)
 
-
     def output_text(self, text, mode="normal"):
         """Output text to output buffer"""
-        
+
         buf = self.output.get_buffer()
 
         # determine whether to follow
@@ -213,11 +208,10 @@ class PythonDialog :
             buf.insert_with_tags(buf.get_end_iter(), text, self.info_tag)
         else:
             buf.insert(buf.get_end_iter(), text)
-        
+
         if follow:
             buf.place_cursor(buf.get_end_iter())
             self.output.scroll_mark_onscreen(mark)
-
 
     def print_info(self):
 
@@ -229,8 +223,9 @@ class PythonDialog :
 
         sys.stdout.write("Open notebooks\n")
         sys.stdout.write("--------------\n")
-        sys.stdout.write("\n".join(n.get_path() for n in self.app.iter_notebooks()) + "\n")
-        
+        sys.stdout.write(
+            "\n".join(n.get_path() for n in self.app.iter_notebooks()) + "\n"
+        )
 
 
 def execute(code, vars, stdout, stderr):
@@ -246,4 +241,3 @@ def execute(code, vars, stdout, stderr):
         keepnote.log_error(e, sys.exc_info()[2], stderr)
     sys.stdout = __stdout
     sys.stderr = __stderr
-

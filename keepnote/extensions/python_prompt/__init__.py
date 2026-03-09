@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Python prompt extension
+KeepNote
+Python prompt extension
 
 """
 
@@ -24,12 +24,12 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-
 # python imports
 import gettext
 import time
 import os
 import sys
+
 _ = gettext.gettext
 
 
@@ -41,7 +41,8 @@ from keepnote.gui import extension
 # pygtk imports
 try:
     import pygtk
-    pygtk.require('2.0')
+
+    pygtk.require("2.0")
     import gtk
 
     from keepnote.gui import dialog_app_options
@@ -56,29 +57,31 @@ sys.path.append(os.path.dirname(__file__))
 import dialog_python
 
 
-class Extension (extension.Extension):
-
+class Extension(extension.Extension):
     def __init__(self, app):
         """Initialize extension"""
-        
-        extension.Extension.__init__(self, app)
 
+        extension.Extension.__init__(self, app)
 
     def get_depends(self):
         return [("keepnote", ">=", (0, 7, 1))]
 
-        
-    #================================
+    # ================================
     # UI setup
 
     def on_add_ui(self, window):
 
         # add menu options
-        self.add_action(window, "Python Prompt...", "Python Prompt...",
-                        lambda w: self.on_python_prompt(window))
+        self.add_action(
+            window,
+            "Python Prompt...",
+            "Python Prompt...",
+            lambda w: self.on_python_prompt(window),
+        )
 
-        self.add_ui(window,
-                """
+        self.add_ui(
+            window,
+            """
                 <ui>
                 <menubar name="main_menu_bar">
                    <menu action="Tools">
@@ -88,12 +91,11 @@ class Extension (extension.Extension):
                    </menu>
                 </menubar>
                 </ui>
-                """)
+                """,
+        )
 
-
-    #================================
+    # ================================
     # actions
-
 
     def on_python_prompt(self, window):
 

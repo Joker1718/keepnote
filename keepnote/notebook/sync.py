@@ -1,8 +1,8 @@
 """
 
-    KeepNote
+KeepNote
 
-    Syncing features for NoteBookConnection's
+Syncing features for NoteBookConnection's
 
 """
 
@@ -25,13 +25,12 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-
 from keepnote.notebook.connection import NodeExists
 from keepnote.notebook.connection import path_join
 from keepnote.notebook.connection import UnknownNode
 
 
-#=============================================================================
+# =============================================================================
 # syncing
 
 
@@ -65,8 +64,7 @@ def on_conflict_newer(nodeid, conn1, conn2, attr1=None, attr2=None):
         pass
 
 
-def sync_node(nodeid, conn1, conn2, attr=None,
-              on_conflict=on_conflict_newer):
+def sync_node(nodeid, conn1, conn2, attr=None, on_conflict=on_conflict_newer):
     """
     Sync a node 'nodeid' from connection 'conn1' to 'conn2'
 
@@ -100,7 +98,7 @@ def sync_files(conn1, nodeid1, conn2, nodeid2, path1="/", path2="/"):
     # copy files from node1 to node2
     for f in files:
         file1 = f
-        file2 = path_join(path2, f[len(path1):])
+        file2 = path_join(path2, f[len(path1) :])
 
         if f.endswith("/"):
             # recurse into directories
@@ -117,7 +115,7 @@ def copy_file(conn1, nodeid1, file1, conn2, nodeid2, file2):
     stream2 = conn2.open_file(nodeid2, file2, "w")
 
     while True:
-        data = stream1.read(1024*4)
+        data = stream1.read(1024 * 4)
         if len(data) == 0:
             break
         stream2.write(data)

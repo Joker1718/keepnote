@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Tabbed Viewer for KeepNote.
+KeepNote
+Tabbed Viewer for KeepNote.
 
 """
 
@@ -26,14 +26,14 @@
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gtk
 import gobject
 
 # keepnote imports
 import keepnote
-from keepnote.gui import \
-    add_actions, Action
+from keepnote.gui import add_actions, Action
 from keepnote.gui.three_pane_viewer import ThreePaneViewer
 from keepnote.gui.viewer import Viewer
 from keepnote.gui.icons import get_node_icon
@@ -42,8 +42,7 @@ from keepnote.gui.icons import get_node_icon
 _ = keepnote.translate
 
 
-class TwoWayDict :
-
+class TwoWayDict:
     def __init__(self):
 
         self._lookup1 = {}
@@ -60,13 +59,11 @@ class TwoWayDict :
         return self._lookup2.get(item2, default)
 
 
-class TabbedViewer (Viewer):
+class TabbedViewer(Viewer):
     """A viewer with a treeview, listview, and editor"""
 
-    def __init__(self, app, main_window, viewerid=None,
-                 default_viewer=ThreePaneViewer):
-        Viewer.__init__(self, app, main_window, viewerid,
-                        viewer_name="tabbed_viewer")
+    def __init__(self, app, main_window, viewerid=None, default_viewer=ThreePaneViewer):
+        Viewer.__init__(self, app, main_window, viewerid, viewer_name="tabbed_viewer")
         self._default_viewer = default_viewer
         self._current_viewer = None
         self._callbacks = {}
@@ -77,8 +74,9 @@ class TabbedViewer (Viewer):
         # TODO: move to the app?
         # viewer registry
         self._viewer_lookup = TwoWayDict()
-        self._viewer_lookup.add(ThreePaneViewer(app, main_window).get_name(),
-                                ThreePaneViewer)
+        self._viewer_lookup.add(
+            ThreePaneViewer(app, main_window).get_name(), ThreePaneViewer
+        )
 
         # layout
         self._tabs = gtk.Notebook()
@@ -119,8 +117,7 @@ class TabbedViewer (Viewer):
         if viewer is None:
             viewer = self._default_viewer(self._app, self._main_window)
         label = TabLabel(self, viewer, None, _("(Untitled)"))
-        label.connect("new-name", lambda w, text:
-                      self._on_new_tab_name(viewer, text))
+        label.connect("new-name", lambda w, text: self._on_new_tab_name(viewer, text))
         self._tabs.append_page(viewer, label)
         self._tabs.set_tab_reorderable(viewer, True)
         self._tab_names[viewer] = None
@@ -129,12 +126,13 @@ class TabbedViewer (Viewer):
         # setup viewer signals
         self._callbacks[viewer] = [
             viewer.connect("error", lambda w, m, e: self.emit("error", m, e)),
-            viewer.connect("status", lambda w, m, b:
-                           self.emit("status", m, b)),
-            viewer.connect("window-request", lambda w, t:
-                           self.emit("window-request", t)),
+            viewer.connect("status", lambda w, m, b: self.emit("status", m, b)),
+            viewer.connect(
+                "window-request", lambda w, t: self.emit("window-request", t)
+            ),
             viewer.connect("current-node", self.on_tab_current_node),
-            viewer.connect("modified", self.on_tab_modified)]
+            viewer.connect("modified", self.on_tab_modified),
+        ]
 
         # load app pref
         viewer.load_preferences(self._app.pref, True)
@@ -208,6 +206,7 @@ class TabbedViewer (Viewer):
                 self.emit("modified", notebook.save_needed())
             else:
                 self.emit("modified", False)
+
         gobject.idle_add(func)
 
     def _on_tab_added(self, tabs, child, page_num):
@@ -238,7 +237,7 @@ class TabbedViewer (Viewer):
         # truncate title
         MAX_TITLE = 20
         if len(title) > MAX_TITLE - 3:
-            title = title[:MAX_TITLE-3] + "..."
+            title = title[: MAX_TITLE - 3] + "..."
 
         # set tab label with node title
         tab = self._tabs.get_tab_label(viewer)
@@ -262,11 +261,15 @@ class TabbedViewer (Viewer):
         self._tabs.set_current_page(pos)
 
     def _on_button_press(self, widget, event):
-        if (self.get_toplevel().get_focus() == self._tabs and
-                event.button == 1 and event.type == gtk.gdk._2BUTTON_PRESS):
+        if (
+            self.get_toplevel().get_focus() == self._tabs
+            and event.button == 1
+            and event.type == gtk.gdk._2BUTTON_PRESS
+        ):
             # double click, start tab name editing
-            label = self._tabs.get_tab_label(self._tabs.get_nth_page(
-                self._tabs.get_current_page()))
+            label = self._tabs.get_tab_label(
+                self._tabs.get_nth_page(self._tabs.get_current_page())
+            )
             label.start_editing()
 
     def _on_new_tab_name(self, viewer, name):
@@ -278,7 +281,7 @@ class TabbedViewer (Viewer):
         if name is None:
             self.on_tab_current_node(viewer, viewer.get_current_node())
 
-    #==============================================
+    # ==============================================
 
     def set_notebook(self, notebook):
         """Set the notebook for the viewer"""
@@ -287,8 +290,7 @@ class TabbedViewer (Viewer):
             return self._current_viewer.set_notebook(notebook)
 
         # restore saved tabs
-        tabs = notebook.pref.get("viewers", "ids", self._viewerid,
-                                 "tabs", default=[])
+        tabs = notebook.pref.get("viewers", "ids", self._viewerid, "tabs", default=[])
 
         if len(tabs) == 0:
             # no tabs to restore
@@ -306,9 +308,10 @@ class TabbedViewer (Viewer):
                 # create new tab if notebook already loaded or
                 # viewer type does not match
                 viewer = (
-                    viewer_type(self._app, self._main_window,
-                                tab.get("viewerid", None))
-                    if viewer_type else None)
+                    viewer_type(self._app, self._main_window, tab.get("viewerid", None))
+                    if viewer_type
+                    else None
+                )
                 self.new_tab(viewer, init="none")
             else:
                 # no notebook loaded, so adopt viewerid
@@ -325,8 +328,8 @@ class TabbedViewer (Viewer):
 
         # set tab focus
         current_id = notebook.pref.get(
-            "viewers", "ids",  self._viewerid,
-            "current_viewer", default="")
+            "viewers", "ids", self._viewerid, "current_viewer", default=""
+        )
         for i, viewer in enumerate(self.iter_viewers()):
             if viewer.get_id() == current_id:
                 self._tabs.set_current_page(i)
@@ -374,8 +377,9 @@ class TabbedViewer (Viewer):
 
         # clear tab info for all open notebooks
         for notebook in notebooks:
-            tabs = notebook.pref.get("viewers", "ids", self._viewerid, "tabs",
-                                     default=[])
+            tabs = notebook.pref.get(
+                "viewers", "ids", self._viewerid, "tabs", default=[]
+            )
             tabs[:] = []
 
         current_viewer = self._current_viewer
@@ -384,19 +388,26 @@ class TabbedViewer (Viewer):
         for viewer in self.iter_viewers():
             notebook = viewer.get_notebook()
             if notebook:
-                tabs = notebook.pref.get(
-                    "viewers", "ids", self._viewerid, "tabs")
-                #node = viewer.get_current_node()
+                tabs = notebook.pref.get("viewers", "ids", self._viewerid, "tabs")
+                # node = viewer.get_current_node()
                 name = self._tab_names[viewer]
                 tabs.append(
-                    {"viewer_type": viewer.get_name(),
-                     "viewerid": viewer.get_id(),
-                     "name": name if name is not None else ""})
+                    {
+                        "viewer_type": viewer.get_name(),
+                        "viewerid": viewer.get_id(),
+                        "name": name if name is not None else "",
+                    }
+                )
 
                 # mark current viewer
                 if viewer == current_viewer:
-                    notebook.pref.set("viewers", "ids", self._viewerid,
-                                      "current_viewer", viewer.get_id())
+                    notebook.pref.set(
+                        "viewers",
+                        "ids",
+                        self._viewerid,
+                        "current_viewer",
+                        viewer.get_id(),
+                    )
 
     def undo(self):
         """Undo the last action in the viewer"""
@@ -409,7 +420,7 @@ class TabbedViewer (Viewer):
     def get_editor(self):
         return self._current_viewer.get_editor()
 
-    #===============================================
+    # ===============================================
     # node operations
 
     def new_node(self, kind, pos, parent=None):
@@ -434,7 +445,7 @@ class TabbedViewer (Viewer):
         """Visit a node in the viewer's history"""
         self._current_viewer.visit_history(offset)
 
-    #============================================
+    # ============================================
     # Search
 
     def start_search_result(self):
@@ -449,7 +460,7 @@ class TabbedViewer (Viewer):
         """Start a new search result"""
         return self._current_viewer.end_search_result()
 
-    #===========================================
+    # ===========================================
     # ui
 
     def add_ui(self, window):
@@ -459,12 +470,10 @@ class TabbedViewer (Viewer):
         self._action_group = gtk.ActionGroup("Tabbed Viewer")
         self._uis = []
         add_actions(self._action_group, self._get_actions())
-        self._main_window.get_uimanager().insert_action_group(
-            self._action_group, 0)
+        self._main_window.get_uimanager().insert_action_group(self._action_group, 0)
 
         for s in self._get_ui():
-            self._uis.append(
-                self._main_window.get_uimanager().add_ui_from_string(s))
+            self._uis.append(self._main_window.get_uimanager().add_ui_from_string(s))
 
         self._current_viewer.add_ui(window)
 
@@ -478,12 +487,12 @@ class TabbedViewer (Viewer):
             self._main_window.get_uimanager().remove_ui(ui)
         self._uis = []
 
-        self._main_window.get_uimanager().remove_action_group(
-            self._action_group)
+        self._main_window.get_uimanager().remove_action_group(self._action_group)
 
     def _get_ui(self):
 
-        return ["""
+        return [
+            """
 <ui>
 
 <!-- main window menu bar -->
@@ -505,34 +514,56 @@ class TabbedViewer (Viewer):
 
 </menubar>
 </ui>
-"""]
+"""
+        ]
 
     def _get_actions(self):
 
-        actions = map(lambda x: Action(*x), [
-            ("New Tab", None, _("New _Tab"),
-             "<shift><control>T", _("Open a new tab"),
-             lambda w: self.new_tab()),
-            ("Close Tab", None, _("Close _Tab"),
-             "<shift><control>W", _("Close a tab"),
-             lambda w: self.close_tab()),
-            ("Next Tab", None, _("_Next Tab"),
-             "<control>Page_Down", _("Switch to next tab"),
-             lambda w: self.switch_tab(1)),
-            ("Previous Tab", None, _("_Previous Tab"),
-             "<control>Page_Up", _("Switch to previous tab"),
-             lambda w: self.switch_tab(-1))
-
-            ])
+        actions = map(
+            lambda x: Action(*x),
+            [
+                (
+                    "New Tab",
+                    None,
+                    _("New _Tab"),
+                    "<shift><control>T",
+                    _("Open a new tab"),
+                    lambda w: self.new_tab(),
+                ),
+                (
+                    "Close Tab",
+                    None,
+                    _("Close _Tab"),
+                    "<shift><control>W",
+                    _("Close a tab"),
+                    lambda w: self.close_tab(),
+                ),
+                (
+                    "Next Tab",
+                    None,
+                    _("_Next Tab"),
+                    "<control>Page_Down",
+                    _("Switch to next tab"),
+                    lambda w: self.switch_tab(1),
+                ),
+                (
+                    "Previous Tab",
+                    None,
+                    _("_Previous Tab"),
+                    "<control>Page_Up",
+                    _("Switch to previous tab"),
+                    lambda w: self.switch_tab(-1),
+                ),
+            ],
+        )
         return actions
 
 
-class TabLabel (gtk.HBox):
-
+class TabLabel(gtk.HBox):
     def __init__(self, tabs, viewer, icon, text):
         gtk.HBox.__init__(self, False, 2)
 
-        #self.name = None
+        # self.name = None
 
         self.tabs = tabs
         self.viewer = viewer
@@ -545,7 +576,7 @@ class TabLabel (gtk.HBox):
 
         # label
         self.label = gtk.Label(text)
-        self.label.set_alignment(0, .5)
+        self.label.set_alignment(0, 0.5)
         self.label.show()
 
         # entry
@@ -567,18 +598,19 @@ class TabLabel (gtk.HBox):
         self.eclose_button.add(self.close_button)
         self.eclose_button.show()
 
-        self.close_button.set_alignment(0, .5)
+        self.close_button.set_alignment(0, 0.5)
         self.eclose_button.connect(
-            "enter-notify-event",
-            lambda w, e: highlight(w, gtk.STATE_PRELIGHT))
+            "enter-notify-event", lambda w, e: highlight(w, gtk.STATE_PRELIGHT)
+        )
         self.eclose_button.connect(
-            "leave-notify-event",
-            lambda w, e: highlight(w, self.close_button_state[0]))
+            "leave-notify-event", lambda w, e: highlight(w, self.close_button_state[0])
+        )
         self.close_button.show()
 
-        self.eclose_button.connect("button-press-event", lambda w, e:
-                                   self.tabs.close_viewer(self.viewer)
-                                   if e.button == 1 else None)
+        self.eclose_button.connect(
+            "button-press-event",
+            lambda w, e: self.tabs.close_viewer(self.viewer) if e.button == 1 else None,
+        )
 
         # layout
         self.pack_start(self.icon, False, False, 0)
@@ -623,5 +655,6 @@ class TabLabel (gtk.HBox):
 
 
 gobject.type_register(TabLabel)
-gobject.signal_new("new-name", TabLabel, gobject.SIGNAL_RUN_LAST,
-                   gobject.TYPE_NONE, (object,))
+gobject.signal_new(
+    "new-name", TabLabel, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (object,)
+)

@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Image Resize Dialog
+KeepNote
+Image Resize Dialog
 
 """
 
@@ -26,7 +26,8 @@
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gtk.glade
 
 # keepnote imports
@@ -36,8 +37,8 @@ from keepnote import get_resource
 # TODO: separate out error callback
 
 
-class ImageResizeDialog :
-    """Image Resize dialog """
+class ImageResizeDialog:
+    """Image Resize dialog"""
 
     def __init__(self, main_window, app_pref):
         self.main_window = main_window
@@ -50,9 +51,11 @@ class ImageResizeDialog :
         self.ignore_width_changed = 0
         self.ignore_height_changed = 0
         self.snap_size = self.app_pref.get(
-            "editors", "general", "image_size_snap_amount", default=50)
+            "editors", "general", "image_size_snap_amount", default=50
+        )
         self.snap_enabled = self.app_pref.get(
-            "editors", "general", "image_size_snap", default=True)
+            "editors", "general", "image_size_snap", default=True
+        )
 
         # widgets
         self.size_width_scale = None
@@ -66,12 +69,12 @@ class ImageResizeDialog :
     def on_resize(self, image):
         """Launch resize dialog"""
         if not image.is_valid():
-            self.main_window.error(
-                "Cannot resize image that is not properly loaded")
+            self.main_window.error("Cannot resize image that is not properly loaded")
             return
 
-        self.xml = gtk.glade.XML(get_resource("rc", "keepnote.glade"),
-                                 domain=keepnote.GETTEXT_DOMAIN)
+        self.xml = gtk.glade.XML(
+            get_resource("rc", "keepnote.glade"), domain=keepnote.GETTEXT_DOMAIN
+        )
         self.dialog = self.xml.get_widget("image_resize_dialog")
         self.dialog.set_transient_for(self.main_window)
         self.dialog.connect("response", lambda d, r: self.on_response(r))
@@ -103,11 +106,12 @@ class ImageResizeDialog :
         self.snap_entry.set_text(str(self.snap_size))
 
         # callback
-        self.xml.signal_autoconnect({
-            "on_width_entry_changed":
-            lambda w: self.on_size_changed("width"),
-            "on_height_entry_changed":
-            lambda w: self.on_size_changed("height")})
+        self.xml.signal_autoconnect(
+            {
+                "on_width_entry_changed": lambda w: self.on_size_changed("width"),
+                "on_height_entry_changed": lambda w: self.on_size_changed("height"),
+            }
+        )
 
         self.xml.signal_autoconnect(self)
 
@@ -141,8 +145,7 @@ class ImageResizeDialog :
                 self.image.scale(width, height)
                 self.dialog.destroy()
             else:
-                self.main_window.error(
-                    "Must specify positive integers for image size")
+                self.main_window.error("Must specify positive integers for image size")
 
         elif response == gtk.RESPONSE_CANCEL:
             self.dialog.destroy()
@@ -209,7 +212,7 @@ class ImageResizeDialog :
 
         if self.snap_enabled:
             snap = self.snap_size
-            width = int((width + snap/2.0) // snap * snap)
+            width = int((width + snap / 2.0) // snap * snap)
         self.set_size("width", str(width))
 
     def on_size_height_scale_value_changed(self, scale):
@@ -218,7 +221,7 @@ class ImageResizeDialog :
 
         if self.snap_enabled:
             snap = self.snap_size
-            height = int((height + snap/2.0) // snap * snap)
+            height = int((height + snap / 2.0) // snap * snap)
         self.set_size("height", str(height))
 
     def on_img_snap_check_toggled(self, check):

@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    TreeView
+KeepNote
+TreeView
 
 """
 #
@@ -25,7 +25,8 @@
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gobject
 import gtk
 
@@ -34,7 +35,7 @@ from keepnote.gui import treemodel
 from keepnote.gui import basetreeview
 
 
-class KeepNoteTreeView (basetreeview.KeepNoteBaseTreeView):
+class KeepNoteTreeView(basetreeview.KeepNoteBaseTreeView):
     """
     TreeView widget for the KeepNote NoteBook
     """
@@ -82,9 +83,9 @@ class KeepNoteTreeView (basetreeview.KeepNoteBaseTreeView):
 
         # make treeview searchable
         self.set_search_column(self.model.get_column_by_name("title").pos)
-        #self.set_fixed_height_mode(True)
+        # self.set_fixed_height_mode(True)
 
-    #=============================================
+    # =============================================
     # gui callbacks
 
     def on_key_released(self, widget, event):
@@ -109,7 +110,7 @@ class KeepNoteTreeView (basetreeview.KeepNoteBaseTreeView):
                 # double click --> goto node
                 self.emit("activate-node", nodes[0])
 
-    #==============================================
+    # ==============================================
     # actions
 
     def set_notebook(self, notebook):
@@ -136,8 +137,9 @@ class KeepNoteTreeView (basetreeview.KeepNoteBaseTreeView):
 
     def edit_node(self, node):
         path = treemodel.get_path_from_node(
-            self.model, node,
-            self.rich_model.get_node_column_pos())
-        gobject.idle_add(lambda: self.set_cursor_on_cell(
-            path, self.column, self.title_text, True))
-        #gobject.idle_add(lambda: self.scroll_to_cell(path))
+            self.model, node, self.rich_model.get_node_column_pos()
+        )
+        gobject.idle_add(
+            lambda: self.set_cursor_on_cell(path, self.column, self.title_text, True)
+        )
+        # gobject.idle_add(lambda: self.scroll_to_cell(path))

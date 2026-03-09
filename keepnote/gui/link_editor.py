@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Link Editor Widget
+KeepNote
+Link Editor Widget
 
 """
 
@@ -26,7 +26,8 @@
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gobject
 import gtk
 
@@ -37,7 +38,8 @@ from keepnote.notebook import get_node_url
 
 # TODO: make more checks for start, end not None
 
-class LinkEditor (gtk.Frame):
+
+class LinkEditor(gtk.Frame):
     """Widget for editing KeepNote links"""
 
     def __init__(self):
@@ -70,12 +72,12 @@ class LinkEditor (gtk.Frame):
         self.align.add(vbox)
 
         hbox = gtk.HBox(False, 5)
-        #self.align.add(hbox)
+        # self.align.add(hbox)
         vbox.pack_start(hbox, True, True, 0)
 
         label = gtk.Label("url:")
         hbox.pack_start(label, False, False, 0)
-        label.set_alignment(0, .5)
+        label.set_alignment(0, 0.5)
         self.url_text = gtk.Entry()
         hbox.pack_start(self.url_text, True, True, 0)
         self.url_text.set_width_chars(-1)
@@ -85,8 +87,7 @@ class LinkEditor (gtk.Frame):
         self.url_text.connect("changed", self._on_url_text_changed)
         self.url_text.connect("activate", self._on_activate)
 
-        self._liststore = gtk.ListStore(gobject.TYPE_STRING,
-                                        gobject.TYPE_STRING)
+        self._liststore = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING)
         self.completion = gtk.EntryCompletion()
         self.completion.connect("match-selected", self._on_completion_match)
         self.completion.set_match_func(self._match_func)
@@ -95,10 +96,10 @@ class LinkEditor (gtk.Frame):
         self.url_text.set_completion(self.completion)
         self._ignore_text = False
 
-        #self.use_text_check = gtk.CheckButton("_use text as url")
-        #vbox.pack_start(self.use_text_check, False, False, 0)
-        #self.use_text_check.connect("toggled", self._on_use_text_toggled)
-        #self.use_text = self.use_text_check.get_active()
+        # self.use_text_check = gtk.CheckButton("_use text as url")
+        # vbox.pack_start(self.use_text_check, False, False, 0)
+        # self.use_text_check.connect("toggled", self._on_use_text_toggled)
+        # self.use_text = self.use_text_check.get_active()
 
         if not self.active:
             self.hide()
@@ -180,7 +181,9 @@ class LinkEditor (gtk.Frame):
             if self.textview:
                 gobject.idle_add(
                     lambda: self.textview.scroll_mark_onscreen(
-                        self.textview.get_buffer().get_insert()))
+                        self.textview.get_buffer().get_insert()
+                    )
+                )
 
         elif self.active:
             self.set_url()
@@ -214,10 +217,10 @@ class LinkEditor (gtk.Frame):
         if end:
             if set_url:
                 self.set_url()
-            #self.textview.get_buffer().place_cursor(end)
+            # self.textview.get_buffer().place_cursor(end)
         else:
             # DEBUG
-            #print "NO LINK"
+            # print "NO LINK"
             pass
 
         self.textview.grab_focus()

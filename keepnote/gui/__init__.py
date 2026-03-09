@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Graphical User Interface for KeepNote Application
+KeepNote
+Graphical User Interface for KeepNote Application
 
 """
 
@@ -31,7 +31,8 @@ import threading
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 from gtk import gdk
 import gtk.glade
 import gobject
@@ -47,12 +48,11 @@ import keepnote.notebook as notebooklib
 import keepnote.gui.dialog_app_options
 import keepnote.gui.dialog_node_icon
 import keepnote.gui.dialog_wait
-from keepnote.gui.icons import \
-    DEFAULT_QUICK_PICK_ICONS, uncache_node_icon
+from keepnote.gui.icons import DEFAULT_QUICK_PICK_ICONS, uncache_node_icon
 
 _ = keepnote.translate
 
-#=============================================================================
+# =============================================================================
 # constants
 
 MAX_RECENT_NOTEBOOKS = 20
@@ -74,58 +74,58 @@ else:
 
 DEFAULT_COLORS_FLOAT = [
     # lights
-    (1, .6, .6),
-    (1, .8, .6),
-    (1, 1, .6),
-    (.6, 1, .6),
-    (.6, 1, 1),
-    (.6, .6, 1),
-    (1, .6, 1),
-
+    (1, 0.6, 0.6),
+    (1, 0.8, 0.6),
+    (1, 1, 0.6),
+    (0.6, 1, 0.6),
+    (0.6, 1, 1),
+    (0.6, 0.6, 1),
+    (1, 0.6, 1),
     # trues
     (1, 0, 0),
-    (1, .64, 0),
+    (1, 0.64, 0),
     (1, 1, 0),
     (0, 1, 0),
     (0, 1, 1),
     (0, 0, 1),
     (1, 0, 1),
-
     # darks
-    (.5, 0, 0),
-    (.5, .32, 0),
-    (.5, .5, 0),
-    (0, .5, 0),
-    (0, .5, .5),
-    (0, 0, .5),
-    (.5, 0, .5),
-
+    (0.5, 0, 0),
+    (0.5, 0.32, 0),
+    (0.5, 0.5, 0),
+    (0, 0.5, 0),
+    (0, 0.5, 0.5),
+    (0, 0, 0.5),
+    (0.5, 0, 0.5),
     # white, gray, black
     (1, 1, 1),
-    (.9, .9, .9),
-    (.75, .75, .75),
-    (.5, .5, .5),
-    (.25, .25, .25),
-    (.1, .1, .1),
+    (0.9, 0.9, 0.9),
+    (0.75, 0.75, 0.75),
+    (0.5, 0.5, 0.5),
+    (0.25, 0.25, 0.25),
+    (0.1, 0.1, 0.1),
     (0, 0, 0),
 ]
 
 
 def color_float_to_int8(color):
-    return (int(255*color[0]), int(255*color[1]), int(255*color[2]))
+    return (int(255 * color[0]), int(255 * color[1]), int(255 * color[2]))
 
 
 def color_int8_to_str(color):
     return f"#{color[0]:02x}{color[1]:02x}{color[2]:02x}"
 
-DEFAULT_COLORS = [color_int8_to_str(color_float_to_int8(color))
-                  for color in DEFAULT_COLORS_FLOAT]
+
+DEFAULT_COLORS = [
+    color_int8_to_str(color_float_to_int8(color)) for color in DEFAULT_COLORS_FLOAT
+]
 
 
-#=============================================================================
+# =============================================================================
 # resources
 
-class PixbufCache :
+
+class PixbufCache:
     """A cache for loading pixbufs from the filesystem"""
 
     def __init__(self):
@@ -149,8 +149,9 @@ class PixbufCache :
             # resize
             if size:
                 if size != (pixbuf.get_width(), pixbuf.get_height()):
-                    pixbuf = pixbuf.scale_simple(size[0], size[1],
-                                                 gtk.gdk.INTERP_BILINEAR)
+                    pixbuf = pixbuf.scale_simple(
+                        size[0], size[1], gtk.gdk.INTERP_BILINEAR
+                    )
 
             self._pixbufs[key] = pixbuf
             return pixbuf
@@ -189,17 +190,19 @@ def fade_pixbuf(pixbuf, alpha=128):
     """Returns a new faded a pixbuf"""
     width, height = pixbuf.get_width(), pixbuf.get_height()
     pixbuf2 = gtk.gdk.Pixbuf(gtk.gdk.COLORSPACE_RGB, True, 8, width, height)
-    pixbuf2.fill(0xffffff00)  # fill with transparent
-    pixbuf.composite(pixbuf2, 0, 0, width, height,
-                     0, 0, 1.0, 1.0, gtk.gdk.INTERP_NEAREST, alpha)
-    #pixbuf.composite_color(pixbuf2, 0, 0, width, height,
+    pixbuf2.fill(0xFFFFFF00)  # fill with transparent
+    pixbuf.composite(
+        pixbuf2, 0, 0, width, height, 0, 0, 1.0, 1.0, gtk.gdk.INTERP_NEAREST, alpha
+    )
+    # pixbuf.composite_color(pixbuf2, 0, 0, width, height,
     #                       0, 0, 1.0, 1.0, gtk.gdk.INTERP_NEAREST, alpha,
     #                       0, 0, 1, 0xcccccc, 0x00000000)
     return pixbuf2
 
 
-#=============================================================================
+# =============================================================================
 # misc. gui functions
+
 
 def get_accel_file():
     """Returns gtk accel file"""
@@ -246,16 +249,20 @@ def update_file_preview(file_chooser, preview):
     file_chooser.set_preview_widget_active(have_preview)
 
 
-class FileChooserDialog (gtk.FileChooserDialog):
+class FileChooserDialog(gtk.FileChooserDialog):
     """File Chooser Dialog with a persistent path"""
 
-    def __init__(self, title=None, parent=None,
-                 action=gtk.FILE_CHOOSER_ACTION_OPEN,
-                 buttons=None, backend=None,
-                 app=None,
-                 persistent_path=None):
-        gtk.FileChooserDialog.__init__(self, title, parent,
-                                       action, buttons, backend)
+    def __init__(
+        self,
+        title=None,
+        parent=None,
+        action=gtk.FILE_CHOOSER_ACTION_OPEN,
+        buttons=None,
+        backend=None,
+        app=None,
+        persistent_path=None,
+    ):
+        gtk.FileChooserDialog.__init__(self, title, parent, action, buttons, backend)
 
         self._app = app
         self._persistent_path = persistent_path
@@ -268,18 +275,19 @@ class FileChooserDialog (gtk.FileChooserDialog):
     def run(self):
         response = gtk.FileChooserDialog.run(self)
 
-        if (response == gtk.RESPONSE_OK and
-                self._app and self._persistent_path):
+        if response == gtk.RESPONSE_OK and self._app and self._persistent_path:
             self._app.set_default_path(
-                self._persistent_path, unicode_gtk(self.get_current_folder()))
+                self._persistent_path, unicode_gtk(self.get_current_folder())
+            )
 
         return response
 
 
-#=============================================================================
+# =============================================================================
 # menu actions
 
-class UIManager (gtk.UIManager):
+
+class UIManager(gtk.UIManager):
     """Specialization of UIManager for use in KeepNote"""
 
     def __init__(self, force_stock=False):
@@ -319,8 +327,7 @@ class UIManager (gtk.UIManager):
         if isinstance(widget, gtk.ImageMenuItem):
             if self.force_stock and action.get_property("stock-id"):
                 img = gtk.Image()
-                img.set_from_stock(action.get_property("stock-id"),
-                                   gtk.ICON_SIZE_MENU)
+                img.set_from_stock(action.get_property("stock-id"), gtk.ICON_SIZE_MENU)
                 img.show()
                 widget.set_image(img)
 
@@ -334,8 +341,9 @@ class UIManager (gtk.UIManager):
             if self.force_stock and action.get_property("stock-id"):
                 w = widget.get_icon_widget()
                 if w:
-                    w.set_from_stock(action.get_property("stock-id"),
-                                     gtk.ICON_SIZE_MENU)
+                    w.set_from_stock(
+                        action.get_property("stock-id"), gtk.ICON_SIZE_MENU
+                    )
 
             elif action.icon:
                 w = widget.get_icon_widget()
@@ -348,10 +356,10 @@ class UIManager (gtk.UIManager):
                     widget.set_icon_widget(img)
 
 
-class Action (gtk.Action):
-    def __init__(self, name, stockid=None, label=None,
-                 accel="", tooltip="", func=None,
-                 icon=None):
+class Action(gtk.Action):
+    def __init__(
+        self, name, stockid=None, label=None, accel="", tooltip="", func=None, icon=None
+    ):
         gtk.Action.__init__(self, name, label, tooltip, stockid)
         self.func = func
         self.accel = accel
@@ -362,9 +370,10 @@ class Action (gtk.Action):
             self.signal = self.connect("activate", func)
 
 
-class ToggleAction (gtk.ToggleAction):
-    def __init__(self, name, stockid, label=None,
-                 accel="", tooltip="", func=None, icon=None):
+class ToggleAction(gtk.ToggleAction):
+    def __init__(
+        self, name, stockid, label=None, accel="", tooltip="", func=None, icon=None
+    ):
         gtk.ToggleAction.__init__(self, name, label, tooltip, stockid)
         self.func = func
         self.accel = accel
@@ -382,7 +391,7 @@ def add_actions(actiongroup, actions):
         actiongroup.add_action_with_accel(action, action.accel)
 
 
-#=============================================================================
+# =============================================================================
 # Application for GUI
 
 
@@ -390,7 +399,7 @@ def add_actions(actiongroup, actions):
 # requires listening for close.
 
 
-class KeepNote (keepnote.KeepNote):
+class KeepNote(keepnote.KeepNote):
     """GUI version of the KeepNote application instance"""
 
     def __init__(self, basedir=None):
@@ -401,14 +410,13 @@ class KeepNote (keepnote.KeepNote):
         self._windows = []
 
         # shared gui resources
-        self._tag_table = (
-            keepnote.gui.richtext.richtext_tags.RichTextTagTable())
+        self._tag_table = keepnote.gui.richtext.richtext_tags.RichTextTagTable()
         self.init_dialogs()
 
         # auto save
-        self._auto_saving = False           # True if autosave is on
+        self._auto_saving = False  # True if autosave is on
         self._auto_save_registered = False  # True if autosave is registered
-        self._auto_save_pause = 0           # >0 if autosave is paused
+        self._auto_save_pause = 0  # >0 if autosave is paused
 
     def init(self):
         """Initialize application from disk"""
@@ -416,9 +424,9 @@ class KeepNote (keepnote.KeepNote):
 
     def init_dialogs(self):
         self.app_options_dialog = (
-            keepnote.gui.dialog_app_options.ApplicationOptionsDialog(self))
-        self.node_icon_dialog = (
-            keepnote.gui.dialog_node_icon.NodeIconDialog(self))
+            keepnote.gui.dialog_app_options.ApplicationOptionsDialog(self)
+        )
+        self.node_icon_dialog = keepnote.gui.dialog_node_icon.NodeIconDialog(self)
 
     def set_lang(self):
         """Set language for application"""
@@ -426,8 +434,8 @@ class KeepNote (keepnote.KeepNote):
 
         # setup glade with gettext
         import gtk.glade
-        gtk.glade.bindtextdomain(keepnote.GETTEXT_DOMAIN,
-                                 keepnote.get_locale_dir())
+
+        gtk.glade.bindtextdomain(keepnote.GETTEXT_DOMAIN, keepnote.get_locale_dir())
         gtk.glade.textdomain(keepnote.GETTEXT_DOMAIN)
 
         # re-initialize dialogs
@@ -442,16 +450,14 @@ class KeepNote (keepnote.KeepNote):
         p.get("autosave_time", default=DEFAULT_AUTOSAVE_TIME)
 
         # set style
-        set_gtk_style(font_size=p.get("look_and_feel", "app_font_size",
-                                      default=10))
+        set_gtk_style(font_size=p.get("look_and_feel", "app_font_size", default=10))
 
         # let windows load their preferences
         for window in self._windows:
             window.load_preferences()
 
         for notebook in self._notebooks.itervalues():
-            notebook.enable_fulltext_search(p.get("use_fulltext_search",
-                                                  default=True))
+            notebook.enable_fulltext_search(p.get("use_fulltext_search", default=True))
 
         # start autosave loop, if requested
         self.begin_auto_save()
@@ -465,7 +471,7 @@ class KeepNote (keepnote.KeepNote):
 
         keepnote.KeepNote.save_preferences(self)
 
-    #=================================
+    # =================================
     # GUI
 
     def get_richtext_tag_table(self):
@@ -502,19 +508,20 @@ class KeepNote (keepnote.KeepNote):
         from keepnote.gui import dialog_update_notebook
 
         # HACK
-        if isinstance(self._conns.get(filename),
-                      keepnote.notebook.connection.fs.NoteBookConnectionFS):
-
+        if isinstance(
+            self._conns.get(filename),
+            keepnote.notebook.connection.fs.NoteBookConnectionFS,
+        ):
             try:
                 version = notebooklib.get_notebook_version(filename)
             except Exception as e:
-                self.error(_(f"Could not load notebook '{filename}'."),
-                           e, sys.exc_info()[2])
+                self.error(
+                    _(f"Could not load notebook '{filename}'."), e, sys.exc_info()[2]
+                )
                 return None
 
             if version < notebooklib.NOTEBOOK_FORMAT_VERSION:
-                dialog = dialog_update_notebook.UpdateNoteBookDialog(
-                    self, window)
+                dialog = dialog_update_notebook.UpdateNoteBookDialog(self, window)
                 if not dialog.show(filename, version=version, task=task):
                     self.error(_("Cannot open notebook (version too old)"))
                     gtk.gdk.threads_leave()
@@ -565,20 +572,27 @@ class KeepNote (keepnote.KeepNote):
                     return None
 
         except notebooklib.NoteBookVersionError as e:
-            self.error(_(f"This version of {keepnote.PROGRAM_NAME} cannot read this notebook.\n"
-                         f"The notebook has version {e.notebook_version:d}.  {keepnote.PROGRAM_NAME} can only read {e.readable_version:d}."),
-                       e, task.exc_info()[2])
+            self.error(
+                _(
+                    f"This version of {keepnote.PROGRAM_NAME} cannot read this notebook.\n"
+                    f"The notebook has version {e.notebook_version:d}.  {keepnote.PROGRAM_NAME} can only read {e.readable_version:d}."
+                ),
+                e,
+                task.exc_info()[2],
+            )
             return None
 
         except NoteBookError as e:
-            self.error(_(f"Could not load notebook '{filename}'."),
-                       e, task.exc_info()[2])
+            self.error(
+                _(f"Could not load notebook '{filename}'."), e, task.exc_info()[2]
+            )
             return None
 
         except Exception as e:
             # give up opening notebook
-            self.error(_(f"Could not load notebook '{filename}'."),
-                       e, task.exc_info()[2])
+            self.error(
+                _(f"Could not load notebook '{filename}'."), e, task.exc_info()[2]
+            )
             return None
 
         self._init_notebook(notebook)
@@ -591,8 +605,7 @@ class KeepNote (keepnote.KeepNote):
 
         # install default quick pick icons
         if len(notebook.pref.get_quick_pick_icons()) == 0:
-            notebook.pref.set_quick_pick_icons(
-                list(DEFAULT_QUICK_PICK_ICONS))
+            notebook.pref.set_quick_pick_icons(list(DEFAULT_QUICK_PICK_ICONS))
             notebook.set_preferences_dirty()
             write_needed = True
 
@@ -602,8 +615,9 @@ class KeepNote (keepnote.KeepNote):
             notebook.set_preferences_dirty()
             write_needed = True
 
-        notebook.enable_fulltext_search(self.pref.get("use_fulltext_search",
-                                                      default=True))
+        notebook.enable_fulltext_search(
+            self.pref.get("use_fulltext_search", default=True)
+        )
 
         # TODO: use listeners to invoke saving
         if write_needed:
@@ -657,7 +671,7 @@ class KeepNote (keepnote.KeepNote):
                 window.get_viewer().goto_node(node)
                 break
 
-    #=====================================
+    # =====================================
     # auto-save
 
     def begin_auto_save(self):
@@ -668,8 +682,7 @@ class KeepNote (keepnote.KeepNote):
 
             if not self._auto_save_registered:
                 self._auto_save_registered = True
-                gobject.timeout_add(self.pref.get("autosave_time"),
-                                    self.auto_save)
+                gobject.timeout_add(self.pref.get("autosave_time"), self.auto_save)
         else:
             self._auto_saving = False
 
@@ -699,7 +712,7 @@ class KeepNote (keepnote.KeepNote):
         """Pauses autosaving"""
         self._auto_save_pause += 1 if pause else -1
 
-    #===========================================
+    # ===========================================
     # node icons
 
     def on_set_icon(self, icon_file, icon_open_file, nodes):
@@ -738,16 +751,20 @@ class KeepNote (keepnote.KeepNote):
         # TODO: assume only one node is selected
         node = nodes[0]
 
-        icon_file, icon_open_file = self.node_icon_dialog.show(node,
-                                                               window=window)
+        icon_file, icon_open_file = self.node_icon_dialog.show(node, window=window)
 
         newly_installed = set()
 
         # NOTE: files may be filename or basename, use isabs to distinguish
-        if icon_file and os.path.isabs(icon_file) and \
-           icon_open_file and os.path.isabs(icon_open_file):
+        if (
+            icon_file
+            and os.path.isabs(icon_file)
+            and icon_open_file
+            and os.path.isabs(icon_open_file)
+        ):
             icon_file, icon_open_file = notebook.install_icons(
-                icon_file, icon_open_file)
+                icon_file, icon_open_file
+            )
             newly_installed.add(os.path.basename(icon_file))
             newly_installed.add(os.path.basename(icon_open_file))
 
@@ -763,13 +780,13 @@ class KeepNote (keepnote.KeepNote):
         # set quick picks if OK was pressed
         if icon_file is not None:
             notebook.pref.set_quick_pick_icons(
-                self.node_icon_dialog.get_quick_pick_icons())
+                self.node_icon_dialog.get_quick_pick_icons()
+            )
 
             # TODO: figure out whether I need to track newly installed or not.
             # set notebook icons
             notebook_icons = notebook.get_icons()
-            keep_set = (set(self.node_icon_dialog.get_notebook_icons()) |
-                        newly_installed)
+            keep_set = set(self.node_icon_dialog.get_notebook_icons()) | newly_installed
             for icon in notebook_icons:
                 if icon not in keep_set:
                     notebook.uninstall_icon(icon)
@@ -781,18 +798,19 @@ class KeepNote (keepnote.KeepNote):
 
         self.on_set_icon(icon_file, icon_open_file, nodes)
 
-    #==================================
+    # ==================================
     # file attachment
 
     def on_attach_file(self, node=None, parent_window=None):
 
         dialog = FileChooserDialog(
-            _("Attach File..."), parent_window,
+            _("Attach File..."),
+            parent_window,
             action=gtk.FILE_CHOOSER_ACTION_OPEN,
-            buttons=(_("Cancel"), gtk.RESPONSE_CANCEL,
-                     _("Attach"), gtk.RESPONSE_OK),
+            buttons=(_("Cancel"), gtk.RESPONSE_CANCEL, _("Attach"), gtk.RESPONSE_OK),
             app=self,
-            persistent_path="attach_file_path")
+            persistent_path="attach_file_path",
+        )
         dialog.set_default_response(gtk.RESPONSE_OK)
         dialog.set_select_multiple(True)
 
@@ -806,52 +824,52 @@ class KeepNote (keepnote.KeepNote):
         if response == gtk.RESPONSE_OK:
             if len(dialog.get_filenames()) > 0:
                 filenames = map(unicode_gtk, dialog.get_filenames())
-                self.attach_files(filenames, node,
-                                  parent_window=parent_window)
+                self.attach_files(filenames, node, parent_window=parent_window)
 
         dialog.destroy()
 
-    def attach_file(self, filename, parent, index=None,
-                    parent_window=None):
+    def attach_file(self, filename, parent, index=None, parent_window=None):
         self.attach_files([filename], parent, index, parent_window)
 
-    def attach_files(self, filenames, parent, index=None,
-                     parent_window=None):
+    def attach_files(self, filenames, parent, index=None, parent_window=None):
 
         if parent_window is None:
             parent_window = self.get_current_window()
 
-        #def func(task):
+        # def func(task):
         #    for filename in filenames:
         #        task.set_message(("detail", _("attaching %s") %
         #                          os.path.basename(filename)))
         #        notebooklib.attach_file(filename, parent, index)
         #        if not task.is_running():
         #            task.abort()
-        #task = tasklib.Task(func)
+        # task = tasklib.Task(func)
 
         try:
             for filename in filenames:
                 notebooklib.attach_file(filename, parent, index)
 
-            #dialog = keepnote.gui.dialog_wait.WaitDialog(parent_window)
-            #dialog.show(_("Attach File"), _("Attaching files to notebook."),
+            # dialog = keepnote.gui.dialog_wait.WaitDialog(parent_window)
+            # dialog.show(_("Attach File"), _("Attaching files to notebook."),
             #            task, cancel=False)
 
-            #if task.aborted():
+            # if task.aborted():
             #    raise task.exc_info()[1]
 
         except Exception as e:
             if len(filenames) > 1:
-                self.error(_("Error while attaching files {0}.".format(
-                             ", ".join([f"'{f}'" for f in filenames]))),
-                           e, sys.exc_info()[2])
+                self.error(
+                    _(f"Error while attaching files {', '.join([f'\'{f}\'' for f in filenames])}."),
+                    e,
+                )
             else:
                 self.error(
                     _(f"Error while attaching file '{filenames[0]}'."),
-                    e, sys.exc_info()[2])
+                    e,
+                    sys.exc_info()[2],
+                )
 
-    #==================================
+    # ==================================
     # misc GUI
 
     def focus_windows(self):
@@ -870,7 +888,8 @@ class KeepNote (keepnote.KeepNote):
             flags=gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
             type=gtk.MESSAGE_ERROR,
             buttons=gtk.BUTTONS_OK,
-            message_format=text)
+            message_format=text,
+        )
         dialog.connect("response", lambda d, r: d.destroy())
         dialog.set_title(_("Error"))
         dialog.show()
@@ -890,7 +909,8 @@ class KeepNote (keepnote.KeepNote):
             flags=gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
             type=gtk.MESSAGE_INFO,
             buttons=gtk.BUTTONS_OK,
-            message_format=text)
+            message_format=text,
+        )
         dialog.set_title(title)
         dialog.run()
         dialog.destroy()
@@ -906,7 +926,8 @@ class KeepNote (keepnote.KeepNote):
             flags=gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
             type=gtk.MESSAGE_QUESTION,
             buttons=gtk.BUTTONS_YES_NO,
-            message_format=text)
+            message_format=text,
+        )
 
         dialog.set_title(title)
         response = dialog.run()
@@ -921,7 +942,7 @@ class KeepNote (keepnote.KeepNote):
         gtk.accel_map_save(get_accel_file())
         gtk.main_quit()
 
-    #===================================
+    # ===================================
     # callbacks
 
     def _on_window_close(self, window, event):
@@ -949,7 +970,7 @@ class KeepNote (keepnote.KeepNote):
         """Callback for when a window gains focus"""
         self._current_window = window
 
-    #====================================
+    # ====================================
     # extension methods
 
     def init_extensions_windows(self, windows=None, exts=None):
@@ -971,8 +992,10 @@ class KeepNote (keepnote.KeepNote):
 
     def install_extension(self, filename):
         """Install a new extension"""
-        if self.ask_yes_no(_("Do you want to install the extension \"{0}\"?").format(
-                           filename), "Extension Install"):
+        if self.ask_yes_no(
+            _('Do you want to install the extension "{0}"?').format(filename),
+            "Extension Install",
+        ):
             # install extension
             new_exts = keepnote.KeepNote.install_extension(self, filename)
 
@@ -980,8 +1003,10 @@ class KeepNote (keepnote.KeepNote):
             self.init_extensions_windows(exts=new_exts)
 
             if len(new_exts) > 0:
-                self.message(_("Extension \"{0}\" is now installed.").format(
-                             filename), _("Install Successful"))
+                self.message(
+                    _('Extension "{0}" is now installed.').format(filename),
+                    _("Install Successful"),
+                )
                 return True
 
         return False
@@ -989,12 +1014,14 @@ class KeepNote (keepnote.KeepNote):
     def uninstall_extension(self, ext_key):
         """Install a new extension"""
         if self.ask_yes_no(
-                _("Do you want to uninstall the extension \"{0}\"?").format(
-                ext_key), _("Extension Uninstall")):
+            _('Do you want to uninstall the extension "{0}"?').format(ext_key),
+            _("Extension Uninstall"),
+        ):
             if keepnote.KeepNote.uninstall_extension(self, ext_key):
-                self.message(_("Extension \"{0}\" is now uninstalled.").format(
-                             ext_key),
-                             _("Uninstall Successful"))
+                self.message(
+                    _('Extension "{0}" is now uninstalled.').format(ext_key),
+                    _("Uninstall Successful"),
+                )
                 return True
 
         return False

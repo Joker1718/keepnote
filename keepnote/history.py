@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Node history data structure
+KeepNote
+Node history data structure
 
 """
 
@@ -25,7 +25,7 @@
 #
 
 
-class NodeHistory :
+class NodeHistory:
     """Data structure of node history"""
 
     def __init__(self, maxsize=40):
@@ -39,7 +39,7 @@ class NodeHistory :
         if self._suspend == 0:
             # truncate list to current position
             if self._list:
-                self._list = self._list[:self._pos+1]
+                self._list = self._list[: self._pos + 1]
 
             # add page to history
             self._list.append(nodeid)
@@ -47,7 +47,7 @@ class NodeHistory :
 
             # keep history to max size
             if len(self._list) > self._maxsize:
-                self._list = self._list[-self._maxsize:]
+                self._list = self._list[-self._maxsize :]
                 self._pos = len(self._list) - 1
 
     def move(self, offset):

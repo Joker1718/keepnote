@@ -1,6 +1,6 @@
 """
-    KeepNote
-    Translation module
+KeepNote
+Translation module
 """
 
 #
@@ -38,7 +38,7 @@ except:
 
 
 # global translation object
-GETTEXT_DOMAIN = 'keepnote'
+GETTEXT_DOMAIN = "keepnote"
 _locale_dir = "."
 _translation = None
 _lang = None
@@ -53,7 +53,7 @@ except locale.Error:
 
 # we must not let windows environment variables deallocate
 # thus we keep a global list of pointers
-#_win_env = []
+# _win_env = []
 
 
 def set_env(key, val):
@@ -64,11 +64,11 @@ def set_env(key, val):
             return
 
         setstr = f"{key}={val}"
-        #setstr = x.encode(locale.getpreferredencoding())
+        # setstr = x.encode(locale.getpreferredencoding())
         msvcrt._putenv(setstr)
 
-        #win32api.SetEnvironmentVariable(key, val)
-        #ctypes.windll.kernel32.SetEnvironmentVariableA(key, val)
+        # win32api.SetEnvironmentVariable(key, val)
+        # ctypes.windll.kernel32.SetEnvironmentVariableA(key, val)
 
         # NOTE: we only need to change the python copy of the environment
         # The data member is only available if we are on windows
@@ -93,7 +93,7 @@ def set_lang(lang=None, localedir=None):
     # default language from environment
     deflang, defencoding = locale.getdefaultlocale()
     if deflang:
-        languages = [deflang+"."+defencoding] + languages
+        languages = [deflang + "." + defencoding] + languages
 
     # specified language
     if lang:
@@ -110,8 +110,7 @@ def set_lang(lang=None, localedir=None):
 
     # setup language translations
     if langfile:
-        _lang = os.path.basename(os.path.dirname(
-            os.path.dirname(langfile)))
+        _lang = os.path.basename(os.path.dirname(os.path.dirname(langfile)))
         set_env("LANG", _lang)
         set_env("LANGUAGE", _lang)
         _translation = gettext.GNUTranslations(open(langfile, "rb"))

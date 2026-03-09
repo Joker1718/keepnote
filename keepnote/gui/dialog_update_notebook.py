@@ -1,7 +1,7 @@
 """
 
-    KeepNote
-    Update notebook dialog
+KeepNote
+Update notebook dialog
 
 """
 
@@ -30,7 +30,8 @@ import shutil
 
 # pygtk imports
 import pygtk
-pygtk.require('2.0')
+
+pygtk.require("2.0")
 import gtk.glade
 
 # keepnote imports
@@ -45,11 +46,13 @@ from keepnote.gui import get_resource, FileChooserDialog
 _ = keepnote.translate
 
 
-MESSAGE_TEXT = _("This notebook has format version %d and must be updated to "
-                 "version %d before opening.")
+MESSAGE_TEXT = _(
+    "This notebook has format version %d and must be updated to "
+    "version %d before opening."
+)
 
 
-class UpdateNoteBookDialog :
+class UpdateNoteBookDialog:
     """Updates a notebook"""
 
     def __init__(self, app, main_window):
@@ -57,13 +60,16 @@ class UpdateNoteBookDialog :
         self.app = app
 
     def show(self, notebook_filename, version=None, task=None):
-        self.xml = gtk.glade.XML(get_resource("rc", "keepnote.glade"),
-                                 "update_notebook_dialog",
-                                 keepnote.GETTEXT_DOMAIN)
+        self.xml = gtk.glade.XML(
+            get_resource("rc", "keepnote.glade"),
+            "update_notebook_dialog",
+            keepnote.GETTEXT_DOMAIN,
+        )
         self.dialog = self.xml.get_widget("update_notebook_dialog")
         self.xml.signal_autoconnect(self)
-        self.dialog.connect("close", lambda w:
-                            self.dialog.response(gtk.RESPONSE_CANCEL))
+        self.dialog.connect(
+            "close", lambda w: self.dialog.response(gtk.RESPONSE_CANCEL)
+        )
         self.dialog.set_transient_for(self.main_window)
 
         self.text = self.xml.get_widget("update_message_label")
@@ -72,15 +78,14 @@ class UpdateNoteBookDialog :
         if version is None:
             version = notebooklib.get_notebook_version(notebook_filename)
 
-        self.text.set_text(MESSAGE_TEXT %
-                           (version,
-                            notebooklib.NOTEBOOK_FORMAT_VERSION))
+        self.text.set_text(
+            MESSAGE_TEXT % (version, notebooklib.NOTEBOOK_FORMAT_VERSION)
+        )
 
         ret = False
         response = self.dialog.run()
 
         if response == gtk.RESPONSE_OK:
-
             # do backup
             if self.saved.get_active():
                 if not self.backup(notebook_filename):
@@ -92,15 +97,15 @@ class UpdateNoteBookDialog :
             # do update
             def func(task):
                 update.update_notebook(
-                    notebook_filename,
-                    notebooklib.NOTEBOOK_FORMAT_VERSION)
+                    notebook_filename, notebooklib.NOTEBOOK_FORMAT_VERSION
+                )
 
             # TODO: reuse existing task
             task = tasklib.Task(func)
             dialog2 = dialog_wait.WaitDialog(self.main_window)
-            dialog2.show(_("Updating Notebook"),
-                         _("Updating notebook..."),
-                         task, cancel=False)
+            dialog2.show(
+                _("Updating Notebook"), _("Updating notebook..."), task, cancel=False
+            )
 
             ret = not task.aborted()
             ty, err, tb = task.exc_info()
@@ -111,9 +116,11 @@ class UpdateNoteBookDialog :
             self.dialog.destroy()
 
         if ret:
-            self.app.message(_("Notebook updated successfully"),
-                             _("Notebook Update Complete"),
-                             self.main_window)
+            self.app.message(
+                _("Notebook updated successfully"),
+                _("Notebook Update Complete"),
+                self.main_window,
+            )
 
         return ret
 
@@ -123,10 +130,10 @@ class UpdateNoteBookDialog :
             _("Choose Backup Notebook Name"),
             self.main_window,
             action=gtk.FILE_CHOOSER_ACTION_SAVE,  # CREATE_FOLDER,
-            buttons=(_("Cancel"), gtk.RESPONSE_CANCEL,
-                     _("Backup"), gtk.RESPONSE_OK),
+            buttons=(_("Cancel"), gtk.RESPONSE_CANCEL, _("Backup"), gtk.RESPONSE_OK),
             app=self.app,
-            persistent_path="new_notebook_path")
+            persistent_path="new_notebook_path",
+        )
 
         response = dialog.run()
 
@@ -143,18 +150,21 @@ class UpdateNoteBookDialog :
                     sys.stderr.write(str(e) + "\n")
                     sys.stderr.write(f"'{notebook_filename}' '{new_filename}'\n")
                     raise
+
             task = tasklib.Task(func)
             dialog2 = dialog_wait.WaitDialog(self.dialog)
-            dialog2.show(_("Backing Up Notebook"),
-                         _("Backing up old notebook..."),
-                         task, cancel=False)
+            dialog2.show(
+                _("Backing Up Notebook"),
+                _("Backing up old notebook..."),
+                task,
+                cancel=False,
+            )
 
             # handle errors
             if task.aborted():
                 ty, err, tb = task.exc_info()
                 if err:
-                    self.main_window.error(_("Error occurred during backup."),
-                                           err, tb)
+                    self.main_window.error(_("Error occurred during backup."), err, tb)
                 else:
                     self.main_window.error(_("Backup canceled."))
                 return False
