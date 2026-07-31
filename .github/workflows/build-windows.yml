@@ -32,12 +32,6 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
-        with:
-          python-version: ${{ matrix.python-version }}
-          architecture: x64
-
       - name: Enable long paths (Windows 11)
         shell: powershell
         run: |
@@ -45,116 +39,67 @@ jobs:
           New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" `
             -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
 
-      - name: Setup MSYS2 and install GTK dev libs
+      - name: Setup MSYS2 and install Python & GTK dev packages
         uses: msys2/setup-msys2@v2
         with:
           msystem: MINGW64
           update: true
           install: >-
-            mingw-w64-x86_64-gcc
-            mingw-w64-x86_64-make
-            mingw-w64-x86_64-binutils
-            mingw-w64-x86_64-crt
-            mingw-w64-x86_64-headers
-            mingw-w64-x86_64-libwinpthread
-            mingw-w64-x86_64-libmangle
-            mingw-w64-x86_64-gdb
+            mingw-w64-x86_64-python3
+            mingw-w64-x86_64-python3-pip
+            mingw-w64-x86_64-python3-setuptools
+            mingw-w64-x86_64-python3-wheel
             mingw-w64-x86_64-gtk3
             mingw-w64-x86_64-gobject-introspection
-            pkg-config
+            mingw-w64-x86_64-python3-gobject
+            mingw-w64-x86_64-python3-cairo
             mingw-w64-x86_64-libffi
+            pkg-config
 
-      - name: Add MSYS2 mingw64 to PATH and set PKG_CONFIG_PATH
-        shell: powershell
+      - name: Install PyInstaller in MSYS2
+        shell: msys2 {0}
         run: |
-          $msysBin = "C:\msys64\mingw64\bin"
-          echo "$msysBin" >> $env:GITHUB_PATH
-          echo "PKG_CONFIG_PATH=C:\msys64\mingw64\lib\pkgconfig;C:\msys64\mingw64\share\pkgconfig" >> $env:GITHUB_ENV
-          echo "Added $msysBin to PATH"
-          echo "PKG_CONFIG_PATH set"
-
-      - name: Install Python dependencies
-        shell: powershell
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
-          pip install PyGObject pycairo pyinstaller
+          export PATH="/mingw64/bin:$PATH"
+          export PKG_CONFIG_PATH="/mingw64/lib/pkgconfig:/mingw64/share/pkgconfig"
+          /mingw64/bin/python -m pip install --upgrade pip setuptools wheel
+          /mingw64/bin/python -m pip install pyinstaller
 
       - name: Verify PyGObject installation
-        shell: powershell
+        shell: msys2 {0}
         run: |
-          python -c "import gi; gi.require_version('Gtk', '3.0'); from gi.repository import Gtk; print('GTK', Gtk.get_major_version(), '.', Gtk.get_minor_version(), '.', Gtk.get_micro_version())"
+          export PATH="/mingw64/bin:$PATH"
+          /mingw64/bin/python -c "import gi; gi.require_version('Gtk', '3.0'); from gi.repository import Gtk; print('GTK', Gtk.get_major_version(), '.', Gtk.get_minor_version(), '.', Gtk.get_micro_version())"
 
-      - name: Build with PyInstaller
-        shell: powershell
+      - name: Build with PyInstaller (MSYS2 python)
+        shell: msys2 {0}
         run: |
-          pyinstaller keepnote.spec --clean --noconfirm 2>&1
+          export PATH="/mingw64/bin:$PATH"
+          /mingw64/bin/python -m PyInstaller keepnote.spec --clean --noconfirm 2>&1
 
       - name: Locate GTK3 runtime
         shell: powershell
         run: |
-          # Find where PyGObject's GTK3 DLLs are installed
-          $pythonDir = python -c "import sys; print(sys.prefix)"
-          $gtkPaths = @(
-            "$pythonDir\Lib\site-packages\gi",
-            "$pythonDir\Library\lib\girepository-1.0",
-            "$env:LOCALAPPDATA\Programs\Python\Python*\Lib\site-packages\gi"
-          )
-          echo "Python prefix: $pythonDir"
-          
-          # Find the actual GTK DLL location
+          # MSYS2 mingw64 is the known GTK/DLL location
+          $msysMingw = "C:\msys64\mingw64"
           $gtkBin = ""
-          $possiblePaths = @(
-            "$pythonDir\Lib\site-packages\gnome",
-            "$pythonDir\Lib\site-packages\gtk",
-            "$pythonDir\Library\bin",
-            "$pythonDir",
-            "C:\GTK",
-            "C:\msys64\mingw64\bin"
-          )
-          foreach ($p in $possiblePaths) {
-            if (Test-Path "$p\libgtk-3-0.dll") {
-              $gtkBin = $p
-              echo "Found GTK at: $gtkBin"
-              break
-            }
+          if (Test-Path "$msysMingw\bin\libgtk-3-0.dll") {
+            $gtkBin = "$msysMingw\bin"
+            echo "Found GTK at: $gtkBin"
           }
-          
-          # Also check the PyGObject wheel location
-          $sitePackages = python -c "import gi; import os; print(os.path.dirname(gi.__file__))"
-          echo "GI site-packages: $sitePackages"
-          
-          # Search for GTK DLLs recursively from site-packages
           if ($gtkBin -eq "") {
-            $found = Get-ChildItem -Path "$pythonDir" -Filter "libgtk-3-0.dll" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
-            if ($found) {
-              $gtkBin = $found.DirectoryName
-              echo "Found GTK via search at: $gtkBin"
-            }
+            echo "WARNING: GTK3 DLLs not found in MSYS2. PyInstaller bundle may be incomplete."
           }
-          
-          if ($gtkBin -eq "") {
-            echo "WARNING: GTK3 DLLs not found. PyInstaller bundle may be incomplete."
-            echo "Attempting to find via gi repository..."
-          }
-          
           echo "GTK_BIN=$gtkBin" >> $env:GITHUB_ENV
 
       - name: Bundle GTK3 runtime with PyInstaller output
         shell: powershell
         run: |
           $distDir = "dist\KeepNote"
-          $pythonDir = python -c "import sys; print(sys.prefix)"
+          $msysMingw = "C:\msys64\mingw64"
           
-          echo "Bundling GTK3 runtime from Python installation..."
+          echo "Bundling GTK3 runtime from MSYS2 mingw64..."
           
-          # Get all GTK-related DLLs from the Python environment
-          $dllDirs = @(
-            "$pythonDir\Library\bin",
-            "$pythonDir\Lib\site-packages",
-            "$pythonDir\bin"
-          )
-          
-          # Copy GTK3 DLLs
+          # Copy GTK3 DLLs from MSYS2 mingw64/bin
           $gtkDlls = @(
             'libgtk-3-0.dll', 'libgdk-3-0.dll', 'libglib-2.0-0.dll',
             'libgobject-2.0-0.dll', 'libgio-2.0-0.dll', 'libgmodule-2.0-0.dll',
@@ -170,55 +115,45 @@ jobs:
             'libgraphene-1.0-0.dll', 'libjson-glib-1.0-0.dll'
           )
           
-          foreach ($dllDir in $dllDirs) {
-            if (Test-Path $dllDir) {
-              foreach ($dll in $gtkDlls) {
-                $src = Join-Path $dllDir $dll
-                if (Test-Path $src) {
-                  Copy-Item $src -Destination $distDir -Force
-                }
-              }
+          $dllSrcDir = "$msysMingw\bin"
+          foreach ($dll in $gtkDlls) {
+            $src = Join-Path $dllSrcDir $dll
+            if (Test-Path $src) {
+              Copy-Item $src -Destination $distDir -Force
             }
           }
           
-          # Copy GI typelibs
-          $typelibDirs = @(
-            "$pythonDir\Library\lib\girepository-1.0",
-            "$pythonDir\Lib\site-packages\gnome\lib\girepository-1.0",
-            "$pythonDir\share\girepository-1.0"
-          )
-          New-Item -ItemType Directory -Path "$distDir\lib\girepository-1.0" -Force | Out-Null
-          foreach ($td in $typelibDirs) {
-            if (Test-Path $td) {
-              Copy-Item "$td\*" -Destination "$distDir\lib\girepository-1.0" -Recurse -Force -ErrorAction SilentlyContinue
-            }
+          # Copy GI typelibs from MSYS2
+          $typelibSrc = "$msysMingw\lib\girepository-1.0"
+          if (Test-Path $typelibSrc) {
+            New-Item -ItemType Directory -Path "$distDir\lib\girepository-1.0" -Force | Out-Null
+            Copy-Item "$typelibSrc\*" -Destination "$distDir\lib\girepository-1.0" -Recurse -Force -ErrorAction SilentlyContinue
           }
           
-          # Copy etc configs (GTK, Pango, Fonts)
+          # Copy etc configs (GTK, Pango, Fonts) from MSYS2
           @('gtk-3.0', 'pango', 'fonts') | ForEach-Object {
-            $src = "$pythonDir\Library\etc\$_"
+            $src = "$msysMingw\etc\$_"
             if (Test-Path $src) {
               New-Item -ItemType Directory -Path "$distDir\etc\$_" -Force | Out-Null
               Copy-Item "$src\*" -Destination "$distDir\etc\$_" -Recurse -Force -ErrorAction SilentlyContinue
             }
           }
           
-          # Copy share data (icons, themes, schemas)
+          # Copy share data (icons, themes, schemas) from MSYS2
           @('icons', 'themes', 'glib-2.0') | ForEach-Object {
-            $src = "$pythonDir\Library\share\$_"
+            $src = "$msysMingw\share\$_"
             if (Test-Path $src) {
               New-Item -ItemType Directory -Path "$distDir\share\$_" -Force | Out-Null
               Copy-Item "$src\*" -Destination "$distDir\share\$_" -Recurse -Force -ErrorAction SilentlyContinue
             }
           }
           
-          # Copy gdk-pixbuf loaders
-          $loadersSrc = "$pythonDir\Library\lib\gdk-pixbuf-2.0\2.10.0\loaders"
+          # Copy gdk-pixbuf loaders from MSYS2
+          $loadersSrc = "$msysMingw\lib\gdk-pixbuf-2.0\2.10.0\loaders"
           if (Test-Path $loadersSrc) {
             New-Item -ItemType Directory -Path "$distDir\lib\gdk-pixbuf-2.0\2.10.0\loaders" -Force | Out-Null
             Copy-Item "$loadersSrc\*" -Destination "$distDir\lib\gdk-pixbuf-2.0\2.10.0\loaders" -Force
-            # Copy the loaders.cache file
-            $cacheSrc = "$pythonDir\Library\lib\gdk-pixbuf-2.0\2.10.0\loaders.cache"
+            $cacheSrc = "$msysMingw\lib\gdk-pixbuf-2.0\2.10.0\loaders.cache"
             if (Test-Path $cacheSrc) {
               Copy-Item $cacheSrc -Destination "$distDir\lib\gdk-pixbuf-2.0\2.10.0\" -Force
             }
