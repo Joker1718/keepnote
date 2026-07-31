@@ -38,7 +38,7 @@ from .richtextbase_tags import RichTextTag
 # fonts buffer
 
 
-class RichTextBaseFont:
+class RichTextBaseFont(object):
     """Class for representing a font in a simple way"""
 
     def __init__(self):

@@ -393,7 +393,7 @@ class NoteBookVersionError(NoteBookError):
 # notebook attributes
 
 
-class AttrDef:
+class AttrDef(object):
     """
     A AttrDef is a metadata attribute that can be associated to
     nodes in a NoteBook.
@@ -415,7 +415,7 @@ class AttrDef:
         if datatype == bool:
             self.write = lambda x: str(int(x))
         else:
-            self.write = unicode
+            self.write = str
 
         # reader function
         if datatype == bool:
@@ -424,7 +424,7 @@ class AttrDef:
             self.read = datatype
 
 
-class UnknownAttr:
+class UnknownAttr(object):
     """A value that belongs to an unknown AttrDef"""
 
     def __init__(self, value):
@@ -432,20 +432,20 @@ class UnknownAttr:
 
 
 g_default_attr_defs = [
-    AttrDef("nodeid", unicode, "Node ID", default=new_nodeid),
-    AttrDef("content_type", unicode, "Content type", default=lambda: CONTENT_TYPE_DIR),
-    AttrDef("title", unicode, "Title"),
+    AttrDef("nodeid", str, "Node ID", default=new_nodeid),
+    AttrDef("content_type", str, "Content type", default=lambda: CONTENT_TYPE_DIR),
+    AttrDef("title", str, "Title"),
     AttrDef("order", int, "Order", default=lambda: sys.maxsize),
     AttrDef("created_time", int, "Created time", default=get_timestamp),
     AttrDef("modified_time", int, "Modified time", default=get_timestamp),
     AttrDef("expanded", bool, "Expaned", default=lambda: True),
     AttrDef("expanded2", bool, "Expanded2", default=lambda: True),
-    AttrDef("info_sort", unicode, "Folder sort", default=lambda: "order"),
+    AttrDef("info_sort", str, "Folder sort", default=lambda: "order"),
     AttrDef("info_sort_dir", int, "Folder sort direction", default=lambda: 1),
-    AttrDef("icon", unicode, "Icon"),
-    AttrDef("icon_open", unicode, "Icon open"),
-    AttrDef("payload_filename", unicode, "Filename"),
-    AttrDef("duplicate_of", unicode, "Duplicate of"),
+    AttrDef("icon", str, "Icon"),
+    AttrDef("icon_open", str, "Icon open"),
+    AttrDef("payload_filename", str, "Filename"),
+    AttrDef("duplicate_of", str, "Duplicate of"),
 ]
 
 
@@ -476,7 +476,7 @@ default_notebook_table = NoteBookTable("default", attrs=[title_attr,
 # Notebook nodes
 
 
-class NoteBookNode:
+class NoteBookNode(object):
     """A general base class for all nodes in a NoteBook"""
 
     def __init__(
@@ -584,7 +584,7 @@ class NoteBookNode:
 
     def iter_attr(self):
         """Iterate through attributes of the node"""
-        return self._attr.items()
+        return list(self._attr.items())
 
     def _init_attr(self, attr):
         """Initialize attributes from a dict"""
@@ -631,7 +631,7 @@ class NoteBookNode:
             else:
                 # perform download
                 out = self.open_file(new_filename, "wb")
-                infile = urllib2.urlopen(filename)
+                infile = urllib.request.urlopen(filename)
                 while True:
                     data = infile.read(1024 * 4)
                     if data == "":
@@ -1118,7 +1118,7 @@ class NoteBookNode:
     '''
 
 
-class NodeAction:
+class NodeAction(object):
     pass
 
 
@@ -1657,7 +1657,7 @@ class NoteBook(NoteBookNode):
             out.write(
                 '<?xml version="1.0" encoding="UTF-8"?>\n'
                 "<notebook>\n"
-                "<version>{0:d}</version>\n"
+                "<version>{:d}</version>\n"
                 "<pref>\n".format(data["version"])
             )
             plist.dump(data, out, indent=4, depth=4)

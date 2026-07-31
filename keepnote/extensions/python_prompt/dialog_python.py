@@ -57,7 +57,7 @@ def move_to_end_of_line(it):
     return it
 
 
-class Stream:
+class Stream(object):
     def __init__(self, callback):
         self._callback = callback
 
@@ -68,7 +68,7 @@ class Stream:
         pass
 
 
-class PythonDialog:
+class PythonDialog(object):
     """Python dialog"""
 
     def __init__(self, main_window):

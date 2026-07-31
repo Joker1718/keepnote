@@ -25,7 +25,7 @@ base class for treeview
 #
 
 # python imports
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 # pygtk imports
 from gi.repository import GObject, Gdk, Gtk
@@ -91,7 +91,7 @@ def compute_new_path(model, target, drop_position):
         raise Exception(f"unknown drop position {str(drop_position)}")
 
 
-class TextRendererValidator:
+class TextRendererValidator(object):
     def __init__(self, format=lambda x: x, parse=lambda x: x, validate=lambda x: True):
 
         def parse2(x):
@@ -1161,7 +1161,7 @@ class KeepNoteBaseTreeView(gtk.TreeView):
                 uris = parse_utf(selection_data.data)
                 uris = [
                     xx
-                    for xx in (urllib.unquote(uri.strip()) for uri in uris.split("\n"))
+                    for xx in (urllib.parse.unquote(uri.strip()) for uri in uris.split("\n"))
                     if len(xx) > 0 and xx[0] != "#"
                 ]
 

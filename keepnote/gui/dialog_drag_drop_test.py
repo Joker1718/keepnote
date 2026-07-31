@@ -41,7 +41,7 @@ def parse_utf(text):
         return str(text, "utf8")
 
 
-class DragDropTestDialog:
+class DragDropTestDialog(object):
     """Drag and drop testing dialog"""
 
     def __init__(self, main_window):

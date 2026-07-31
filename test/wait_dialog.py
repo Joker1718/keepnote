@@ -1,3 +1,4 @@
+from past.utils import old_div
 import os, shutil, unittest, traceback, sys, time
 
 
@@ -45,7 +46,7 @@ class TestCaseWaitDialog (unittest.TestCase):
 
             t = 0.0
             while t < n and task.is_running():
-                task.set_percent(t / n)
+                task.set_percent(old_div(t, n))
                 t = time.time() - start
                 
         

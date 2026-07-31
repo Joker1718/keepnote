@@ -7,6 +7,7 @@ from keepnote.notebook.connection import fs_raw
 
 from .test_notebook_conn import TestConnBase
 from . import make_clean_dir, TMP_DIR
+from six.moves import range
 
 
 class FSRaw (TestConnBase):

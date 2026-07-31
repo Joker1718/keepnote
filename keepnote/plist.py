@@ -34,6 +34,8 @@ import datetime
 import re
 import sys
 from xml.sax.saxutils import escape
+# six.moves no longer needed in Python 3
+# map and range are builtins
 
 try:
     from .orderdict import OrderDict
@@ -41,7 +43,7 @@ except (ImportError, ValueError):
     OrderDict = dict
 
 
-class Data:
+class Data(object):
     def __init__(self, text):
         self.text = text
 
@@ -61,12 +63,13 @@ _unmarshallers = {
     # simple types
     "string": lambda x: x.text or "",
     "data": lambda x: Data(base64.decodebytes(x.text or "")),
-    "date": lambda x: datetime.datetime(*map(int, re.findall(r"\d+", x.text))),
+    "date": lambda x: datetime.datetime(*list(map(int, re.findall(r"\d+", x.text)))),
     "true": lambda x: True,
     "false": lambda x: False,
     "real": lambda x: float(x.text),
     "integer": lambda x: int(x.text),
     "null": lambda x: None,
+    # simple types
 }
 
 
@@ -113,7 +116,7 @@ def dump(elm, out=sys.stdout, indent=0, depth=0, suppress=False):
         out.write("<dict>")
         if indent:
             out.write("\n")
-        for key, val in elm.items():
+        for key, val in list(elm.items()):
             if indent:
                 out.write(" " * (depth + indent))
             out.write(f"<key>{key}</key>")
@@ -174,7 +177,7 @@ def dumps(elm, indent=0):
 def dump_etree(elm):
     if isinstance(elm, dict):
         elm2 = ET.Element("dict")
-        for key, val in elm.items():
+        for key, val in list(elm.items()):
             key2 = ET.Element("key")
             key2.text = key
             elm2.append(key2)

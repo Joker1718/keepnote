@@ -309,7 +309,7 @@ def mark_path_outdated(path):
 # path cache
 
 
-class PathCacheNode:
+class PathCacheNode(object):
     """Cache information for a node"""
 
     def __init__(self, nodeid, basename, parent):
@@ -320,7 +320,7 @@ class PathCacheNode:
         self.children_complete = False
 
 
-class PathCache:
+class PathCache(object):
     """
     An in-memory cache of filesystem paths for nodeids
     """
@@ -423,7 +423,7 @@ class PathCache:
         """Add a new nodeid, basename, and parentid to the cache"""
 
         parent = self._nodes.get(parentid, 0)
-        if parent is 0:
+        if parent == 0:
             # TODO: should I allow unknown parent?
             raise UnknownNode(
                 f"unknown parent {repr((basename, parentid, self._nodes))}"
@@ -450,7 +450,7 @@ class PathCache:
         parent = self._nodes.get(parentid, 0)
 
         if node is not None:
-            if parent is not 0:
+            if parent != 0:
                 # update cache
                 node.parent.children.remove(node)
                 node.parent = parent
@@ -482,7 +482,7 @@ class NoteBookConnectionFS(NoteBookConnection):
         self._index_file = None
 
         # attributes to not write to disk, they can be derived
-        self._attr_suppress = set(["parentids", "childids"])
+        self._attr_suppress = {"parentids", "childids"}
 
         # NOTES:
         # - I only use the notebook object for assesing attrdefs and
@@ -902,7 +902,7 @@ class NoteBookConnectionFS(NoteBookConnection):
                 f"<version>{keepnote.compat.notebook_v4.NOTEBOOK_FORMAT_VERSION}</version>\n"
             )
 
-            for key, val in attr.items():
+            for key, val in list(attr.items()):
                 if key in self._attr_suppress:
                     continue
 

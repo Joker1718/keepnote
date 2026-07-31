@@ -76,26 +76,17 @@ class MaskDict(dict):
     def keys(self):
         return [k for k in self._dict if k not in self._mask]
 
-    def iterkeys(self):
-        return (k for k in self._dict if k not in self._mask)
-
     def values(self):
         return [self._dict[key] for key in self._dict if key not in self._mask]
 
-    def itervalues(self):
-        return (self._dict[key] for key in self._dict if key not in self._mask)
-
     def items(self):
         return [(key, self._dict[key]) for key in self._dict if key not in self._mask]
-
-    def iteritems(self):
-        return ((key, self._dict[key]) for key in self._dict if key not in self._mask)
 
     def __iter__(self):
         return (key for key in self._dict if key not in self._mask)
 
     def __repr__(self):
-        return repr(dict(self.items()))
+        return repr(dict(list(self.items())))
 
     def __str__(self):
-        return str(dict(self.items()))
+        return str(dict(list(self.items())))

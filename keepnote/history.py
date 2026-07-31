@@ -25,7 +25,7 @@ Node history data structure
 #
 
 
-class NodeHistory:
+class NodeHistory(object):
     """Data structure of node history"""
 
     def __init__(self, maxsize=40):

@@ -38,6 +38,7 @@ from .textbuffer_tools import (
 
 # richtext imports
 from .richtextbase_tags import RichTextTag
+from six.moves import filter
 
 
 # default maximum undo levels
@@ -52,7 +53,7 @@ def add_child_to_buffer(textbuffer, it, anchor):
 # RichTextBaseBuffer undoable actions
 
 
-class Action:
+class Action(object):
     """A base class for undoable actions in RichTextBuffer"""
 
     def __init__(self):
@@ -198,19 +199,19 @@ class TagAction(Action):
 
         # TODO: I can probably discard iter's.  Maybe make argument to
         # iter_buffer_contents
-        self.contents = filter(
+        self.contents = list(filter(
             lambda kip: kip[0] in ("begin", "end") and kip[2] == self.tag,
             buffer_contents_iter_to_offset(
                 iter_buffer_contents(self.textbuffer, start, end)
             ),
-        )
+        ))
 
 
 # =============================================================================
 # handler class
 
 
-class UndoHandler:
+class UndoHandler(object):
     """TextBuffer Handler that provides undo/redo functionality"""
 
     def __init__(self, textbuffer):

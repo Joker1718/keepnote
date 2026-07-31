@@ -37,6 +37,7 @@ from keepnote.timestamp import (
     get_str_timestamp,
 )
 from keepnote import safefile
+from six.moves import range
 
 
 # constants
@@ -68,7 +69,7 @@ DEFAULT_FONT = f"{DEFAULT_FONT_FAMILY} {DEFAULT_FONT_SIZE:d}"
     INFO_SORT_TITLE,
     INFO_SORT_CREATED_TIME,
     INFO_SORT_MODIFIED_TIME,
-) = range(5)
+) = list(range(5))
 
 
 # =============================================================================
@@ -285,7 +286,7 @@ class NoteBookVersionError(NoteBookError):
 # TODO: finish
 
 
-class NoteBookAttr:
+class NoteBookAttr(object):
     def __init__(self, name, datatype, key=None, write=None, read=None):
         if key == None:
             self.key = name
@@ -299,7 +300,7 @@ class NoteBookAttr:
             if datatype == bool:
                 self.write = lambda x: str(int(x))
             else:
-                self.write = unicode
+                self.write = str
         else:
             self.write = write
 
@@ -313,7 +314,7 @@ class NoteBookAttr:
             self.read = read
 
 
-class NoteBookTable:
+class NoteBookTable(object):
     def __init__(self, name):
         self.name = name
         self.cols = []
@@ -323,8 +324,8 @@ class NoteBookTable:
 
 
 g_default_attrs = [
-    NoteBookAttr("Title", unicode, "title"),
-    NoteBookAttr("Kind", unicode, "kind"),
+    NoteBookAttr("Title", str, "title"),
+    NoteBookAttr("Kind", str, "kind"),
     NoteBookAttr("Order", int, "order"),
     NoteBookAttr("Created", int, "created_time"),
     NoteBookAttr("Modified", int, "modified_time"),
@@ -343,7 +344,7 @@ g_default_attrs = [
 # 2. attrs can appear in listview
 
 
-class NoteBookNode:
+class NoteBookNode(object):
     """A general base class for all nodes in a NoteBook"""
 
     def __init__(self, path, title="", parent=None, notebook=None, kind="dir"):
@@ -815,7 +816,7 @@ class NoteBookNode:
             out.write(XML_HEADER)
             out.write("<node>\n<version>2</version>\n")
 
-            for key, val in self._attr.items():
+            for key, val in list(self._attr.items()):
                 attr = self._notebook.notebook_attrs.get(key, None)
 
                 if attr is not None:
@@ -1005,7 +1006,7 @@ class NoteBookTrash(NoteBookDir):
         raise NoteBookError("The Trash folder cannot be deleted.")
 
 
-class NoteBookPreferences:
+class NoteBookPreferences(object):
     """Preference data structure for a NoteBook"""
 
     def __init__(self):

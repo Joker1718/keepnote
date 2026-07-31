@@ -7,6 +7,7 @@ from keepnote import notebook
 import keepnote.notebook.sync as sync
 
 from . import clean_dir, makedirs, TMP_DIR
+from six.moves import range
 
 
 # root path for test data

@@ -30,7 +30,7 @@ from collections import defaultdict
 import contextlib
 import http.client
 import json
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import urllib.parse
 
 # keepnote imports
@@ -70,14 +70,14 @@ def parse_node_path(path, prefixes=("/")):
     i = path.find("/")
     if i != -1:
         nodeid = path[:i]
-        filename = urllib.unquote(path[i + 1 :])
+        filename = urllib.parse.unquote(path[i + 1 :])
         if filename == "":
             filename = "/"
     else:
         nodeid = path
         filename = None
 
-    return urllib.unquote(nodeid), filename
+    return urllib.parse.unquote(nodeid), filename
 
 
 def format_node_path(prefix, nodeid="", filename=None):
@@ -86,9 +86,9 @@ def format_node_path(prefix, nodeid="", filename=None):
     """
     nodeid = nodeid.replace("/", "%2F")
     if filename is not None:
-        return urllib.quote(f"{prefix}{nodeid}/{filename}")
+        return urllib.parse.quote(f"{prefix}{nodeid}/{filename}")
     else:
-        return urllib.quote(prefix + nodeid)
+        return urllib.parse.quote(prefix + nodeid)
 
 
 def format_node_url(host, prefix, nodeid, filename=None, port=80):
@@ -237,7 +237,7 @@ class NoteBookConnectionHttp(NoteBookConnection):
         # write: POST nodeid/file
         # append: POST nodeid/file?mode=a
 
-        class HttpFile:
+        class HttpFile(object):
             def __init__(self, codec=None):
                 self.data = []
                 self.codec = codec
@@ -397,9 +397,9 @@ class NoteBookConnectionHttp(NoteBookConnection):
         return format_node_url(self._netloc, self._prefix, nodeid, filename)
 
 
-class NodeTitleCache:
+class NodeTitleCache(object):
     def __init__(self):
-        self._titles = defaultdict(lambda: set())
+        self._titles = defaultdict(set)
         self._nodeids = {}
         self._complete = False
 
@@ -451,7 +451,7 @@ class NodeTitleCache:
 
     def get(self, query):
         query = query.lower()
-        for title in self._titles.keys():
+        for title in list(self._titles.keys()):
             if query in title:
                 for nodeid in self._titles[title]:
                     yield (nodeid, self._nodeids[nodeid])

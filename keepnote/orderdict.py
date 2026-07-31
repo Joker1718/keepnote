@@ -29,15 +29,17 @@ class OrderDict(dict):
     """
 
     def __init__(self, *args, **kargs):
-        if len(args) > 0 and hasattr(args[0], "next"):
-            dict.__init__(self)
-            self._order = []
+        dict.__init__(self)
+        self._order = []
+        if len(args) > 0:
             for k, v in args[0]:
-                self._order.append(k)
+                if k not in self:
+                    self._order.append(k)
                 dict.__setitem__(self, k, v)
         else:
+            for k in kargs:
+                self._order.append(k)
             dict.__init__(self, *args, **kargs)
-            self._order = dict.keys(self)
 
     # The following methods keep names in sync with dictionary keys
     def __setitem__(self, key, value):
@@ -68,22 +70,11 @@ class OrderDict(dict):
     def keys(self):
         return list(self._order)
 
-    def iterkeys(self):
-        return iter(self._order)
-
     def values(self):
         return [self[key] for key in self._order]
 
-    def itervalues(self):
-        for key in self._order:
-            yield self[key]
-
     def items(self):
         return [(key, self[key]) for key in self._order]
-
-    def iteritems(self):
-        for key in self._order:
-            yield (key, self[key])
 
     def __iter__(self):
         return iter(self._order)

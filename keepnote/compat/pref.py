@@ -35,6 +35,8 @@ import keepnote.timestamp
 import keepnote.compat.xmlobject_v3 as xmlo
 from keepnote.util import compose
 from keepnote import orderdict
+from six.moves import map
+from six.moves import range
 
 
 OLD_USER_PREF_DIR = "takenote"
@@ -188,7 +190,7 @@ DEFAULT_VIEW_MODE = "vertical"
 DEFAULT_AUTOSAVE_TIME = 10 * 1000  # 10 sec (in msec)
 
 
-class ExternalApp:
+class ExternalApp(object):
     """Class represents the information needed for calling an external application"""
 
     def __init__(self, key, title, prog, args=[]):
@@ -198,7 +200,7 @@ class ExternalApp:
         self.args = args
 
 
-class KeepNotePreferences:
+class KeepNotePreferences(object):
     """Preference data structure for the KeepNote application"""
 
     def __init__(self):
@@ -411,7 +413,7 @@ g_keepnote_pref_parser = xmlo.XmlObject(
                 tags=[
                     xmlo.TagMany(
                         "notebook",
-                        iterfunc=lambda s: range(len(s.recent_notebooks)),
+                        iterfunc=lambda s: list(range(len(s.recent_notebooks))),
                         get=lambda si, x: si[0].recent_notebooks.append(x),
                         set=lambda si: si[0].recent_notebooks[si[1]],
                     )
@@ -426,7 +428,7 @@ g_keepnote_pref_parser = xmlo.XmlObject(
                         tags=[
                             xmlo.TagMany(
                                 "extension",
-                                iterfunc=lambda s: range(len(s.disabled_extensions)),
+                                iterfunc=lambda s: list(range(len(s.disabled_extensions))),
                                 get=lambda si, x: si[0].disabled_extensions.append(x),
                                 set=lambda si: si[0].disabled_extensions[si[1]],
                             )
@@ -439,7 +441,7 @@ g_keepnote_pref_parser = xmlo.XmlObject(
                 tags=[
                     xmlo.TagMany(
                         "app",
-                        iterfunc=lambda s: range(len(s.external_apps)),
+                        iterfunc=lambda s: list(range(len(s.external_apps))),
                         before=lambda si: si[0].external_apps.append(
                             ExternalApp("", "", "")
                         ),
@@ -474,7 +476,7 @@ g_keepnote_pref_parser = xmlo.XmlObject(
                 tags=[
                     xmlo.TagMany(
                         "timestamp_format",
-                        iterfunc=lambda s: range(len(s.timestamp_formats)),
+                        iterfunc=lambda s: list(range(len(s.timestamp_formats))),
                         before=lambda si: (
                             setattr(si[0], "_last_timestamp_name", "")
                             or setattr(si[0], "_last_timestamp_format", "")

@@ -25,7 +25,7 @@ Listener (Observer) pattern
 #
 
 
-class Listeners:
+class Listeners(object):
     """Maintains a list of listeners (functions) that are called when the
     notify function is called.
     """

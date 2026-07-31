@@ -27,6 +27,7 @@ UndoStack for maintaining undo and redo actions
 import sys
 
 from keepnote.linked_list import LinkedList
+from six.moves import zip
 
 
 def cat_funcs(funcs):
@@ -46,7 +47,7 @@ def cat_funcs(funcs):
     return f
 
 
-class UndoStack:
+class UndoStack(object):
     """UndoStack for maintaining undo and redo actions"""
 
     def __init__(self, maxsize=sys.maxsize):
@@ -139,7 +140,7 @@ class UndoStack:
 
         if self._group_counter == 0:
             if len(self._pending_actions) > 0:
-                actions, undos = zip(*self._pending_actions)
+                actions, undos = list(zip(*self._pending_actions))
 
                 self._undo_actions.append(
                     (cat_funcs(actions), cat_funcs(reversed(undos)))

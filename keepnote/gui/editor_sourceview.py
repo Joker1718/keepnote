@@ -27,6 +27,7 @@ Editor widget in main window
 
 # pygtk imports
 from gi.repository import GObject
+from six.moves import map
 
 
 try:
@@ -390,7 +391,7 @@ class EditorMenus(gobject.GObject):
         def BothAction(name1, *args):
             return [Action(name1, *args), ToggleAction(name1 + " Tool", *args)]
 
-        return map(
+        return list(map(
             lambda x: Action(*x),
             [
                 # finding
@@ -427,7 +428,7 @@ class EditorMenus(gobject.GObject):
                     lambda w: self._editor.find_dialog.on_find(True),
                 ),
             ],
-        ) + [
+        )) + [
             ToggleAction(
                 "Spell Check",
                 None,

@@ -25,6 +25,7 @@ Application Options Dialog
 #
 
 # python imports
+from past.utils import old_div
 import os
 
 # pygtk imports
@@ -68,7 +69,7 @@ def on_browse(parent, title, filename, entry, action=Gtk.FileChooserAction.OPEN)
     dialog.destroy()
 
 
-class Section:
+class Section(object):
     """A Section in the Options Dialog"""
 
     def __init__(self, key, dialog, app, label="", icon=None):
@@ -165,7 +166,7 @@ class GeneralSection(Section):
         # populate autosave
         self.builder.get_object("autosave_check").set_active(app.pref.get("autosave"))
         self.builder.get_object("autosave_entry").set_text(
-            str(int(app.pref.get("autosave_time") / 1000))
+            str(int(old_div(app.pref.get("autosave_time"), 1000)))
         )
 
         self.builder.get_object("autosave_entry").set_sensitive(app.pref.get("autosave"))
@@ -834,7 +835,7 @@ class ExtensionWidget(gtk.EventBox):
 # =============================================================================
 
 
-class ApplicationOptionsDialog:
+class ApplicationOptionsDialog(object):
     """Application options"""
 
     def __init__(self, app):

@@ -27,7 +27,7 @@ Richtext indentation handler
 from .textbuffer_tools import move_to_start_of_line, move_to_end_of_line, paragraph_iter
 from .richtext_tags import RichTextIndentTag
 from .richtextbasebuffer import get_paragraph
-from textbuffer_tools import get_paragraphs_selected
+from .textbuffer_tools import get_paragraphs_selected
 
 
 # string for bullet points
@@ -37,7 +37,7 @@ BULLET_STR = "\u2022 "
 # =============================================================================
 
 
-class IndentHandler:
+class IndentHandler(object):
     """This object will manage the indentation of paragraphs in a
     TextBuffer with RichTextTags
     """

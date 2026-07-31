@@ -1,6 +1,7 @@
-from testing import *
+from six.moves import range
+from .testing import *
 
-import os, shutil, unittest, thread, threading, traceback, sys, time
+import os, shutil, unittest, _thread, threading, traceback, sys, time
 
 # keepnote imports
 import keepnote
@@ -29,7 +30,7 @@ class Speed (unittest.TestCase):
         walk(book)
         
         t = time.time() - start
-        print("seconds: ", t)
+        print(("seconds: ", t))
         book.close()
         
 
@@ -52,7 +53,7 @@ class Speed (unittest.TestCase):
             notebook.new_page(n, str(i))
 
         t = time.time() - start
-        print("seconds: ", t)
+        print(("seconds: ", t))
         book.close()
 
 

@@ -15,7 +15,7 @@ _datapath = os.path.join(TMP_DIR, 'notebook_struct')
 
 
 def display_notebook(node, depth=0):
-    print("  " * depth,)
+    print(("  " * depth,))
     print(node.get_title())
 
     for child in node.get_children():
@@ -110,7 +110,7 @@ class Test (unittest.TestCase):
         book.load(_datapath + "/n1")
 
         c1 = book.get_node_by_id(c1id)
-        print("found", c1.get_title())
+        print(("found", c1.get_title()))
 
         book.close()
 
@@ -149,8 +149,8 @@ class Test (unittest.TestCase):
         print(attr)
 
         # check orphan node dir
-        print((open(_datapath + "/conn/__NOTEBOOK__/orphans/%s/%s/node.xml"
-                   % (nodeid[:2], nodeid[2:])).read()))
+        print(open(_datapath + "/conn/__NOTEBOOK__/orphans/%s/%s/node.xml"
+                   % (nodeid[:2], nodeid[2:])).read())
 
         # move orphan out of orphandir
         attr["parentids"] = [rootid]

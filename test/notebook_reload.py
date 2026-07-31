@@ -1,6 +1,6 @@
-import os, shutil, unittest, thread, threading, traceback, sys
+import os, shutil, unittest, _thread, threading, traceback, sys
 
-from testing import *
+from .testing import *
 
 # keepnote imports
 import keepnote
@@ -32,7 +32,7 @@ class NoteBookReload (unittest.TestCase):
         print("\t".join(["%d. '%s'" % (i+1, x.get_title())
                          for i, x in enumerate(app.iter_notebooks())]))
 
-        self.assert_(len(list(app.iter_notebooks())) == 0)
+        self.assertTrue(len(list(app.iter_notebooks())) == 0)
 
 
 if __name__ == "__main__":

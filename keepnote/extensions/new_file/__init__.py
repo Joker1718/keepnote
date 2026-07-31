@@ -307,7 +307,7 @@ class Extension(extension.Extension):
         return os.path.basename(newfilename)
 
 
-class FileType:
+class FileType(object):
     """Class containing information about a filetype"""
 
     def __init__(self, name, filename, example_file):

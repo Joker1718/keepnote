@@ -176,4 +176,4 @@ class Update (unittest.TestCase):
             print("Correctly detects version error")
         else:
             print("Error not detected")
-            self.assert_(False)
+            self.assertTrue(False)

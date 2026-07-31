@@ -27,6 +27,7 @@ timestamp module
 
 import locale
 import time
+from six.moves import range
 
 # determine UNIX Epoc (which should be 0, unless the current platform has a
 # different definition of epoc)
@@ -42,22 +43,21 @@ if ENCODING is None:
 
 """
 
-0  	tm_year  	(for example, 1993)
-1 	tm_mon 	range [1,12]
-2 	tm_mday 	range [1,31]
-3 	tm_hour 	range [0,23]
-4 	tm_min 	range [0,59]
-5 	tm_sec 	range [0,61]; see (1) in strftime() description
-6 	tm_wday 	range [0,6], Monday is 0
-7 	tm_yday 	range [1,366]
-8 	tm_isdst 	0, 1 or -1; see below
+0       tm_year         (for example, 1993)
+1       tm_mon  range [1,12]
+2       tm_mday         range [1,31]
+3       tm_hour         range [0,23]
+4       tm_min  range [0,59]
+5       tm_sec  range [0,61]; see (1) in strftime() description
+6       tm_wday         range [0,6], Monday is 0
+7       tm_yday         range [1,366]
+8       tm_isdst        0, 1 or -1; see below
 
 """
 
 
-(TM_YEAR, TM_MON, TM_MDAY, TM_HOUR, TM_MIN, TM_SEC, TM_WDAY, TM_YDAY, TM_ISDST) = range(
-    9
-)
+(TM_YEAR, TM_MON, TM_MDAY, TM_HOUR, TM_MIN, TM_SEC, TM_WDAY, TM_YDAY, TM_ISDST) = list(range(
+    9))
 
 
 """
@@ -115,8 +115,8 @@ def get_str_timestamp(timestamp, current=None, formats=DEFAULT_TIMESTAMP_FORMATS
     The string will be abbreviated according to the current time.
     """
 
-    # NOTE: I have written this function to allow unicode formats.
-    # The encode/decode functions should allow most unicode formats to
+    # NOTE: I have written this function to allow non-ASCII formats.
+    # The encode/decode functions should allow most str formats to
     # to be processed by strftime.  However, a '%' may occur inside a
     # multibyte character.  This is a hack until python issue
     # http://bugs.python.org/issue2782 is resolved.

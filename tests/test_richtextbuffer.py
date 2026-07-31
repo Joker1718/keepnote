@@ -30,7 +30,7 @@ class TestCaseRichTextBuffer (BufferBase):
                            'END:bold'])
 
         dom = TextBufferDom(self.get_contents())
-        print
+        print()
         dom.display()
 
         self.assertEqual([display_item(x) for x in dom.get_contents()],

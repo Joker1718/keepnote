@@ -56,7 +56,7 @@ def match_words(infile, words):
                 matches[word] = True
 
     # return True if all words are found (AND)
-    for val in matches.values():
+    for val in list(matches.values()):
         if not val:
             return False
 
@@ -94,7 +94,7 @@ def test_fts3(cur, tmpname="fts3test"):
 # =============================================================================
 
 
-class AttrIndex:
+class AttrIndex(object):
     """Indexing information for an attribute"""
 
     def __init__(self, name, type, index_value=False):
@@ -160,7 +160,7 @@ class AttrIndex:
         )
 
 
-class NodeIndex:
+class NodeIndex(object):
     """
     General index for nodes and their attributes
     """
@@ -237,7 +237,7 @@ class NodeIndex:
         #            """)
 
         # initialize attribute tables
-        for attr in self._attrs.values():
+        for attr in list(self._attrs.values()):
             attr.init(cur)
 
     def drop_attrs(self, cur):
@@ -261,7 +261,7 @@ class NodeIndex:
     def add_node_attr(self, cur, nodeid, attr, fulltext=True):
 
         # update attrs
-        for attrindex in self._attrs.values():
+        for attrindex in list(self._attrs.values()):
             attrindex.add_node(cur, nodeid, attr)
 
         # update fulltext
@@ -272,7 +272,7 @@ class NodeIndex:
     def remove_node_attr(self, cur, nodeid):
 
         # update attrs
-        for attr in self._attrs.values():
+        for attr in list(self._attrs.values()):
             attr.remove_node(cur, nodeid)
 
         self._remove_text(cur, nodeid)

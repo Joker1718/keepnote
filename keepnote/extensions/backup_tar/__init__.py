@@ -412,8 +412,8 @@ def restore_notebook(filename, path, rename, task=None):
                 task.set_message(("text", f"Restoring {len(members):d} files..."))
 
             for i, member in enumerate(members):
-                # FIX: tarfile does not seem to keep unicode and str straight
-                # make sure member.name is unicode
+                # FIX: tarfile does not seem to keep str and bytes straight
+                # make sure member.name is str
                 if "path" in member.pax_headers:
                     member.name = member.pax_headers["path"]
 

@@ -25,7 +25,7 @@ A tree implemented with linked lists
 #
 
 
-class LinkedTreeNode:
+class LinkedTreeNode(object):
     """A node in a linked list tree"""
 
     def __init__(self):

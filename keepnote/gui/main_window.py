@@ -25,6 +25,8 @@ Graphical User Interface for KeepNote Application
 #
 
 # python imports
+from six.moves import map
+from six.moves import range
 import os
 import shutil
 import sys
@@ -219,7 +221,7 @@ class KeepNoteWindow(gtk.Window):
     def get_all_notebooks(self):
         """Returns all notebooks loaded by all viewers"""
         return set(
-            filter(lambda n: n is not None, (v.get_notebook() for v in self._viewers))
+            [n for n in (v.get_notebook() for v in self._viewers) if n is not None]
         )
 
     # ===============================================
@@ -615,7 +617,7 @@ class KeepNoteWindow(gtk.Window):
             self.close_notebook()
 
         try:
-            # make sure filename is unicode
+            # make sure filename is str
             filename = ensure_str(filename, FS_ENCODING)
             notebook = notebooklib.NoteBook()
             notebook.create(filename)
@@ -673,7 +675,7 @@ class KeepNoteWindow(gtk.Window):
 
         """
         # init window lookup
-        win_lookup = dict((w.get_id(), w) for w in self._app.get_windows())
+        win_lookup = {w.get_id(): w for w in self._app.get_windows()}
 
         def open_in_window(winid, viewerid, notebook):
             win = win_lookup.get(winid, None)
@@ -700,7 +702,7 @@ class KeepNoteWindow(gtk.Window):
 
         elif len(windows) == 1:
             # restore a single window
-            winid, winpref = windows.items()[0]
+            winid, winpref = list(windows.items())[0]
             viewerid = winpref.get("viewerid", None)
 
             if viewerid is not None:
@@ -748,7 +750,7 @@ class KeepNoteWindow(gtk.Window):
                 # to reuse this window
 
                 if self._winid not in restoring_ids:
-                    self._winid = iter(restoring_ids).next()
+                    self._winid = next(iter(restoring_ids))
 
                 restoring_ids.remove(self._winid)
                 viewerid = windows[self._winid].get("viewerid", None)
@@ -1081,7 +1083,7 @@ class KeepNoteWindow(gtk.Window):
     # Menus
 
     def get_actions(self):
-        actions = map(
+        actions = list(map(
             lambda x: Action(*x),
             [
                 ("File", None, _("_File")),
@@ -1336,7 +1338,7 @@ class KeepNoteWindow(gtk.Window):
                     lambda w: self.on_about(),
                 ),
             ],
-        ) + [
+        )) + [
             Action("Main Spacer Tool"),
             Action("Search Box Tool", None, None, "", _("Search All Notes")),
             Action(
@@ -1453,7 +1455,7 @@ class KeepNoteWindow(gtk.Window):
 
     def get_actions_statusicon(self):
         """Set actions for StatusIcon menu and return."""
-        actions = map(
+        actions = list(map(
             lambda x: Action(*x),
             [
                 (
@@ -1481,7 +1483,7 @@ class KeepNoteWindow(gtk.Window):
                     lambda w: self.on_about(),
                 ),
             ],
-        )
+        ))
 
         return actions
 
@@ -1614,7 +1616,7 @@ class SearchBox(gtk.Entry):
 
         # queue for sending results between threads
         from threading import Lock
-        from Queue import Queue
+        from queue import Queue
 
         queue = Queue()
         lock = Lock()  # a mutex for the notebook (protect sqlite)

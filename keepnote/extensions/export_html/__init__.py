@@ -31,7 +31,7 @@ import os
 import sys
 import time
 import shutil
-import urllib
+import urllib.request, urllib.parse, urllib.error
 import xml.dom
 from xml.dom import minidom
 from xml.sax.saxutils import escape
@@ -199,7 +199,7 @@ def nodeid2html_link(notebook, path, nodeid):
         elif note.has_attr("payload_filename"):
             newpath = "/".join((newpath, note.get_attr("payload_filename")))
 
-        return urllib.quote(newpath.encode("utf8"))
+        return urllib.parse.quote(newpath.encode("utf8"))
     else:
         return ""
 
@@ -353,7 +353,7 @@ font-weight: bold;
 
         if len(node.get_children()) > 0:
             out.write(
-                """<nobr><tt><a href='javascript: toggleDivName("{0}", {1})'>+</a>&nbsp;</tt>""".format(
+                """<nobr><tt><a href='javascript: toggleDivName("{}", {})'>+</a>&nbsp;</tt>""".format(
                     nodeid, ["false", "true"][int(expand)]
                 )
             )
@@ -369,7 +369,7 @@ font-weight: bold;
 
         if len(node.get_children()) > 0:
             out.write(
-                "<div id='{0}' class='node{1}'>".format(
+                "<div id='{}' class='node{}'>".format(
                     nodeid, ["_collapsed", ""][int(expand)]
                 )
             )
@@ -451,7 +451,7 @@ def export_notebook(notebook, filename, task):
         task.set_message(("detail", truncate_filename(path)))
         task.set_percent(nnodes2[0] / float(nnodes[0]))
 
-        skipfiles = set(child.get_basename() for child in node.get_children())
+        skipfiles = {child.get_basename() for child in node.get_children()}
 
         # make node directory
         os.mkdir(arcname)

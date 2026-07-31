@@ -60,7 +60,7 @@ MAX_LEN_NODE_FILENAME = 40
 NULL = object()
 
 
-class NodeFSSimple:
+class NodeFSSimple(object):
     """
     Stores node directories in a directory structure organized by nodeid.
 

@@ -419,7 +419,7 @@ def get_paragraph(it):
     return start, end
 
 
-class paragraph_iter:
+class paragraph_iter(object):
     """Iterate through the paragraphs of a TextBuffer"""
 
     def __init__(self, buf, start, end):

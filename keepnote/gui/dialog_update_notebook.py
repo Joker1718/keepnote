@@ -49,7 +49,7 @@ MESSAGE_TEXT = _(
 )
 
 
-class UpdateNoteBookDialog:
+class UpdateNoteBookDialog(object):
     """Updates a notebook"""
 
     def __init__(self, app, main_window):

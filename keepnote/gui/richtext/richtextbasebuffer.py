@@ -62,7 +62,7 @@ class RichTextAnchor(gtk.TextChildAnchor):
         return self._widgets
 
     def show(self):
-        for widget in self._widgets.values():
+        for widget in list(self._widgets.values()):
             if widget:
                 widget.show()
 
@@ -78,12 +78,12 @@ class RichTextAnchor(gtk.TextChildAnchor):
         return anchor
 
     def highlight(self):
-        for widget in self._widgets.values():
+        for widget in list(self._widgets.values()):
             if widget:
                 widget.highlight()
 
     def unhighlight(self):
-        for widget in self._widgets.values():
+        for widget in list(self._widgets.values()):
             if widget:
                 widget.unhighlight()
 GObject.signal_new(

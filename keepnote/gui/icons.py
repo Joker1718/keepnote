@@ -38,6 +38,7 @@ from keepnote import unicode_gtk
 import keepnote.gui
 from keepnote import get_resource
 import keepnote.notebook as notebooklib
+from six.moves import range
 
 
 # =============================================================================
@@ -91,7 +92,7 @@ DEFAULT_QUICK_PICK_ICONS = (
 # node icons
 
 
-class MimeIcons:
+class MimeIcons(object):
     def __init__(self):
         self.theme = Gtk.icon_theme_get_default()
         if self.theme is None:
@@ -288,7 +289,7 @@ def get_node_icon_filenames(node):
 # TODO: continue to clean up class
 
 
-class NoteBookIconManager:
+class NoteBookIconManager(object):
     def __init__(self):
         self.pixbufs = None
         self._node_icon_cache = {}

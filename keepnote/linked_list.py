@@ -25,7 +25,7 @@ Linked list data structure
 #
 
 
-class LinkedNode:
+class LinkedNode(object):
     """A node in a doubly linked list"""
 
     def __init__(self, item):
@@ -43,7 +43,7 @@ class LinkedNode:
         return self._item
 
 
-class LinkedList:
+class LinkedList(object):
     """A doubly linked list"""
 
     def __init__(self, items=[]):

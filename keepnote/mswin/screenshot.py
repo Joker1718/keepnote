@@ -62,7 +62,7 @@ def capture_screen(filename, x, y, x2, y2):
     shot_bitmap.SaveBitmapFile(shot_dc, filename)
 
 
-class Window:
+class Window(object):
     """Class for basic MS Windows window"""
 
     def __init__(
@@ -148,7 +148,7 @@ class Window:
         win32gui.DestroyWindow(self._handle)
 
 
-class WinLoop:
+class WinLoop(object):
     def __init__(self):
         self._running = True
 

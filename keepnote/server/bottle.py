@@ -41,100 +41,53 @@ if __name__ == "__main__":
 
             eventlet.monkey_patch()
 
-import base64, cgi, email.utils, functools, hmac, imp, itertools, mimetypes, os, re, subprocess, sys, tempfile, threading, time, warnings
+import base64, cgi, email.utils, functools, hmac, importlib, itertools, mimetypes, os, re, subprocess, sys, tempfile, threading, time, types, warnings
 
 from datetime import date as datedate, datetime, timedelta
 from tempfile import TemporaryFile
 from traceback import format_exc, print_exc
-from inspect import getargspec
+from inspect import getfullargspec as getargspec
 from unicodedata import normalize
 
 
 try:
     from simplejson import dumps as json_dumps, loads as json_lds
-except ImportError:  # pragma: no cover
+except ImportError:
     try:
         from json import dumps as json_dumps, loads as json_lds
     except ImportError:
-        try:
-            from django.utils.simplejson import dumps as json_dumps, loads as json_lds
-        except ImportError:
-
-            def json_dumps(data):
-                raise ImportError("JSON support requires Python 2.6 or simplejson.")
-
-            json_lds = json_dumps
+        def json_dumps(data):
+            raise ImportError("JSON support requires the json module or simplejson.")
+        json_lds = json_dumps
 
 
-# We now try to fix 2.5/2.6/3.1/3.2 incompatibilities.
-# It ain't pretty but it works... Sorry for the mess.
+# Python 3 only -- all Python 2 compatibility code removed
 
-py = sys.version_info
-py3k = py >= (3, 0, 0)
-py25 = py < (2, 6, 0)
-py31 = (3, 1, 0) <= py < (3, 2, 0)
+import http.client as httplib
+import _thread as thread
+from urllib.parse import urljoin, SplitResult as UrlSplitResult
+from urllib.parse import urlencode, quote as urlquote, unquote as urlunquote
+
+urlunquote = functools.partial(urlunquote, encoding="latin1")
+from http.cookies import SimpleCookie
+from collections.abc import MutableMapping as DictMixin
+import pickle
+from io import BytesIO
+from configparser import ConfigParser
+from inspect import getfullargspec
 
 
-# Workaround for the missing "as" keyword in py3k.
 def _e():
+    """Return the current exception instance (for use in except blocks without 'as')."""
     return sys.exc_info()[1]
 
 
-# Workaround for the "print is a keyword/function" Python 2/3 dilemma
-# and a fallback for mod_wsgi (resticts stdout/err attribute access)
+# Workaround for mod_wsgi (restricts stdout/err attribute access)
 try:
     _stdout, _stderr = sys.stdout.write, sys.stderr.write
 except OSError:
     _stdout = lambda x: sys.stdout.write(x)
     _stderr = lambda x: sys.stderr.write(x)
-
-# Lots of stdlib and builtin differences.
-if py3k:
-    import http.client as httplib
-    import _thread as thread
-    from urllib.parse import urljoin, SplitResult as UrlSplitResult
-    from urllib.parse import urlencode, quote as urlquote, unquote as urlunquote
-
-    urlunquote = functools.partial(urlunquote, encoding="latin1")
-    from http.cookies import SimpleCookie
-    from collections.abc import MutableMapping as DictMixin
-    import pickle
-    from io import BytesIO
-    from configparser import ConfigParser
-
-    str = str
-    unicode = str
-    json_loads = lambda s: json_lds(touni(s))
-    callable = lambda x: hasattr(x, "__call__")
-    imap = map
-
-    def _raise(*a):
-        raise a[0](a[1]).with_traceback(a[2])
-else:  # 2.x
-    import httplib
-    import thread
-    from urlparse import urljoin, SplitResult as UrlSplitResult
-    from urllib import urlencode, quote as urlquote, unquote as urlunquote
-    from Cookie import SimpleCookie
-    from itertools import imap
-    import cPickle as pickle
-    from io import StringIO as BytesIO
-    from ConfigParser import SafeConfigParser as ConfigParser
-
-    if py25:
-        msg = "Python 2.5 support may be dropped in future versions of Bottle."
-        warnings.warn(msg, DeprecationWarning)
-        from UserDict import DictMixin
-
-        def next(it):
-            return it.next()
-
-        bytes = str
-    else:  # 2.6, 2.7
-        from collections.abc import MutableMapping as DictMixin
-    unicode = unicode
-    json_loads = json_lds
-    eval(compile("def _raise(*a): raise a[0], a[1], a[2]", "<py3fix>", "exec"))
 
 
 # Some helpers for string/byte handling
@@ -149,16 +102,11 @@ def touni(s, enc="utf8", err="strict"):
         return str(s or ("" if s is None else s))
 
 
-tonat = touni if py3k else tob
+tonat = touni
+json_loads = lambda s: json_lds(touni(s))
 
-# 3.2 fixes cgi.FieldStorage to accept bytes (which makes a lot of sense).
-# 3.1 needs a workaround.
-if py31:
-    from io import TextIOWrapper
 
-    class NCTextIOWrapper(TextIOWrapper):
-        def close(self):
-            pass  # Keep wrapped buffer open.
+# py31 workaround section removed -- Python 3.1 is end-of-life
 
 
 # A bug in functools causes it to break if the wrapper is an instance method
@@ -186,7 +134,7 @@ def makelist(data):  # This is just to handy
         return []
 
 
-class DictProperty:
+class DictProperty(object):
     """Property that maps to a key in a local dict-like attribute."""
 
     def __init__(self, attr, key=None, read_only=False):
@@ -216,7 +164,7 @@ class DictProperty:
         del getattr(obj, self.attr)[self.key]
 
 
-class cached_property:
+class cached_property(object):
     """A property that is only computed once per instance and then replaces
     itself with an ordinary attribute. Deleting the attribute resets the
     property."""
@@ -232,7 +180,7 @@ class cached_property:
         return value
 
 
-class lazy_attribute:
+class lazy_attribute(object):
     """A property that caches itself to the class object."""
 
     def __init__(self, func):
@@ -294,7 +242,7 @@ def _re_flatten(p):
     )
 
 
-class Router:
+class Router(object):
     """A Router is an ordered collection of route->target pairs. It is used to
     efficiently match WSGI requests against a number of routes and return
     the first target that satisfies the request. The target may be anything,
@@ -499,7 +447,7 @@ class Router:
         raise HTTPError(404, "Not found: " + repr(path))
 
 
-class Route:
+class Route(object):
     """This class wraps a route callback along with route specific metadata and
     configuration and applies Plugins on demand. It is also responsible for
     turing an URL path rule into a regular expression usable by the Router.
@@ -583,8 +531,8 @@ class Route:
         """Return the callback. If the callback is a decorated function, try to
         recover the original function."""
         func = self.callback
-        func = getattr(func, "__func__" if py3k else "im_func", func)
-        closure_attr = "__closure__" if py3k else "func_closure"
+        func = getattr(func, "__func__", func)
+        closure_attr = "__closure__"
         while hasattr(func, closure_attr) and getattr(func, closure_attr):
             func = getattr(func, closure_attr)[0].cell_contents
         return func
@@ -613,7 +561,7 @@ class Route:
 ###############################################################################
 
 
-class Bottle:
+class Bottle(object):
     """Each Bottle object represents a single, distinct web application and
     consists of routes, callbacks, plugins, resources and configuration.
     Instances are callable WSGI applications.
@@ -716,7 +664,7 @@ class Bottle:
 
                 def start_response(status, headerlist, exc_info=None):
                     if exc_info:
-                        _raise(*exc_info)
+                        raise exc_info[1].with_traceback(exc_info[2])
                     rs.status = status
                     for name, value in headerlist:
                         rs.add_header(name, value)
@@ -925,11 +873,10 @@ class Bottle:
 
     def _handle(self, environ):
         path = environ["bottle.raw_path"] = environ["PATH_INFO"]
-        if py3k:
-            try:
-                environ["PATH_INFO"] = path.encode("latin1").decode("utf8")
-            except UnicodeError:
-                return HTTPError(400, "Invalid path string. Expected UTF-8")
+        try:
+            environ["PATH_INFO"] = path.encode("latin1").decode("utf8")
+        except UnicodeError:
+            return HTTPError(400, "Invalid path string. Expected UTF-8")
 
         try:
             environ["bottle.app"] = self
@@ -961,8 +908,8 @@ class Bottle:
     def _cast(self, out, peek=None):
         """Try to convert the parameter into something WSGI compatible and set
         correct HTTP headers when possible.
-        Support: False, str, unicode, dict, HTTPResponse, HTTPError, file-like,
-        iterable of strings and iterable of unicodes
+        Support: False, str, bytes, dict, HTTPResponse, HTTPError, file-like,
+        iterable of strings and iterable of strings
         """
 
         # Empty output is done here
@@ -970,10 +917,10 @@ class Bottle:
             if "Content-Length" not in response:
                 response["Content-Length"] = 0
             return []
-        # Join lists of byte or unicode strings. Mixed lists are NOT supported
-        if isinstance(out, (tuple, list)) and isinstance(out[0], (bytes, unicode)):
+        # Join lists of byte or str strings. Mixed lists are NOT supported
+        if isinstance(out, (tuple, list)) and isinstance(out[0], (bytes, str)):
             out = out[0][0:0].join(out)  # b'abc'[0:0] -> b''
-        # Encode unicode strings
+        # Encode str to bytes
         if isinstance(out, str):
             out = out.encode(response.charset)
         # Byte Strings are just returned
@@ -1024,7 +971,7 @@ class Bottle:
             new_iter = itertools.chain([first], iout)
         elif isinstance(first, str):
             encoder = lambda x: x.encode(response.charset)
-            new_iter = imap(encoder, itertools.chain([first], iout))
+            new_iter = list(map(encoder, itertools.chain([first], iout)))
         else:
             msg = "Unsupported response type: %s" % type(first)
             return self._cast(HTTPError(500, msg))
@@ -1083,7 +1030,7 @@ class Bottle:
 ###############################################################################
 
 
-class BaseRequest:
+class BaseRequest(object):
     """A wrapper for WSGI environment dictionaries that adds a lot of
     convenient access methods and properties. Most of them are read-only.
 
@@ -1144,7 +1091,7 @@ class BaseRequest:
     def cookies(self):
         """Cookies parsed into a :class:`FormsDict`. Signed cookies are NOT
         decoded. Use :meth:`get_cookie` if you expect signed cookies."""
-        cookies = SimpleCookie(self.environ.get("HTTP_COOKIE", "")).values()
+        cookies = list(SimpleCookie(self.environ.get("HTTP_COOKIE", "")).values())
         return FormsDict((c.key, c.value) for c in cookies)
 
     def get_cookie(self, key, default=None, secret=None):
@@ -1328,10 +1275,7 @@ class BaseRequest:
             if key in self.environ:
                 safe_env[key] = self.environ[key]
         args = dict(fp=self.body, environ=safe_env, keep_blank_values=True)
-        if py31:
-            args["fp"] = NCTextIOWrapper(args["fp"], encoding="utf8", newline="\n")
-        elif py3k:
-            args["encoding"] = "utf8"
+        args["encoding"] = "utf8"
         data = cgi.FieldStorage(**args)
         self["_cgi.FieldStorage"] = data  # http://bugs.python.org/issue18394#msg207958
         data = data.list or []
@@ -1481,7 +1425,7 @@ class BaseRequest:
         return len(self.environ)
 
     def keys(self):
-        return self.environ.keys()
+        return list(self.environ.keys())
 
     def __setitem__(self, key, value):
         """Change an environ value and clear all caches that depend on it."""
@@ -1523,7 +1467,7 @@ def _hkey(s):
     return s.title().replace("_", "-")
 
 
-class HeaderProperty:
+class HeaderProperty(object):
     def __init__(self, name, reader=None, writer=str, default=""):
         self.name, self.default = name, default
         self.reader, self.writer = reader, writer
@@ -1542,7 +1486,7 @@ class HeaderProperty:
         del obj.headers[self.name]
 
 
-class BaseResponse:
+class BaseResponse(object):
     """Storage class for a response body as well as headers and cookies.
 
     This class does support dict-like case-insensitive item-access to
@@ -1584,11 +1528,11 @@ class BaseResponse:
         self.status = status or self.default_status
         if headers:
             if isinstance(headers, dict):
-                headers = headers.items()
+                headers = list(headers.items())
             for name, value in headers:
                 self.add_header(name, value)
         if more_headers:
-            for name, value in more_headers.items():
+            for name, value in list(more_headers.items()):
                 self.add_header(name, value)
 
     def copy(self, cls=None):
@@ -1597,7 +1541,7 @@ class BaseResponse:
         assert issubclass(cls, BaseResponse)
         copy = cls()
         copy.status = self.status
-        copy._headers = {k: v[:] for (k, v) in self._headers.items()}
+        copy._headers = {k: v[:] for (k, v) in list(self._headers.items())}
         if self._cookies:
             copy._cookies = SimpleCookie()
             copy._cookies.load(self._cookies.output())
@@ -1699,7 +1643,7 @@ class BaseResponse:
             headers = [h for h in headers if h[0] not in bad_headers]
         out += [(name, val) for name, vals in headers for val in vals]
         if self._cookies:
-            for c in self._cookies.values():
+            for c in list(self._cookies.values()):
                 out.append(("Set-Cookie", c.OutputString()))
         return out
 
@@ -1763,7 +1707,7 @@ class BaseResponse:
             raise ValueError("Cookie value to long.")
         self._cookies[name] = value
 
-        for key, value in options.items():
+        for key, value in list(options.items()):
             if key == "max_age":
                 if isinstance(value, timedelta):
                     value = value.seconds + value.days * 24 * 3600
@@ -1869,7 +1813,7 @@ class PluginError(BottleException):
     pass
 
 
-class JSONPlugin:
+class JSONPlugin(object):
     name = "json"
     api = 2
 
@@ -1901,7 +1845,7 @@ class JSONPlugin:
         return wrapper
 
 
-class TemplatePlugin:
+class TemplatePlugin(object):
     """This plugin applies the :func:`view` decorator to all routes with a
     `template` config parameter. If the parameter is a tuple, the second
     element must be a dict with additional options (e.g. `template_engine`)
@@ -1921,12 +1865,12 @@ class TemplatePlugin:
 
 
 #: Not a plugin, but part of the plugin API. TODO: Find a better place.
-class _ImportRedirect:
+class _ImportRedirect(object):
     def __init__(self, name, impmask):
         """Create a virtual package that redirects imports (see PEP 302)."""
         self.name = name
         self.impmask = impmask
-        self.module = sys.modules.setdefault(name, imp.new_module(name))
+        self.module = sys.modules.setdefault(name, types.ModuleType(name))
         self.module.__dict__.update(
             {"__file__": __file__, "__path__": [], "__all__": [], "__loader__": self}
         )
@@ -1964,7 +1908,7 @@ class MultiDict(DictMixin):
     """
 
     def __init__(self, *a, **k):
-        self.dict = {k: [v] for (k, v) in dict(*a, **k).items()}
+        self.dict = {k: [v] for (k, v) in list(dict(*a, **k).items())}
 
     def __len__(self):
         return len(self.dict)
@@ -1985,46 +1929,21 @@ class MultiDict(DictMixin):
         self.append(key, value)
 
     def keys(self):
-        return self.dict.keys()
+        return list(self.dict.keys())
 
-    if py3k:
+    def values(self):
+        return (v[-1] for v in list(self.dict.values()))
 
-        def values(self):
-            return (v[-1] for v in self.dict.values())
+    def items(self):
+        return ((k, v[-1]) for k, v in list(self.dict.items()))
 
-        def items(self):
-            return ((k, v[-1]) for k, v in self.dict.items())
+    def allitems(self):
+        return ((k, v) for k, vl in list(self.dict.items()) for v in vl)
 
-        def allitems(self):
-            return ((k, v) for k, vl in self.dict.items() for v in vl)
-
-        iterkeys = keys
-        itervalues = values
-        iteritems = items
-        iterallitems = allitems
-
-    else:
-
-        def values(self):
-            return [v[-1] for v in self.dict.values()]
-
-        def items(self):
-            return [(k, v[-1]) for k, v in self.dict.items()]
-
-        def iterkeys(self):
-            return self.dict.keys()
-
-        def itervalues(self):
-            return (v[-1] for v in self.dict.values())
-
-        def iteritems(self):
-            return ((k, v[-1]) for k, v in self.dict.items())
-
-        def iterallitems(self):
-            return ((k, v) for k, vl in self.dict.items() for v in vl)
-
-        def allitems(self):
-            return [(k, v) for k, vl in self.dict.items() for v in vl]
+    iterkeys = keys
+    itervalues = values
+    iteritems = items
+    iterallitems = allitems
 
     def get(self, key, default=None, index=-1, type=None):
         """Return the most recent value for a key.
@@ -2070,7 +1989,7 @@ class FormsDict(MultiDict):
 
     #: Encoding used for attribute values.
     input_encoding = "utf8"
-    #: If true (default), unicode strings are first encoded with `latin1`
+    #: If true (default), str strings are first encoded with `latin1`
     #: and then decoded to match :attr:`input_encoding`.
     recode_unicode = True
 
@@ -2085,7 +2004,7 @@ class FormsDict(MultiDict):
     def decode(self, encoding=None):
         """Returns a copy with all keys and values de- or recoded to match
         :attr:`input_encoding`. Some libraries (e.g. WTForms) want a
-        unicode dictionary."""
+        str dictionary."""
         copy = FormsDict()
         enc = copy.input_encoding = encoding or self.input_encoding
         copy.recode_unicode = False
@@ -2094,13 +2013,13 @@ class FormsDict(MultiDict):
         return copy
 
     def getstr(self, name, default=None, encoding=None):
-        """Return the value as a unicode string, or the default."""
+        """Return the value as a str, or the default."""
         try:
             return self._fix(self[name], encoding)
         except (UnicodeError, KeyError):
             return default
 
-    def __getattr__(self, name, default=str()):
+    def __getattr__(self, name, default=''):
         # Without this guard, pickle generates a cryptic TypeError:
         if name.startswith("__") and name.endswith("__"):
             return super().__getattr__(name)
@@ -2149,7 +2068,7 @@ class HeaderDict(MultiDict):
 class WSGIHeaderDict(DictMixin):
     """This dict-like class wraps a WSGI environ dict and provides convenient
     access to HTTP_* fields. Keys and values are native strings
-    (2.x bytes or 3.x unicode) and keys are case-insensitive. If the WSGI
+    (native str) and keys are case-insensitive. If the WSGI
     environment contains non-native string values, these are de- or encoded
     using a lossless 'latin1' character set.
 
@@ -2172,7 +2091,7 @@ class WSGIHeaderDict(DictMixin):
         return "HTTP_" + key
 
     def raw(self, key, default=None):
-        """Return the header value as is (may be bytes or unicode)."""
+        """Return the header value as is (may be bytes or str)."""
         return self.environ.get(self._ekey(key), default)
 
     def __getitem__(self, key):
@@ -2195,7 +2114,7 @@ class WSGIHeaderDict(DictMixin):
         return [x for x in self]
 
     def __len__(self):
-        return len(self.keys())
+        return len(list(self.keys()))
 
     def __contains__(self, key):
         return self._ekey(key) in self.environ
@@ -2236,7 +2155,7 @@ class ConfigDict(dict):
         >>> c.load_dict({'some': {'namespace': {'key': 'value'} } })
         {'some.namespace.key': 'value'}
         """
-        for key, value in source.items():
+        for key, value in list(source.items()):
             if isinstance(key, str):
                 nskey = (namespace + "." + key).strip(".")
                 if isinstance(value, dict):
@@ -2255,7 +2174,7 @@ class ConfigDict(dict):
         if a and isinstance(a[0], str):
             prefix = a[0].strip(".") + "."
             a = a[1:]
-        for key, value in dict(*a, **ka).items():
+        for key, value in list(dict(*a, **ka).items()):
             self[prefix + key] = value
 
     def setdefault(self, key, value):
@@ -2288,7 +2207,7 @@ class ConfigDict(dict):
 
     def meta_list(self, key):
         """Return an iterable of meta field names defined for a key."""
-        return self._meta.get(key, {}).keys()
+        return list(self._meta.get(key, {}).keys())
 
 
 class AppStack(list):
@@ -2306,7 +2225,7 @@ class AppStack(list):
         return value
 
 
-class WSGIFileWrapper:
+class WSGIFileWrapper(object):
     def __init__(self, fp, buffer_size=1024 * 64):
         self.fp, self.buffer_size = fp, buffer_size
         for attr in ("fileno", "close", "read", "readlines", "tell", "seek"):
@@ -2322,7 +2241,7 @@ class WSGIFileWrapper:
             yield part
 
 
-class _closeiter:
+class _closeiter(object):
     """This only exists to be able to attach a .close method to iterators that
     do not support attribute assignment (most of itertools)."""
 
@@ -2338,7 +2257,7 @@ class _closeiter:
             func()
 
 
-class ResourceManager:
+class ResourceManager(object):
     """This class manages a list of search paths and helps to find and open
     application-bound resources (files).
 
@@ -2428,7 +2347,7 @@ class ResourceManager:
         return self.opener(fname, mode=mode, *args, **kwargs)
 
 
-class FileUpload:
+class FileUpload(object):
     def __init__(self, fileobj, name, filename, headers=None):
         """Wrapper for file uploads."""
         #: Open file(-like) object (BytesIO buffer or temporary file)
@@ -2829,7 +2748,7 @@ url = make_default_app_wrapper("get_url")
 ###############################################################################
 
 
-class ServerAdapter:
+class ServerAdapter(object):
     quiet = False
 
     def __init__(self, host="127.0.0.1", port=8080, **options):
@@ -2841,7 +2760,7 @@ class ServerAdapter:
         pass
 
     def __repr__(self):
-        args = ", ".join(["%s=%s" % (k, repr(v)) for k, v in self.options.items()])
+        args = ", ".join(["{}={}".format(k, repr(v)) for k, v in list(self.options.items())])
         return f"{self.__class__.__name__}({args})"
 
 
@@ -3354,11 +3273,11 @@ class FileCheckerThread(threading.Thread):
                 or mtime(self.lockfile) < time.time() - self.interval - 5
             ):
                 self.status = "error"
-                thread.interrupt_main()
+                _thread.interrupt_main()
             for path, lmtime in list(files.items()):
                 if not exists(path) or mtime(path) > lmtime:
                     self.status = "reload"
-                    thread.interrupt_main()
+                    _thread.interrupt_main()
                     break
             time.sleep(self.interval)
 
@@ -3382,7 +3301,7 @@ class TemplateError(HTTPError):
         HTTPError.__init__(self, 500, message)
 
 
-class BaseTemplate:
+class BaseTemplate(object):
     """Base class and minimal API for template adapters"""
 
     extensions = ["tpl", "html", "thtml", "stpl"]
@@ -3458,7 +3377,7 @@ class BaseTemplate:
 
     def render(self, *args, **kwargs):
         """Render the template with the specified local variables and return
-        a single byte or unicode string. If it is a byte string, the encoding
+        a single byte or str. If it is a byte string, the encoding
         must match self.encoding. This method must be thread-safe!
         Local variables may be provided in dictionaries (args)
         or directly, as keywords (kwargs).
@@ -3622,7 +3541,7 @@ class StplSyntaxError(TemplateError):
     pass
 
 
-class StplParser:
+class StplParser(object):
     """Parser for stpl templates."""
 
     _re_cache = {}  #: Cache for compiled re patterns
@@ -3671,8 +3590,8 @@ class StplParser:
         self._tokens = syntax.split()
         if not syntax in self._re_cache:
             names = "block_start block_close line_start inline_start inline_end"
-            etokens = map(re.escape, self._tokens)
-            pattern_vars = dict(zip(names.split(), etokens))
+            etokens = list(map(re.escape, self._tokens))
+            pattern_vars = dict(list(zip(names.split(), etokens)))
             patterns = (self._re_split, self._re_tok, self._re_inl)
             patterns = [re.compile(p % pattern_vars) for p in patterns]
             self._re_cache[syntax] = patterns
@@ -3862,13 +3781,13 @@ DEBUG = False
 NORUN = False  # If set, run() does nothing. Used by load_app()
 
 #: A dict to map HTTP status codes (e.g. 404) to phrases (e.g. 'Not Found')
-HTTP_CODES = httplib.responses
+HTTP_CODES = http.client.responses
 HTTP_CODES[418] = "I'm a teapot"  # RFC 2324
 HTTP_CODES[428] = "Precondition Required"
 HTTP_CODES[429] = "Too Many Requests"
 HTTP_CODES[431] = "Request Header Fields Too Large"
 HTTP_CODES[511] = "Network Authentication Required"
-_HTTP_STATUS_LINES = {k: "%d %s" % (k, v) for (k, v) in HTTP_CODES.items()}
+_HTTP_STATUS_LINES = {k: "%d %s" % (k, v) for (k, v) in list(HTTP_CODES.items())}
 
 #: The default template used for error pages. Override with @error()
 ERROR_PAGE_TEMPLATE = (

@@ -25,6 +25,7 @@ Command processing for KeepNote
 #
 
 # python libs
+from six.moves import range
 import errno
 import os
 import random
@@ -41,8 +42,6 @@ KEEPNOTE_HEADER = "keepnote\n"
 # KEEPNOTE_EOF = "\x00"
 # KEEPNOTE_ESCAPE = "\xff"
 
-
-# TODO: add unicode support
 
 # TODO: ensure commands are executed in order, but don't allow malicious
 # process to DOS main process (may be minor issue)
@@ -271,7 +270,7 @@ def format_command(argv):
     return " ".join(escape(x) for x in argv)
 
 
-class CommandExecutor:
+class CommandExecutor(object):
     def __init__(self):
         self._execfunc = None
         self._app = None

@@ -37,6 +37,7 @@ import uuid
 import zipfile
 
 import xml.etree.ElementTree as ET
+# six.moves.range is no longer needed in Python 3
 
 
 # work around pygtk changing default encoding
@@ -68,7 +69,7 @@ import keepnote.xdg
 
 import base64
 import html.entities
-import tarfile
+from . import tarfile
 import random
 import string
 import xml.dom.minidom
@@ -179,13 +180,13 @@ def is_url(text):
 
 
 def ensure_str(text, encoding="utf8"):
-    """Ensures a string is unicode"""
+    """Ensures a string is a str (Python 3 string)"""
 
     # let None's pass through
     if text is None:
         return None
 
-    # make sure text is unicode
+    # make sure text is str
     if not isinstance(text, str):
         return str(text, encoding)
     return text
@@ -193,14 +194,14 @@ def ensure_str(text, encoding="utf8"):
 
 def unicode_gtk(text):
     """
-    Converts a string from gtk (utf8) to unicode
+    Converts a string from gtk (utf8) to str
 
     All strings from the pygtk API are returned as byte strings (str)
     encoded as utf8.  KeepNote has the convention to keep all strings as
-    unicode internally.  So strings from pygtk must be converted to unicode
+    str internally.  So strings from pygtk must be converted to str
     immediately.
 
-    Note: pygtk can accept either unicode or utf8 encoded byte strings.
+    Note: pygtk can accept either str or utf8 encoded byte strings.
     """
     if text is None:
         return None
@@ -524,7 +525,7 @@ class KeepNotePreferenceError(Exception):
 # Preference data structures
 
 
-class ExternalApp:
+class ExternalApp(object):
     """
     Class represents the information needed for calling an external application
     """
@@ -680,7 +681,7 @@ class KeepNotePreferences(Pref):
 # Application class
 
 
-class ExtensionEntry:
+class ExtensionEntry(object):
     """An entry for an Extension in the KeepNote application"""
 
     def __init__(self, filename, ext_type, ext):
@@ -692,7 +693,7 @@ class ExtensionEntry:
         return os.path.basename(self.filename)
 
 
-class AppCommand:
+class AppCommand(object):
     """Application Command"""
 
     def __init__(self, name, func=lambda app, args: None, metavar="", help=""):
@@ -702,7 +703,7 @@ class AppCommand:
         self.help = help
 
 
-class KeepNote:
+class KeepNote(object):
     """KeepNote application class"""
 
     def __init__(self, basedir=None, pref_dir=None):
@@ -875,7 +876,7 @@ class KeepNote:
         notebook.closing_event.remove(self._on_closing_notebook)
         del self._notebook_count[notebook]
 
-        for key, val in self._notebooks.items():
+        for key, val in list(self._notebooks.items()):
             if val == notebook:
                 del self._notebooks[key]
                 break
@@ -932,19 +933,19 @@ class KeepNote:
 
     def iter_notebooks(self):
         """Iterate through open notebooks"""
-        return self._notebooks.values()
+        return list(self._notebooks.values())
 
     def save_notebooks(self, silent=False):
         """Save all opened notebooks"""
 
         # save all the notebooks
-        for notebook in self._notebooks.values():
+        for notebook in list(self._notebooks.values()):
             notebook.save()
 
     def get_node(self, nodeid):
         """Returns a node with 'nodeid' from any of the opened notebooks"""
 
-        for notebook in self._notebooks.values():
+        for notebook in list(self._notebooks.values()):
             node = notebook.get_node_by_id(nodeid)
             if node is not None:
                 return node
@@ -999,7 +1000,7 @@ class KeepNote:
                 self._external_apps_lookup[defapp.key] = defapp
 
         # place default apps first
-        lookup = dict((x.key, i) for i, x in enumerate(DEFAULT_EXTERNAL_APPS))
+        lookup = {x.key: i for i, x in enumerate(DEFAULT_EXTERNAL_APPS)}
         top = len(DEFAULT_EXTERNAL_APPS)
         self._external_apps.sort(key=lambda x: (lookup.get(x.key, top), x.key))
 
@@ -1038,7 +1039,7 @@ class KeepNote:
                     cmd[i] = filename
 
         # create proper encoding
-        cmd = map(lambda x: str(x), cmd)
+        cmd = [str(x) for x in cmd]
         if get_platform() == "windows":
             cmd = [x for x in cmd]
         else:
@@ -1097,7 +1098,7 @@ class KeepNote:
     def take_screenshot(self, filename):
         """Take a screenshot and save it to 'filename'"""
 
-        # make sure filename is unicode
+        # make sure filename is str
         filename = ensure_str(filename, "utf-8")
 
         if get_platform() == "windows":
@@ -1141,7 +1142,7 @@ class KeepNote:
 
     def get_commands(self):
         """Returns a list of all registered commands"""
-        return self._commands.values()
+        return list(self._commands.values())
 
     def add_command(self, command):
         """Adds a command to the application"""
@@ -1253,11 +1254,11 @@ class KeepNote:
 
     def get_installed_extensions(self):
         """Iterates through installed extensions"""
-        return self._extensions.keys()
+        return list(self._extensions.keys())
 
     def get_imported_extensions(self):
         """Iterates through imported extensions"""
-        for entry in self._extensions.values():
+        for entry in list(self._extensions.values()):
             if entry.ext is not None:
                 yield entry.ext
 
@@ -1283,7 +1284,7 @@ class KeepNote:
 
     def _import_all_extensions(self):
         """Import all extensions"""
-        for entry in self._extensions.values():
+        for entry in list(self._extensions.values()):
             # load if first use
             if entry.ext is None:
                 self._import_extension(entry)

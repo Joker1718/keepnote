@@ -31,6 +31,7 @@ import xml.etree.ElementTree as ET
 import keepnote
 from keepnote.listening import Listeners
 from keepnote import plist
+from six.moves import map
 
 
 # globals
@@ -46,7 +47,7 @@ class DependencyError(Exception):
         self.dep = dep
 
     def __str__(self):
-        return "Extension '%s' has failed dependency %s" % (self.ext.key, self.dep)
+        return "Extension '{}' has failed dependency {}".format(self.ext.key, self.dep)
 
 
 # =============================================================================
@@ -172,7 +173,7 @@ def is_extension_install_file(filename):
     return filename.endswith(EXTENSION_EXT)
 
 
-class Extension:
+class Extension(object):
     """KeepNote Extension"""
 
     version = (1, 0)

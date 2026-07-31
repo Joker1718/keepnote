@@ -27,7 +27,7 @@ Allow one file stream to multiplex for multiple file streams
 #
 
 
-class TeeFileStream:
+class TeeFileStream(object):
     """Create a file stream that forwards writes to multiple streams"""
 
     def __init__(self, streams, autoflush=False):

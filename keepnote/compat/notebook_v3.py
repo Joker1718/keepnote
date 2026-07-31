@@ -29,6 +29,7 @@ NoteBook indexing has been disabled to increase efficiency in reading.
 #
 
 # python imports
+from six.moves import range
 import gettext
 import mimetypes
 import os
@@ -393,7 +394,7 @@ class NoteBookVersionError(NoteBookError):
 # TODO: finish
 
 
-class AttrDef:
+class AttrDef(object):
     """
     A AttrDef is a metadata attribute that can be associated to
     nodes in a NoteBook.
@@ -412,7 +413,7 @@ class AttrDef:
             if datatype == bool:
                 self.write = lambda x: str(int(x))
             else:
-                self.write = unicode
+                self.write = str
         else:
             self.write = write
 
@@ -432,14 +433,14 @@ class AttrDef:
             self.default = default
 
 
-class UnknownAttr:
+class UnknownAttr(object):
     """A value that belongs to an unknown AttrDef"""
 
     def __init__(self, value):
         self.value = value
 
 
-class NoteBookTable:
+class NoteBookTable(object):
     def __init__(self, name, attrs=[]):
         self.name = name
         self.attrs = list(attrs)
@@ -462,13 +463,13 @@ def read_info_sort(key):
     return _sort_info_backcompat.get(key, key)
 
 
-title_attr = AttrDef("Title", unicode, "title")
+title_attr = AttrDef("Title", str, "title")
 created_time_attr = AttrDef("Created", int, "created_time", default=get_timestamp)
 modified_time_attr = AttrDef("Modified", int, "modified_time", default=get_timestamp)
 
 g_default_attr_defs = [
     title_attr,
-    AttrDef("Content type", unicode, "content_type", default=lambda: CONTENT_TYPE_DIR),
+    AttrDef("Content type", str, "content_type", default=lambda: CONTENT_TYPE_DIR),
     AttrDef("Order", int, "order", default=lambda: sys.maxsize),
     created_time_attr,
     modified_time_attr,
@@ -476,17 +477,17 @@ g_default_attr_defs = [
     AttrDef("Expanded2", bool, "expanded2", default=lambda: True),
     AttrDef(
         "Folder Sort",
-        unicode,
+        str,
         "info_sort",
         read=read_info_sort,
         default=lambda: "order",
     ),
     AttrDef("Folder Sort Direction", int, "info_sort_dir", default=lambda: 1),
-    AttrDef("Node ID", unicode, "nodeid", default=new_nodeid),
-    AttrDef("Icon", unicode, "icon"),
-    AttrDef("Icon Open", unicode, "icon_open"),
-    AttrDef("Filename", unicode, "payload_filename"),
-    AttrDef("Duplicate of", unicode, "duplicate_of"),
+    AttrDef("Node ID", str, "nodeid", default=new_nodeid),
+    AttrDef("Icon", str, "icon"),
+    AttrDef("Icon Open", str, "icon_open"),
+    AttrDef("Filename", str, "payload_filename"),
+    AttrDef("Duplicate of", str, "duplicate_of"),
 ]
 
 
@@ -507,7 +508,7 @@ default_notebook_table = NoteBookTable(
 # Notebook nodes
 
 
-class NoteBookNode:
+class NoteBookNode(object):
     """A general base class for all nodes in a NoteBook"""
 
     def __init__(
@@ -641,7 +642,7 @@ class NoteBookNode:
 
     def iter_attr(self):
         """Iterate through attributes of the node"""
-        return self._attr.items()
+        return list(self._attr.items())
 
     def set_attr_timestamp(self, name, timestamp=None):
         """Set a timestamp attribute"""
@@ -910,7 +911,7 @@ class NoteBookNode:
         """Return True if node has children"""
 
         try:
-            self.iter_temp_children().next()
+            next(self.iter_temp_children())
             return True
         except StopIteration:
             return False
@@ -1034,8 +1035,7 @@ class NoteBookNode:
         filename = self.get_data_file()
         infile = safefile.open(filename, "r", codec="utf-8")
 
-        for line in read_data_as_plain_text(infile):
-            yield line
+        yield from read_data_as_plain_text(infile)
 
         infile.close()
 
@@ -1211,7 +1211,7 @@ class NoteBookGenericFile(NoteBookNode):
             else:
                 # perform download
                 out = open(new_filename, "w")
-                infile = urllib2.urlopen(filename)
+                infile = urllib.request.urlopen(filename)
                 while True:
                     data = infile.read(1024 * 4)
                     if data == "":
@@ -1254,7 +1254,7 @@ class NoteBookTrash(NoteBookDir):
         raise NoteBookError(_("The Trash folder cannot be deleted."))
 
 
-class NoteBookPreferences:
+class NoteBookPreferences(object):
     """Preference data structure for a NoteBook"""
 
     def __init__(self):
@@ -1363,7 +1363,7 @@ g_notebook_pref_parser = xmlo.XmlObject(
                 tags=[
                     xmlo.TagMany(
                         "icon",
-                        iterfunc=lambda s: range(len(s._quick_pick_icons)),
+                        iterfunc=lambda s: list(range(len(s._quick_pick_icons))),
                         get=lambda si, x: si[0]._quick_pick_icons.append(x),
                         set=lambda si: si[0]._quick_pick_icons[si[1]],
                     )
@@ -1806,7 +1806,7 @@ class NoteBook(NoteBookDir):
 # Meta Data Parsing
 
 
-class NoteBookNodeFactory:
+class NoteBookNodeFactory(object):
     """
     This is a factory class that creates NoteBookNode's.
     """
@@ -1895,14 +1895,14 @@ class NoteBookNodeFactory:
 
                 if attr is not None:
                     out.write(
-                        '<attr key="%s">%s</attr>\n' % (key, escape(attr.write(val)))
+                        '<attr key="{}">{}</attr>\n'.format(key, escape(attr.write(val)))
                     )
                 elif key == "version":
                     # skip version attr
                     pass
                 elif isinstance(val, UnknownAttr):
                     # write unknown attrs if they are strings
-                    out.write('<attr key="%s">%s</attr>\n' % (key, escape(val.value)))
+                    out.write('<attr key="{}">{}</attr>\n'.format(key, escape(val.value)))
                 else:
                     # drop attribute
                     pass

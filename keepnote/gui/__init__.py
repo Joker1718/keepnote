@@ -45,6 +45,7 @@ import keepnote.gui.dialog_app_options
 import keepnote.gui.dialog_node_icon
 import keepnote.gui.dialog_wait
 from keepnote.gui.icons import DEFAULT_QUICK_PICK_ICONS, uncache_node_icon
+from six.moves import map
 
 _ = keepnote.translate
 
@@ -121,7 +122,7 @@ DEFAULT_COLORS = [
 # resources
 
 
-class PixbufCache:
+class PixbufCache(object):
     """A cache for loading pixbufs from the filesystem"""
 
     def __init__(self):
@@ -449,7 +450,7 @@ class KeepNote(keepnote.KeepNote):
         for window in self._windows:
             window.load_preferences()
 
-        for notebook in self._notebooks.values():
+        for notebook in list(self._notebooks.values()):
             notebook.enable_fulltext_search(p.get("use_fulltext_search", default=True))
 
         # start autosave loop, if requested
@@ -620,7 +621,7 @@ class KeepNote(keepnote.KeepNote):
         """Save all opened notebooks"""
 
         # clear all window and viewer info in notebooks
-        for notebook in self._notebooks.values():
+        for notebook in list(self._notebooks.values()):
             notebook.pref.clear("windows", "ids")
             notebook.pref.clear("viewers", "ids")
 
@@ -629,7 +630,7 @@ class KeepNote(keepnote.KeepNote):
             window.save_notebook(silent=silent)
 
         # save all the notebooks
-        for notebook in self._notebooks.values():
+        for notebook in list(self._notebooks.values()):
             notebook.save()
 
         # let windows know about completed save
@@ -816,7 +817,7 @@ class KeepNote(keepnote.KeepNote):
 
         if response == Gtk.ResponseType.OK:
             if len(dialog.get_filenames()) > 0:
-                filenames = map(unicode_gtk, dialog.get_filenames())
+                filenames = list(map(unicode_gtk, dialog.get_filenames()))
                 self.attach_files(filenames, node, parent_window=parent_window)
 
         dialog.destroy()

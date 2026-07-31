@@ -25,7 +25,7 @@ utilities
 #
 
 
-class PushIter:
+class PushIter(object):
     """
     Wrap an iterator in another iterator that allows one to push new
     items onto the front of the iteration stream

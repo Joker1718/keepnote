@@ -25,6 +25,7 @@ TagTable and Tags for RichTextBuffer
 #
 
 # pygtk imports
+from past.utils import old_div
 from gi.repository import Gtk, Pango
 
 
@@ -230,7 +231,7 @@ class RichTextSizeTag(RichTextTag):
 
     def get_size(self):
         # return int(self.get_property("scale") * 10.0)
-        return int(self.get_property("size-points") / get_text_scale())
+        return int(old_div(self.get_property("size-points"), get_text_scale()))
 
     @classmethod
     def tag_name(cls, size):

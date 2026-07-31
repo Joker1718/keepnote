@@ -34,12 +34,14 @@ from keepnote.gui import add_actions, Action
 from keepnote.gui.three_pane_viewer import ThreePaneViewer
 from keepnote.gui.viewer import Viewer
 from keepnote.gui.icons import get_node_icon
+from six.moves import map
+from six.moves import range
 
 
 _ = keepnote.translate
 
 
-class TwoWayDict:
+class TwoWayDict(object):
     def __init__(self):
 
         self._lookup1 = {}
@@ -516,7 +518,7 @@ class TabbedViewer(Viewer):
 
     def _get_actions(self):
 
-        actions = map(
+        actions = list(map(
             lambda x: Action(*x),
             [
                 (
@@ -552,7 +554,7 @@ class TabbedViewer(Viewer):
                     lambda w: self.switch_tab(-1),
                 ),
             ],
-        )
+        ))
         return actions
 
 

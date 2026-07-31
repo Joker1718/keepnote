@@ -1,7 +1,7 @@
 import json
 import socket
 import _thread
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 from keepnote import notebook as notebooklib
 from keepnote.notebook.connection.http import NoteBookConnectionHttp
@@ -79,9 +79,9 @@ class TestHttp(TestConnBase):
             "key1": 123,
             "key2": 456,
         }
-        data = urllib.urlopen(url + 'nodes/', json.dumps(attr)).read()
+        data = urllib.request.urlopen(url + 'nodes/', json.dumps(attr)).read()
         nodeid = json.loads(data)['nodeid']
-        data = urllib.urlopen(url + 'nodes/%s' % nodeid).read()
+        data = urllib.request.urlopen(url + 'nodes/%s' % nodeid).read()
         attr2 = json.loads(data)
         attr['nodeid'] = nodeid
         self.assertEqual(attr, attr2)

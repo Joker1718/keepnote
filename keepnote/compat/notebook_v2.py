@@ -44,6 +44,7 @@ from keepnote.timestamp import (
     get_str_timestamp,
 )
 from keepnote import safefile
+from six.moves import range
 
 
 # NOTE: the <?xml ?> header is left off to keep it compatiable with IE,
@@ -302,7 +303,7 @@ class NoteBookVersionError(NoteBookError):
 # TODO: finish
 
 
-class NoteBookAttr:
+class NoteBookAttr(object):
     """
     A NoteBookAttr is a metadata attribute that can be associated to
     nodes in a NoteBook.
@@ -321,7 +322,7 @@ class NoteBookAttr:
             if datatype == bool:
                 self.write = lambda x: str(int(x))
             else:
-                self.write = unicode
+                self.write = str
         else:
             self.write = write
 
@@ -338,12 +339,12 @@ class NoteBookAttr:
         self.default = default
 
 
-class UnknownAttr:
+class UnknownAttr(object):
     def __init__(self, value):
         self.value = value
 
 
-class NoteBookTable:
+class NoteBookTable(object):
     def __init__(self, name, attrs=[]):
         self.name = name
         self.attrs = list(attrs)
@@ -367,7 +368,7 @@ def read_info_sort(key):
     # return _sort_info_backcompat.get(key, key)
 
 
-title_attr = NoteBookAttr("Title", unicode, "title")
+title_attr = NoteBookAttr("Title", str, "title")
 created_time_attr = NoteBookAttr("Created", int, "created_time", default=get_timestamp)
 modified_time_attr = NoteBookAttr(
     "Modified", int, "modified_time", default=get_timestamp
@@ -375,7 +376,7 @@ modified_time_attr = NoteBookAttr(
 
 g_default_attrs = [
     title_attr,
-    NoteBookAttr("Content type", unicode, "content_type"),
+    NoteBookAttr("Content type", str, "content_type"),
     NoteBookAttr("Order", int, "order"),
     created_time_attr,
     modified_time_attr,
@@ -384,8 +385,8 @@ g_default_attrs = [
     NoteBookAttr("Folder Sort", str, "info_sort", read=read_info_sort),
     NoteBookAttr("Folder Sort Direction", int, "info_sort_dir"),
     NoteBookAttr("Node ID", str, "nodeid", default=new_nodeid),
-    NoteBookAttr("Icon", unicode, "icon"),
-    NoteBookAttr("Icon Open", unicode, "icon_open"),
+    NoteBookAttr("Icon", str, "icon"),
+    NoteBookAttr("Icon Open", str, "icon_open"),
 ]
 
 
@@ -402,7 +403,7 @@ default_notebook_table = NoteBookTable(
 # 2. attrs can appear in listview
 
 
-class NoteBookNode:
+class NoteBookNode(object):
     """A general base class for all nodes in a NoteBook"""
 
     def __init__(
@@ -550,7 +551,7 @@ class NoteBookNode:
 
     def iter_attr(self):
         """Iterate through attributes"""
-        return self._attr.items()
+        return list(self._attr.items())
 
     def set_attr_timestamp(self, name, timestamp=None):
         """Set a timestamp attribute"""
@@ -953,7 +954,7 @@ class NoteBookTrash(NoteBookDir):
         raise NoteBookError("The Trash folder cannot be deleted.")
 
 
-class NoteBookPreferences:
+class NoteBookPreferences(object):
     """Preference data structure for a NoteBook"""
 
     def __init__(self):
@@ -975,7 +976,7 @@ g_notebook_pref_parser = xmlo.XmlObject(
                 tags=[
                     xmlo.TagMany(
                         "icon",
-                        iterfunc=lambda s: range(len(s.quick_pick_icons)),
+                        iterfunc=lambda s: list(range(len(s.quick_pick_icons))),
                         get=lambda si, x: si[0].quick_pick_icons.append(x),
                         set=lambda si: si[0].quick_pick_icons[si[1]],
                     )
@@ -1298,7 +1299,7 @@ class NoteBook(NoteBookDir):
 #
 
 
-class NoteBookNodeFactory:
+class NoteBookNodeFactory(object):
     """
     This is a factory class that creates NoteBookNode's.
     """
@@ -1356,7 +1357,7 @@ class NoteBookNodeFactory:
             return None
 
 
-class NoteBookNodeMetaData:
+class NoteBookNodeMetaData(object):
     """Reads and writes metadata for NoteBookNode objects"""
 
     def __init__(self):

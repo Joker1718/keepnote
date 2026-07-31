@@ -94,8 +94,8 @@ def download_file(url, filename):
 
     try:
         # open url and download image
-        opener = urllib2.build_opener()
-        request = urllib2.Request(url)
+        opener = urllib.request.build_opener()
+        request = urllib.request.Request(url)
         request.add_header("User-Agent", USER_AGENT)
         infile = opener.open(request)
 
@@ -357,7 +357,7 @@ class RichTextImage(RichTextAnchor):
             if self.is_size_set():
                 self.scale(self._size[0], self._size[1], False)
 
-            for widget in self.get_all_widgets().values():
+            for widget in list(self.get_all_widgets().values()):
                 widget.set_from_pixbuf(self._pixbuf)
 
     def set_from_stream(self, stream):
@@ -376,12 +376,12 @@ class RichTextImage(RichTextAnchor):
             if self.is_size_set():
                 self.scale(self._size[0], self._size[1], False)
 
-            for widget in self.get_all_widgets().values():
+            for widget in list(self.get_all_widgets().values()):
                 widget.set_from_pixbuf(self._pixbuf)
 
     def set_no_image(self):
         """Set the 'no image' icon"""
-        for widget in self.get_all_widgets().values():
+        for widget in list(self.get_all_widgets().values()):
             widget.set_from_stock("Missing Image", gtk.ICON_SIZE_MENU)
         self._pixbuf_original = None
         self._pixbuf = None
@@ -396,7 +396,7 @@ class RichTextImage(RichTextAnchor):
         if self.is_size_set():
             self.scale(self._size[0], self._size[1], True)
         else:
-            for widget in self.get_all_widgets().values():
+            for widget in list(self.get_all_widgets().values()):
                 widget.set_from_pixbuf(self._pixbuf)
 
     def set_from_url(self, url, filename=None):
@@ -463,7 +463,7 @@ class RichTextImage(RichTextAnchor):
             if self._pixbuf != self._pixbuf_original:
                 self._pixbuf = self._pixbuf_original
                 if self._pixbuf is not None and set_widget:
-                    for widget in self.get_all_widgets().values():
+                    for widget in list(self.get_all_widgets().values()):
                         widget.set_from_pixbuf(self._pixbuf)
 
         elif self._pixbuf_original is not None:
@@ -484,7 +484,7 @@ class RichTextImage(RichTextAnchor):
             )
 
             if set_widget:
-                for widget in self.get_all_widgets().values():
+                for widget in list(self.get_all_widgets().values()):
                     widget.set_from_pixbuf(self._pixbuf)
 
         if self._buffer is not None:
@@ -494,7 +494,7 @@ class RichTextImage(RichTextAnchor):
     # GUI callbacks
 
     def _on_image_destroy(self, widget):
-        for key, value in self._widgets.items():
+        for key, value in list(self._widgets.items()):
             if value == widget:
                 del self._widgets[key]
                 break
@@ -684,7 +684,7 @@ class RichTextBuffer(RichTextBaseBuffer):
                 end_tag = item[2]
 
                 while not (item[0] == "end" and item[2] == end_tag):
-                    item = contents.next()
+                    item = next(contents)
 
                     if item[0] not in ("text", "anchor") and item[2] != end_tag:
                         yield item

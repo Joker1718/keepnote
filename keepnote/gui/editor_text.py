@@ -46,6 +46,7 @@ from keepnote.gui import (
     dialog_find,
 )
 from keepnote.gui.editor import KeepNoteEditor
+from six.moves import map
 
 
 _ = keepnote.translate
@@ -349,7 +350,7 @@ class EditorMenus(gobject.GObject):
         def BothAction(name1, *args):
             return [Action(name1, *args), ToggleAction(name1 + " Tool", *args)]
 
-        return map(
+        return list(map(
             lambda x: Action(*x),
             [
                 # finding
@@ -386,7 +387,7 @@ class EditorMenus(gobject.GObject):
                     lambda w: self._editor.find_dialog.on_find(True),
                 ),
             ],
-        ) + [
+        )) + [
             ToggleAction(
                 "Spell Check",
                 None,

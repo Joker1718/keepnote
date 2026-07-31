@@ -24,7 +24,7 @@ def get_node_filename(node_path, filename):
     return os.path.join(node_path, path_node2local(filename))
 
 
-class FileFS:
+class FileFS(object):
     """
     Implements the NoteBook File API using the file-system.
     """

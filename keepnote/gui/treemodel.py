@@ -27,6 +27,7 @@ Treemodel for treeview and listview
 
 # pygtk imports
 from gi.repository import GObject, Gtk
+from six.moves import range
 
 
 
@@ -79,7 +80,7 @@ def get_path_from_node(model, node, node_col):
     return tuple(path)
 
 
-class TreeModelColumn:
+class TreeModelColumn(object):
     def __init__(self, name, datatype, attr=None, get=lambda node: ""):
         self.pos = None
         self.name = name

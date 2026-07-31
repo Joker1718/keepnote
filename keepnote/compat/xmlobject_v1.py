@@ -27,6 +27,8 @@ objects.
 #
 
 # python imports
+from six.moves import map
+from six.moves import range
 import sys
 import codecs
 
@@ -50,7 +52,7 @@ class XmlError(Exception):
     pass
 
 
-class Tag:
+class Tag(object):
     def __init__(self, name, get=None, set=None, getobj=None, tags=[]):
         self.name = name
 
@@ -188,7 +190,7 @@ class TagMany(Tag):
                 out.write("</%s>\n" % self.name)
 
 
-class XmlObject:
+class XmlObject(object):
     def __init__(self, *tags):
         self._object = None
         self._root_tag = Tag("", tags=tags)
@@ -265,7 +267,7 @@ class XmlObject:
 
 
 if __name__ == "__main__":
-    import StringIO
+    import io
 
     parser = XmlObject(
         Tag(
@@ -298,7 +300,7 @@ if __name__ == "__main__":
                     tags=[
                         TagMany(
                             "app",
-                            iterfunc=lambda s: range(len(s.apps)),
+                            iterfunc=lambda s: list(range(len(s.apps))),
                             get=lambda si, x: si[0].apps.append(x),
                             set=lambda si: si[0].apps[si[1]],
                         )
@@ -309,7 +311,7 @@ if __name__ == "__main__":
                     tags=[
                         TagMany(
                             "app",
-                            iterfunc=lambda s: range(len(s.apps2)),
+                            iterfunc=lambda s: list(range(len(s.apps2))),
                             before=lambda si: si[0].apps2.append([None, None]),
                             tags=[
                                 Tag(
@@ -334,7 +336,7 @@ if __name__ == "__main__":
         )
     )
 
-    class Pref:
+    class Pref(object):
         def __init__(self):
             self.window_size = (0, 0)
             self.window_pos = (0, 0)
@@ -353,7 +355,7 @@ if __name__ == "__main__":
 
     util.tic("run")
 
-    infile = StringIO.StringIO("""<?xml version="1.0" encoding="UTF-8"?>
+    infile = io.StringIO("""<?xml version="1.0" encoding="UTF-8"?>
        <notebook>
        <window_size>1053,905</window_size>
 <window_pos>0,0</window_pos>

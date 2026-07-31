@@ -12,7 +12,7 @@ variables = {
     "${VERSION}": PROGRAM_VERSION_TEXT
     }
 
-for old, new in variables.items():
+for old, new in list(variables.items()):
     src = src.replace(old, new)
 
 print(src)

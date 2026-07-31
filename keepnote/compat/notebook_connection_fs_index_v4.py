@@ -66,14 +66,14 @@ def match_words(infile, words):
                 matches[word] = True
 
     # return True if all words are found (AND)
-    for val in matches.values():
+    for val in list(matches.values()):
         if not val:
             return False
 
     return True
 
 
-class AttrIndex:
+class AttrIndex(object):
     """Indexing information for an attribute"""
 
     def __init__(self, name, type, multivalue=False, index_value=False):
@@ -152,7 +152,7 @@ class AttrIndex:
 # TODO: remove uniroot
 
 
-class NoteBookIndex:
+class NoteBookIndex(object):
     """Index for a NoteBook"""
 
     def __init__(self, conn, index_file):
@@ -311,7 +311,7 @@ class NoteBookIndex:
             #            """)
 
             # initialize attribute tables
-            for attr in self._attrs.values():
+            for attr in list(self._attrs.values()):
                 attr.init(self.cur)
 
             con.commit()
@@ -467,7 +467,7 @@ class NoteBookIndex:
             )
 
             # update attrs
-            for attrindex in self._attrs.values():
+            for attrindex in list(self._attrs.values()):
                 attrindex.add_node(self.cur, nodeid, attr)
 
             # update fulltext
@@ -491,7 +491,7 @@ class NoteBookIndex:
             self.cur.execute("DELETE FROM NodeGraph WHERE nodeid=?", (nodeid,))
 
             # update attrs
-            for attr in self._attrs.values():
+            for attr in list(self._attrs.values()):
                 attr.remove_node(self.cur, nodeid)
 
             # delete children
@@ -530,7 +530,7 @@ class NoteBookIndex:
 
         # TODO: handle multiple parents
 
-        visit = set([nodeid])
+        visit = {nodeid}
         path = []
         parentid = None
 
@@ -573,7 +573,7 @@ class NoteBookIndex:
 
         # TODO: handle multiple parents
 
-        visit = set([nodeid])
+        visit = {nodeid}
         path = []
         parentid = None
 

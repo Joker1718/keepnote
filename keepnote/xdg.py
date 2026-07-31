@@ -53,7 +53,7 @@ FS_ENCODING = object()
 
 
 def ensure_str(text, encoding="utf8"):
-    """Ensures a string is unicode"""
+    """Ensures a string is a str (Python 3 string)"""
 
     if text is None:
         return None

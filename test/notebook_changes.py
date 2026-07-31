@@ -74,7 +74,7 @@ class TestCaseNotebookChanges (unittest.TestCase):
 
         def walk(node):
             if node.get_attr("content_type") == "text/xhtml+xml":
-                print("rewrite", node.get_data_file())
+                print(("rewrite", node.get_data_file()))
                 
                 filename = node.get_data_file()
                 self.buffer.clear()

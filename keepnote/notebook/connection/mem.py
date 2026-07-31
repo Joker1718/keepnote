@@ -32,12 +32,13 @@ from io import StringIO
 # keepnote imports
 import keepnote.notebook.connection as connlib
 from keepnote.notebook.connection import NoteBookConnection
+from six.moves import range
 
 
 # =============================================================================
 
 
-class Node:
+class Node(object):
     def __init__(self, attr={}):
         self.attr = dict(attr)
         self.files = {}
@@ -179,7 +180,7 @@ class NoteBookConnectionMem(NoteBookConnection):
             raise connlib.FileError()
 
         seen = set()
-        for name in node.files.keys():
+        for name in list(node.files.keys()):
             if name.startswith(filename) and name != filename:
                 part = name[len(filename) :]
                 index = part.find("/")
@@ -220,7 +221,7 @@ class NoteBookConnectionMem(NoteBookConnection):
             assert query[1] == "title"
             return [
                 (nodeid, node.attr["title"])
-                for nodeid, node in self._nodes.items()
+                for nodeid, node in list(self._nodes.items())
                 if query[2] in node.attr.get("title", "")
             ]
 

@@ -25,6 +25,7 @@ General Wait Dialog
 #
 
 # python imports
+from past.utils import old_div
 import time
 
 # pygtk imports
@@ -34,9 +35,10 @@ from gi.repository import GObject
 # keepnote imports
 import keepnote
 from keepnote import get_resource
+from six.moves import filter
 
 
-class WaitDialog:
+class WaitDialog(object):
     """General dialog for background tasks"""
 
     def __init__(self, parent_window):
@@ -91,19 +93,19 @@ class WaitDialog:
                 t = time.time()
                 timestep = t - lasttime[0]
                 lasttime[0] = t
-                step = max(min(timestep / pulse_rate, 0.1), 0.001)
+                step = max(min(old_div(timestep, pulse_rate), 0.1), 0.001)
                 self.progressbar.set_pulse_step(step)
                 self.progressbar.pulse()
             else:
                 self.progressbar.set_fraction(percent)
 
             # filter for messages we process
-            messages = filter(
+            messages = list(filter(
                 lambda x: isinstance(x, tuple) and len(x) == 2,
                 self._task.get_messages(),
-            )
-            texts = filter(lambda ab: ab[0] == "text", messages)
-            details = filter(lambda ab: ab[0] == "detail", messages)
+            ))
+            texts = [ab for ab in messages if ab[0] == "text"]
+            details = [ab for ab in messages if ab[0] == "detail"]
 
             # update text
             if len(texts) > 0:

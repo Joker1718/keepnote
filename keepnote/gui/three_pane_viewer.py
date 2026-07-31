@@ -44,6 +44,7 @@ from keepnote.gui.icon_menu import IconMenu
 from keepnote.gui.viewer import Viewer
 from keepnote.gui.icons import lookup_icon_filename
 from keepnote.gui.colortool import ColorMenu
+from six.moves import map
 
 
 _ = keepnote.translate
@@ -989,7 +990,7 @@ class ThreePaneViewer(Viewer):
     def _get_actions(self):
         """Returns actions for view's UI"""
 
-        return map(
+        return list(map(
             lambda x: Action(*x),
             [
                 ("treeview_popup", None, "", "", None, lambda w: None),
@@ -1169,4 +1170,4 @@ class ThreePaneViewer(Viewer):
                 ("Change Fg Color", None, _("Change _Fg Color")),
                 ("Change Bg Color", None, _("Change _Bg Color")),
             ],
-        )
+        ))

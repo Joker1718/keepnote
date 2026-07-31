@@ -41,6 +41,7 @@ from keepnote.gui.icons import (
     builtin_icons,
     get_node_icon_filenames,
 )
+from six.moves import zip
 
 _ = keepnote.translate
 
@@ -73,7 +74,7 @@ def browse_file(parent, title, filename=None):
     return filename
 
 
-class NodeIconDialog:
+class NodeIconDialog(object):
     """Updates a notebook"""
 
     def __init__(self, app):

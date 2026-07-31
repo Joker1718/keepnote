@@ -101,7 +101,7 @@ def path_basename(filename):
 # =============================================================================
 
 
-class NoteBookConnection:
+class NoteBookConnection(object):
     def __init__(self):
         pass
 

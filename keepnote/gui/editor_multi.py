@@ -33,6 +33,7 @@ the content-type of the node.
 # keepnote imports
 import keepnote
 from keepnote.gui.editor import KeepNoteEditor
+from six.moves import range
 
 
 _ = keepnote.translate

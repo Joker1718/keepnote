@@ -117,7 +117,7 @@ def is_dir(filename):
 # =============================================================================
 
 
-class NoteBookConnection:
+class NoteBookConnection(object):
     def __init__(self):
         pass
 
@@ -367,7 +367,7 @@ class NoteBookConnection:
 # Connection registration
 
 
-class NoteBookConnections:
+class NoteBookConnections(object):
     def __init__(self):
         self._protos = {}
 

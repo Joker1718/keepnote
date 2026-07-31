@@ -1,4 +1,4 @@
-import os, shutil, unittest, thread, threading, traceback, sys
+import os, shutil, unittest, _thread, threading, traceback, sys
 
 # keepnote imports
 import keepnote

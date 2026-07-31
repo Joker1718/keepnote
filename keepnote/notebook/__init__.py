@@ -402,7 +402,7 @@ class NoteBookVersionError(NoteBookError):
 _datatype_defaults = {"string": "", "integer": 0, "float": 0.0, "bool": False}
 
 
-class AttrDef:
+class AttrDef(object):
     """
     An AttrDef defines the type of an notebook attr
     """
@@ -430,7 +430,7 @@ class AttrDef:
         }
 
 
-class AttrDefs:
+class AttrDefs(object):
     """
     A collection of AttrDef's
     """
@@ -456,7 +456,7 @@ class AttrDefs:
             self.add(parse_attr_def(item))
 
     def format(self):
-        return [attr_def.format() for attr_def in self._attr_defs.values()]
+        return [attr_def.format() for attr_def in list(self._attr_defs.values())]
 
 
 def format_attr_def(attr_def):
@@ -498,7 +498,7 @@ g_default_attr_defs = [
 ]
 
 
-class AttrTable:
+class AttrTable(object):
     def __init__(self, key, name, attrs=[]):
         self.key = key
         self.name = name
@@ -508,7 +508,7 @@ class AttrTable:
         return {"key": self.key, "name": self.name, "attrs": list(self.attrs)}
 
 
-class AttrTables:
+class AttrTables(object):
     """
     A collection of AttrTable's
     """
@@ -534,7 +534,7 @@ class AttrTables:
             self.add(parse_attr_table(item))
 
     def format(self):
-        return [attr_table.format() for attr_table in self._attr_tables.values()]
+        return [attr_table.format() for attr_table in list(self._attr_tables.values())]
 
 
 g_default_attr_tables = [
@@ -563,7 +563,7 @@ def iter_attr_tables(lst):
 BUILTIN_ATTR = ("nodeid", "parentids", "childrenids", "order")
 
 
-class NoteBookNode:
+class NoteBookNode(object):
     """A general base class for all nodes in a NoteBook"""
 
     def __init__(
@@ -621,7 +621,7 @@ class NoteBookNode:
 
     def clear_attr(self, title="", content_type=CONTENT_TYPE_DIR):
         """Clear attributes (set them to defaults)"""
-        for key in self._attr.keys():
+        for key in list(self._attr.keys()):
             if key not in BUILTIN_ATTR:
                 del self._attr[key]
 
@@ -654,7 +654,7 @@ class NoteBookNode:
 
     def iter_attr(self):
         """Iterate through attributes of the node"""
-        return self._attr.items()
+        return list(self._attr.items())
 
     def _init_attr(self):
         """Initialize attributes from a dict"""
@@ -702,7 +702,7 @@ class NoteBookNode:
             else:
                 # perform download
                 out = self.open_file(new_filename, "w")
-                infile = urllib2.urlopen(filename)
+                infile = urllib.request.urlopen(filename)
                 while True:
                     data = infile.read(1024 * 4)
                     if data == "":
@@ -1182,7 +1182,7 @@ class NoteBookNode:
     '''
 
 
-class NodeAction:
+class NodeAction(object):
     pass
 
 
@@ -1732,7 +1732,7 @@ class NoteBook(NoteBookNode):
             out.write(
                 '<?xml version="1.0" encoding="UTF-8"?>\n'
                 "<notebook>\n"
-                "<version>{0:d}</version>\n"
+                "<version>{:d}</version>\n"
                 "<pref>\n".format(data["version"])
             )
             plist.dump(data, out, indent=4, depth=4)

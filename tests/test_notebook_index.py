@@ -11,6 +11,7 @@ import traceback
 from keepnote import notebook
 
 from . import clean_dir, TMP_DIR
+from six.moves import range
 
 
 # test notebook
@@ -202,7 +203,7 @@ class Index (unittest.TestCase):
 
         def process(book, name):
             for i in range(100):
-                print(i, name)
+                print((i, name))
                 results = list(book.search_node_contents('world'))
                 test.assertTrue(len(results) == 2)
                 time.sleep(.001)

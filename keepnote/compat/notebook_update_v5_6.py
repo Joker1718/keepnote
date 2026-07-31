@@ -47,7 +47,7 @@ def iter_child_node_paths(path):
             yield child_path
 
 
-class AttrDef:
+class AttrDef(object):
     """
     A AttrDef is a metadata attribute that can be associated to
     nodes in a NoteBook.
@@ -69,7 +69,7 @@ class AttrDef:
         if datatype == bool:
             self.write = lambda x: str(int(x))
         else:
-            self.write = unicode
+            self.write = str
 
         # reader function
         if datatype == bool:
@@ -78,7 +78,7 @@ class AttrDef:
             self.read = datatype
 
 
-class UnknownAttr:
+class UnknownAttr(object):
     """A value that belongs to an unknown AttrDef"""
 
     def __init__(self, value):
@@ -86,23 +86,23 @@ class UnknownAttr:
 
 
 g_default_attr_defs = [
-    AttrDef("nodeid", unicode, "Node ID", default=new_nodeid),
-    AttrDef("content_type", unicode, "Content type", default=lambda: CONTENT_TYPE_DIR),
-    AttrDef("title", unicode, "Title"),
+    AttrDef("nodeid", str, "Node ID", default=new_nodeid),
+    AttrDef("content_type", str, "Content type", default=lambda: CONTENT_TYPE_DIR),
+    AttrDef("title", str, "Title"),
     AttrDef("order", int, "Order", default=lambda: sys.maxsize),
     AttrDef("created_time", int, "Created time", default=get_timestamp),
     AttrDef("modified_time", int, "Modified time", default=get_timestamp),
     AttrDef("expanded", bool, "Expaned", default=lambda: True),
     AttrDef("expanded2", bool, "Expanded2", default=lambda: True),
-    AttrDef("info_sort", unicode, "Folder sort", default=lambda: "order"),
+    AttrDef("info_sort", str, "Folder sort", default=lambda: "order"),
     AttrDef("info_sort_dir", int, "Folder sort direction", default=lambda: 1),
-    AttrDef("icon", unicode, "Icon"),
-    AttrDef("icon_open", unicode, "Icon open"),
-    AttrDef("payload_filename", unicode, "Filename"),
-    AttrDef("duplicate_of", unicode, "Duplicate of"),
+    AttrDef("icon", str, "Icon"),
+    AttrDef("icon_open", str, "Icon open"),
+    AttrDef("payload_filename", str, "Filename"),
+    AttrDef("duplicate_of", str, "Duplicate of"),
 ]
 
-g_attr_defs_lookup = dict((attr.key, attr) for attr in g_default_attr_defs)
+g_attr_defs_lookup = {attr.key: attr for attr in g_default_attr_defs}
 
 
 def read_attr_v5(filename, attr_defs=g_attr_defs_lookup):

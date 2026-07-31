@@ -33,7 +33,7 @@ import keepnote
 _ = keepnote.translate
 
 
-class NewImageDialog:
+class NewImageDialog(object):
     """New Image dialog"""
 
     def __init__(self, main_window, app):

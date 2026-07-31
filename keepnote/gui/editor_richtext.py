@@ -65,6 +65,7 @@ from keepnote.gui import (
     dialog_find,
     dialog_image_resize,
 )
+from six.moves import map
 
 
 _ = keepnote.translate
@@ -796,7 +797,7 @@ class RichTextEditor(KeepNoteEditor):
         menu.append(item)
 
 
-class FontUI:
+class FontUI(object):
     def __init__(
         self,
         widget,
@@ -1009,7 +1010,7 @@ class EditorMenus(gobject.GObject):
             return [Action(name1, *args), ToggleAction(name1 + " Tool", *args)]
 
         return (
-            map(
+            list(map(
                 lambda x: Action(*x),
                 [
                     (
@@ -1081,7 +1082,7 @@ class EditorMenus(gobject.GObject):
                     ),
                     ("Format", None, _("Fo_rmat")),
                 ],
-            )
+            ))
             + BothAction(
                 "Bold",
                 "Bold",
@@ -1190,7 +1191,7 @@ class EditorMenus(gobject.GObject):
                 lambda w: self._on_bullet_list(),
                 "bullet.png",
             )
-            + map(
+            + list(map(
                 lambda x: Action(*x),
                 [
                     ("Font Selector Tool", None, "", "", _("Set Font Face")),
@@ -1267,7 +1268,7 @@ class EditorMenus(gobject.GObject):
                         lambda w: self._editor.get_textview().click_iter(),
                     ),
                 ],
-            )
+            ))
             + [
                 ToggleAction(
                     "Spell Check",

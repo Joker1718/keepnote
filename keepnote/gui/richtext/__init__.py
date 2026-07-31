@@ -250,7 +250,7 @@ class RichTextMenu(gtk.Menu):
         return self._child
 
 
-class RichTextIO:
+class RichTextIO(object):
     """Read/Writes the contents of a RichTextBuffer to disk"""
 
     def __init__(self):
@@ -368,7 +368,7 @@ class RichTextIO:
         return filename
 
 
-class RichTextDragDrop:
+class RichTextDragDrop(object):
     """Manages drag and drop events for a richtext editor"""
 
     def __init__(self, targets=[]):
@@ -1028,7 +1028,7 @@ print("get", repr(text))
 
         elif "text/html" in selection_data.target:
             # set html
-            stream = StringIO.StringIO()
+            stream = StringIO()
             self._html_buffer.set_output(stream)
             self._html_buffer.write(
                 contents, self._textbuffer.tag_table, partial=True, xhtml=False
@@ -1203,7 +1203,7 @@ print("deserialize")
     def parse_html(self, html):
         contents = list(
             self._html_buffer.read(
-                StringIO.StringIO(html), partial=True, ignore_errors=True
+                StringIO(html), partial=True, ignore_errors=True
             )
         )
 

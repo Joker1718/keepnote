@@ -30,9 +30,9 @@ import os
 import tempfile
 import random
 import logging
-from cPickle import dumps, loads, HIGHEST_PROTOCOL as PICKLE_PROTOCOL
-from UserDict import DictMixin
-from Queue import Queue
+from pickle import dumps, loads, HIGHEST_PROTOCOL as PICKLE_PROTOCOL
+from collections.abc import MutableMapping
+from queue import Queue
 from threading import Thread
 
 
@@ -55,7 +55,7 @@ def decode(obj):
     return loads(str(obj))
 
 
-class SqliteDict(DictMixin):
+class SqliteDict(MutableMapping):
     def __init__(self, filename=None, tablename='unnamed', flag='c',
                  autocommit=False, journal_mode="DELETE"):
         """
@@ -121,20 +121,10 @@ class SqliteDict(DictMixin):
         GET_LEN = f'SELECT MAX(ROWID) FROM {self.tablename}'
         return self.conn.select_one(GET_LEN) is not None
 
-    def iterkeys(self):
+    def __iter__(self):
         GET_KEYS = f'SELECT key FROM {self.tablename} ORDER BY rowid'
         for key in self.conn.select(GET_KEYS):
             yield key[0]
-
-    def itervalues(self):
-        GET_VALUES = f'SELECT value FROM {self.tablename} ORDER BY rowid'
-        for value in self.conn.select(GET_VALUES):
-            yield decode(value[0])
-
-    def iteritems(self):
-        GET_ITEMS = f'SELECT key, value FROM {self.tablename} ORDER BY rowid'
-        for key, value in self.conn.select(GET_ITEMS):
-            yield key, decode(value)
 
     def __contains__(self, key):
         HAS_ITEM = f'SELECT 1 FROM {self.tablename} WHERE key = ?'
@@ -160,7 +150,7 @@ class SqliteDict(DictMixin):
 
     def update(self, items=(), **kwds):
         try:
-            items = [(k, encode(v)) for k, v in items.items()]
+            items = [(k, encode(v)) for k, v in list(items.items())]
         except AttributeError:
             pass
 
@@ -170,16 +160,15 @@ class SqliteDict(DictMixin):
             self.update(kwds)
 
     def keys(self):
-        return list(self.keys())
+        return list(self)
 
     def values(self):
-        return list(self.values())
+        GET_VALUES = f'SELECT value FROM {self.tablename} ORDER BY rowid'
+        return [decode(value[0]) for value in self.conn.select(GET_VALUES)]
 
     def items(self):
-        return list(self.items())
-
-    def __iter__(self):
-        return self.keys()
+        GET_ITEMS = f'SELECT key, value FROM {self.tablename} ORDER BY rowid'
+        return [(key, decode(value)) for key, value in self.conn.select(GET_ITEMS)]
 
     def clear(self):
         CLEAR_ALL = f'DELETE FROM {self.tablename};' # avoid VACUUM, as it gives "OperationalError: database schema has changed"
@@ -244,7 +233,7 @@ class SqliteMultithread(Thread):
         self.autocommit = autocommit
         self.journal_mode = journal_mode
         self.reqs = Queue() # use request queue of unlimited size
-        self.setDaemon(True) # python2.5-compatible
+        self.daemon = True
         self.start()
 
     def run(self):
@@ -303,7 +292,7 @@ class SqliteMultithread(Thread):
     def select_one(self, req, arg=None):
         """Return only the first row of the SELECT, or None if there are no matching rows."""
         try:
-            return iter(self.select(req, arg)).next()
+            return next(iter(self.select(req, arg)))
         except StopIteration:
             return None
 
@@ -336,13 +325,13 @@ if __name__ in '__main___':
         d['xyz'] = 'pdq'
         assert len(d) == 2
         assert list(d.items()) == [('abc', 'lmno'), ('xyz', 'pdq')]
-        assert d.items() == [('abc', 'lmno'), ('xyz', 'pdq')]
-        assert d.values() == ['lmno', 'pdq']
-        assert d.keys() == ['abc', 'xyz']
+        assert list(d.items()) == [('abc', 'lmno'), ('xyz', 'pdq')]
+        assert list(d.values()) == ['lmno', 'pdq']
+        assert list(d.keys()) == ['abc', 'xyz']
         assert list(d) == ['abc', 'xyz']
         d.update(p='x', q='y', r='z')
         assert len(d) == 5
-        assert d.items() == [('abc', 'lmno'), ('xyz', 'pdq'), ('q', 'y'), ('p', 'x'), ('r', 'z')]
+        assert list(d.items()) == [('abc', 'lmno'), ('xyz', 'pdq'), ('q', 'y'), ('p', 'x'), ('r', 'z')]
         del d['abc']
         try:
             error = d['abc']
