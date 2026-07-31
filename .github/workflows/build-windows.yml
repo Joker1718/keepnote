@@ -45,6 +45,29 @@ jobs:
           New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" `
             -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
 
+      - name: Setup MSYS2 and install GTK dev libs
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64
+          update: true
+          install: >-
+            mingw-w64-x86_64-toolchain
+            mingw-w64-x86_64-gtk3
+            mingw-w64-x86_64-gobject-introspection
+            mingw-w64-x86_64-python3-gobject
+            mingw-w64-x86_64-python3-cairo
+            pkg-config
+            mingw-w64-x86_64-libffi
+
+      - name: Add MSYS2 mingw64 to PATH and set PKG_CONFIG_PATH
+        shell: powershell
+        run: |
+          $msysBin = "C:\msys64\mingw64\bin"
+          echo "$msysBin" >> $env:GITHUB_PATH
+          echo "PKG_CONFIG_PATH=C:\msys64\mingw64\lib\pkgconfig;C:\msys64\mingw64\share\pkgconfig" >> $env:GITHUB_ENV
+          echo "Added $msysBin to PATH"
+          echo "PKG_CONFIG_PATH set"
+
       - name: Install Python dependencies
         shell: powershell
         run: |
