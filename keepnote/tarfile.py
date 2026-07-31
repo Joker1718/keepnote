@@ -140,26 +140,26 @@ PAX_NUMBER_FIELDS = {
 #---------------------------------------------------------
 # Bits used in the mode field, values in octal.
 #---------------------------------------------------------
-S_IFLNK = 0120000        # symbolic link
-S_IFREG = 0100000        # regular file
-S_IFBLK = 0060000        # block device
-S_IFDIR = 0040000        # directory
-S_IFCHR = 0020000        # character device
-S_IFIFO = 0010000        # fifo
+S_IFLNK = 0o120000        # symbolic link
+S_IFREG = 0o100000        # regular file
+S_IFBLK = 0o060000        # block device
+S_IFDIR = 0o040000        # directory
+S_IFCHR = 0o020000        # character device
+S_IFIFO = 0o010000        # fifo
 
-TSUID   = 04000          # set UID on execution
-TSGID   = 02000          # set GID on execution
-TSVTX   = 01000          # reserved
+TSUID   = 0o4000          # set UID on execution
+TSGID   = 0o2000          # set GID on execution
+TSVTX   = 0o1000          # reserved
 
-TUREAD  = 0400           # read by owner
-TUWRITE = 0200           # write by owner
-TUEXEC  = 0100           # execute/search by owner
-TGREAD  = 0040           # read by group
-TGWRITE = 0020           # write by group
-TGEXEC  = 0010           # execute/search by group
-TOREAD  = 0004           # read by other
-TOWRITE = 0002           # write by other
-TOEXEC  = 0001           # execute/search by other
+TUREAD  = 0o400           # read by owner
+TUWRITE = 0o200           # write by owner
+TUEXEC  = 0o100           # execute/search by owner
+TGREAD  = 0o040           # read by group
+TGWRITE = 0o020           # write by group
+TGEXEC  = 0o010           # execute/search by group
+TOREAD  = 0o004           # read by other
+TOWRITE = 0o002           # write by other
+TOEXEC  = 0o001           # execute/search by other
 
 #---------------------------------------------------------
 # initialization
@@ -191,14 +191,14 @@ def nti(s):
     """
     # There are two possible encodings for a number field, see
     # itn() below.
-    if s[0] != chr(0200):
+    if s[0] != chr(0o200):
         try:
             n = int(nts(s) or "0", 8)
         except ValueError:
             raise HeaderError("invalid header")
     else:
-        n = 0L
-        for i in xrange(len(s) - 1):
+        n = 0
+        for i in range(len(s) - 1):
             n <<= 8
             n += ord(s[i + 1])
     return n
@@ -224,10 +224,10 @@ def itn(n, digits=8, format=DEFAULT_FORMAT):
             n = struct.unpack("L", struct.pack("l", n))[0]
 
         s = ""
-        for i in xrange(digits - 1):
-            s = chr(n & 0377) + s
+        for i in range(digits - 1):
+            s = chr(n & 0o377) + s
             n >>= 8
-        s = chr(0200) + s
+        s = chr(0o200) + s
     return s
 
 def uts(s, encoding, errors):
@@ -275,7 +275,7 @@ def copyfileobj(src, dst, length=None):
 
     BUFSIZE = 16 * 1024
     blocks, remainder = divmod(length, BUFSIZE)
-    for b in xrange(blocks):
+    for b in range(blocks):
         buf = src.read(BUFSIZE)
         if len(buf) < BUFSIZE:
             raise IOError("end of file reached")
@@ -412,7 +412,7 @@ class _Stream:
         self.fileobj  = fileobj
         self.bufsize  = bufsize
         self.buf      = ""
-        self.pos      = 0L
+        self.pos      = 0
         self.closed   = False
 
         if comptype == "gz":
@@ -421,7 +421,7 @@ class _Stream:
             except ImportError:
                 raise CompressionError("zlib module is not available")
             self.zlib = zlib
-            self.crc = zlib.crc32("") & 0xffffffffL
+            self.crc = zlib.crc32("") & 0xffffffff
             if mode == "r":
                 self._init_read_gz()
             else:
@@ -459,7 +459,7 @@ class _Stream:
         """Write string s to the stream.
         """
         if self.comptype == "gz":
-            self.crc = self.zlib.crc32(s, self.crc) & 0xffffffffL
+            self.crc = self.zlib.crc32(s, self.crc) & 0xffffffff
         self.pos += len(s)
         if self.comptype != "tar":
             s = self.cmp.compress(s)
@@ -494,7 +494,7 @@ class _Stream:
                 # while the same crc on a 64-bit box may "look positive".
                 # To avoid irksome warnings from the `struct` module, force
                 # it to look positive on all boxes.
-                self.fileobj.write(struct.pack("<L", self.crc & 0xffffffffL))
+                self.fileobj.write(struct.pack("<L", self.crc & 0xffffffff))
                 self.fileobj.write(struct.pack("<L", self.pos & 0xffffFFFFL))
 
         if not self._extfileobj:
@@ -544,7 +544,7 @@ class _Stream:
         """
         if pos - self.pos >= 0:
             blocks, remainder = divmod(pos - self.pos, self.bufsize)
-            for i in xrange(blocks):
+            for i in range(blocks):
                 self.read(self.bufsize)
             self.read(remainder)
         else:
@@ -920,7 +920,7 @@ class TarInfo(object):
            of the member.
         """
         self.name = name        # member name
-        self.mode = 0644        # file permissions
+        self.mode = 0o644        # file permissions
         self.uid = 0            # user id
         self.gid = 0            # group id
         self.size = 0           # file size
@@ -966,7 +966,7 @@ class TarInfo(object):
 
         info = {
             "name":     normpath(self.name),
-            "mode":     self.mode & 07777,
+            "mode":     self.mode & 0o7777,
             "uid":      self.uid,
             "gid":      self.gid,
             "size":     self.size,
@@ -1109,7 +1109,7 @@ class TarInfo(object):
         """
         parts = [
             stn(info.get("name", ""), 100),
-            itn(info.get("mode", 0) & 07777, 8, format),
+            itn(info.get("mode", 0) & 0o7777, 8, format),
             itn(info.get("uid", 0), 8, format),
             itn(info.get("gid", 0), 8, format),
             itn(info.get("size", 0), 12, format),
@@ -1313,11 +1313,11 @@ class TarInfo(object):
         buf = self.buf
         sp = _ringbuffer()
         pos = 386
-        lastpos = 0L
-        realpos = 0L
+        lastpos = 0
+        realpos = 0
         # There are 4 possible sparse structs in the
         # first header.
-        for i in xrange(4):
+        for i in range(4):
             try:
                 offset = nti(buf[pos:pos + 12])
                 numbytes = nti(buf[pos + 12:pos + 24])
@@ -1338,7 +1338,7 @@ class TarInfo(object):
         while isextended == 1:
             buf = tarfile.fileobj.read(BLOCKSIZE)
             pos = 0
-            for i in xrange(21):
+            for i in range(21):
                 try:
                     offset = nti(buf[pos:pos + 12])
                     numbytes = nti(buf[pos + 12:pos + 24])
@@ -1885,7 +1885,7 @@ class TarFile(object):
         if stat.S_ISREG(stmd):
             tarinfo.size = statres.st_size
         else:
-            tarinfo.size = 0L
+            tarinfo.size = 0
         tarinfo.mtime = statres.st_mtime
         tarinfo.type = type
         tarinfo.linkname = linkname
@@ -2038,7 +2038,7 @@ class TarFile(object):
                 # Extract directories with a safe mode.
                 directories.append(tarinfo)
                 tarinfo = copy.copy(tarinfo)
-                tarinfo.mode = 0700
+                tarinfo.mode = 0o700
             self.extract(tarinfo, path)
 
         # Reverse sort directories.
@@ -2352,7 +2352,7 @@ class TarFile(object):
         else:
             end = members.index(tarinfo)
 
-        for i in xrange(end - 1, -1, -1):
+        for i in range(end - 1, -1, -1):
             if name == members[i].name:
                 return members[i]
 

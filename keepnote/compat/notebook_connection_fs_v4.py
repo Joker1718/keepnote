@@ -423,7 +423,7 @@ class PathCache:
         """Add a new nodeid, basename, and parentid to the cache"""
 
         parent = self._nodes.get(parentid, 0)
-        if parent is 0:
+        if parent == 0:
             # TODO: should I allow unknown parent?
             raise UnknownNode(
                 f"unknown parent {repr((basename, parentid, self._nodes))}"
@@ -450,7 +450,7 @@ class PathCache:
         parent = self._nodes.get(parentid, 0)
 
         if node is not None:
-            if parent is not 0:
+            if parent != 0:
                 # update cache
                 node.parent.children.remove(node)
                 node.parent = parent
