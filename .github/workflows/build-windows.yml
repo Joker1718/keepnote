@@ -46,16 +46,12 @@ jobs:
           update: true
           install: >-
             mingw-w64-x86_64-python3
-            mingw-w64-x86_64-python3-pip
-            mingw-w64-x86_64-python3-setuptools
-            mingw-w64-x86_64-python3-wheel
             mingw-w64-x86_64-gtk3
             mingw-w64-x86_64-gobject-introspection
-            mingw-w64-x86_64-python3-gobject
-            mingw-w64-x86_64-python3-cairo
+            mingw-w64-x86_64-python3-gobject-introspection
             mingw-w64-x86_64-libffi
             pkg-config
-
+            
       - name: Install PyInstaller in MSYS2
         shell: msys2 {0}
         run: |
