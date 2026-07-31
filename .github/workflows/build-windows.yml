@@ -45,13 +45,13 @@ jobs:
         with:
           msystem: MINGW64
           update: true
-          # Fixed package names and dynamically targeted matrix version via pacboy Shorthand
-          install: >-
-            python${{ matrix.python-version }}
-            gtk3
-            python-gobject
-            gobject-introspection
-            libffi
+          # Notice 'pacboy' instead of 'install'
+          pacboy: >-
+            python:p
+            gtk3:p
+            python-gobject:p
+            gobject-introspection:p
+            libffi:p
             pkgconf:p
 
       - name: Install PyInstaller in MSYS2
