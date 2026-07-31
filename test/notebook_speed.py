@@ -1,4 +1,3 @@
-from six.moves import range
 from .testing import *
 
 import os, shutil, unittest, _thread, threading, traceback, sys, time
@@ -9,12 +8,10 @@ from keepnote import notebook
 
 from test.testing import *
 
-
 class Speed (unittest.TestCase):
     
     def setUp(self):      
         pass
-
 
     def test_open(self):
 
@@ -33,7 +30,6 @@ class Speed (unittest.TestCase):
         print(("seconds: ", t))
         book.close()
         
-
     def test_new_node(self):
         
         clean_dir("test/tmp/notebook_new_node")
@@ -55,9 +51,6 @@ class Speed (unittest.TestCase):
         t = time.time() - start
         print(("seconds: ", t))
         book.close()
-
-
-        
 
 if __name__ == "__main__":
     test_main()

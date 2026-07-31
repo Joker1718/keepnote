@@ -27,8 +27,6 @@ objects.
 #
 
 # python imports
-from six.moves import map
-from six.moves import range
 import sys
 import codecs
 
@@ -41,16 +39,13 @@ from xml.sax.saxutils import escape
 # keepnote imports
 from keepnote import safefile
 
-
 # constants
 ELEMENT_NODE = xml.dom.Node.ELEMENT_NODE
-
 
 class XmlError(Exception):
     """Error for parsing XML"""
 
     pass
-
 
 class Tag(object):
     def __init__(self, name, get=None, set=None, getobj=None, tags=[]):
@@ -128,7 +123,6 @@ class Tag(object):
         self._tag_list.append(tag)
         self._tags[tag.name] = tag
 
-
 class TagMany(Tag):
     def __init__(
         self, name, iterfunc, get=None, set=None, before=None, after=None, tags=[]
@@ -188,7 +182,6 @@ class TagMany(Tag):
                 for child_tag in self._tag_list:
                     child_tag.write((obj, i), out)
                 out.write("</%s>\n" % self.name)
-
 
 class XmlObject(object):
     def __init__(self, *tags):
@@ -264,7 +257,6 @@ class XmlObject(object):
         out.write("\n")
         if need_close:
             out.close()
-
 
 if __name__ == "__main__":
     import io
@@ -378,7 +370,6 @@ if __name__ == "__main__":
         pref.write(sys.stdout)
 
     util.toc()
-
 
 '''
 def get_dom_children(node):

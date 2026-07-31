@@ -25,8 +25,6 @@ Graphical User Interface for KeepNote Application
 #
 
 # python imports
-from six.moves import map
-from six.moves import range
 import os
 import shutil
 import sys
@@ -34,7 +32,6 @@ import uuid
 
 # pygtk imports
 from gi.repository import GObject, Gtk
-
 
 # keepnote imports
 import keepnote
@@ -54,7 +51,6 @@ from keepnote.gui import (
 from keepnote.gui import dialog_drag_drop_test, dialog_wait
 from keepnote.gui.tabbed_viewer import TabbedViewer
 
-
 _ = keepnote.translate
 
 # =============================================================================
@@ -63,9 +59,7 @@ _ = keepnote.translate
 DEFAULT_WINDOW_SIZE = (1024, 600)
 DEFAULT_WINDOW_POS = (-1, -1)
 
-
 # =============================================================================
-
 
 class KeepNoteWindow(gtk.Window):
     """Main windows for KeepNote"""
@@ -657,7 +651,6 @@ class KeepNoteWindow(gtk.Window):
         Restore multiple windows for notebook
 
         open_here -- if True, will open notebook in this window
-
 
         Cases:
         1. if notebook has no saved windows, just open notebook in this window
@@ -1579,7 +1572,6 @@ GObject.signal_new(
     gobject.TYPE_NONE,
     (str, object, object),
 )
-
 
 class SearchBox(gtk.Entry):
     def __init__(self, window):

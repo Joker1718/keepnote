@@ -31,7 +31,6 @@ import re
 # pygtk imports
 from gi.repository import GObject, Gdk
 
-
 # keepnote imports
 import keepnote
 from keepnote import KeepNoteError, is_url, unicode_gtk
@@ -65,20 +64,15 @@ from keepnote.gui import (
     dialog_find,
     dialog_image_resize,
 )
-from six.moves import map
-
 
 _ = keepnote.translate
-
 
 def is_relative_file(filename):
     """Returns True if filename is relative"""
     return not re.match("[^:/]+://", filename) and not os.path.isabs(filename)
 
-
 def is_local_file(filename):
     return filename and ("/" not in filename) and ("\\" not in filename)
-
 
 class NodeIO(RichTextIO):
     """Read/Writes the contents of a RichTextBuffer to disk"""
@@ -155,7 +149,6 @@ class NodeIO(RichTextIO):
 
         # mark image as saved
         self._saved_image_files.add(image.get_filename())
-
 
 class RichTextEditor(KeepNoteEditor):
     def __init__(self, app):
@@ -796,7 +789,6 @@ class RichTextEditor(KeepNoteEditor):
         item.show()
         menu.append(item)
 
-
 class FontUI(object):
     def __init__(
         self,
@@ -819,7 +811,6 @@ class FontUI(object):
             self.unblock = lambda: self.widget.handler_unblock(self.signal)
         else:
             self.unblock = unblock
-
 
 class EditorMenus(gobject.GObject):
     def __init__(self, app, editor):
@@ -1617,7 +1608,6 @@ class EditorMenus(gobject.GObject):
             window.get_app().pref.get("editors", "general", "spell_check", default=True)
         )
 
-
 class ComboToolItem(gtk.ToolItem):
     __gtype_name__ = "ComboToolItem"
 
@@ -1639,12 +1629,10 @@ class ComboToolItem(gtk.ToolItem):
 
         tooltips.set_tip(self.combobox, tip_text, tip_private)
 
-
 class ComboToolAction(gtk.Action):
     __gtype_name__ = "ComboToolAction"
 
     def __init__(self, name, label, tooltip, stock_id):
         Gtk.Action.__init__(self, name, label, tooltip, stock_id)
-
 
 ComboToolAction.set_tool_item_type(ComboToolItem)

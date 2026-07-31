@@ -27,7 +27,6 @@ Editor widget in main window
 # pygtk imports
 from gi.repository import GObject
 
-
 # keepnote imports
 import keepnote
 from keepnote import KeepNoteError, unicode_gtk
@@ -46,11 +45,8 @@ from keepnote.gui import (
     dialog_find,
 )
 from keepnote.gui.editor import KeepNoteEditor
-from six.moves import map
-
 
 _ = keepnote.translate
-
 
 class TextEditor(KeepNoteEditor):
     def __init__(self, app):
@@ -285,7 +281,6 @@ class TextEditor(KeepNoteEditor):
                 self._app.open_webpage(url)
             except KeepNoteError as e:
                 self.emit("error", e.msg, e)
-
 
 class EditorMenus(gobject.GObject):
     def __init__(self, app, editor):

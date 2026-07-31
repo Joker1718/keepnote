@@ -37,8 +37,6 @@ from keepnote.timestamp import (
     get_str_timestamp,
 )
 from keepnote import safefile
-from six.moves import range
-
 
 # constants
 BLANK_NOTE = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -61,7 +59,6 @@ DEFAULT_FONT_FAMILY = "Sans"
 DEFAULT_FONT_SIZE = 10
 DEFAULT_FONT = f"{DEFAULT_FONT_FAMILY} {DEFAULT_FONT_SIZE:d}"
 
-
 # information sort constants
 (
     INFO_SORT_NONE,
@@ -71,13 +68,11 @@ DEFAULT_FONT = f"{DEFAULT_FONT_FAMILY} {DEFAULT_FONT_SIZE:d}"
     INFO_SORT_MODIFIED_TIME,
 ) = list(range(5))
 
-
 # =============================================================================
 # filename creation functions
 
 REGEX_SLASHES = re.compile(r"[/\\]")
 REGEX_BAD_CHARS = re.compile(r"[\?'&<>|`:;]")
-
 
 def get_valid_filename(filename, default="folder"):
     """Converts a filename into a valid one
@@ -103,7 +98,6 @@ def get_valid_filename(filename, default="folder"):
 
     return filename
 
-
 def get_unique_filename(path, filename, ext="", sep=" ", number=2):
     """Returns a unique version of a filename for a given directory"""
 
@@ -123,11 +117,9 @@ def get_unique_filename(path, filename, ext="", sep=" ", number=2):
             return newname
         i += 1
 
-
 def get_valid_unique_filename(path, filename, ext="", sep=" ", number=2):
     """Returns a valid and unique version of a filename for a given path"""
     return get_unique_filename(path, get_valid_filename(filename), ext, sep, number)
-
 
 def get_unique_filename_list(filenames, filename, ext="", sep=" ", number=2):
     """Returns a unique filename for a given list of existing files"""
@@ -146,50 +138,40 @@ def get_unique_filename_list(filenames, filename, ext="", sep=" ", number=2):
             return newname
         i += 1
 
-
 # =============================================================================
 # File naming scheme
-
 
 def get_dir_meta_file(nodepath):
     """Returns the metadata file for a dir"""
     return os.path.join(nodepath, NODE_META_FILE)
 
-
 def get_page_meta_file(pagepath):
     """Retruns the metadata file for a page"""
     return os.path.join(pagepath, PAGE_META_FILE)
-
 
 def get_page_data_file(pagepath):
     """Returns the HTML data file for a page"""
     return os.path.join(pagepath, PAGE_DATA_FILE)
 
-
 def get_pref_file(nodepath):
     """Returns the filename of the notebook preference file"""
     return os.path.join(nodepath, PREF_FILE)
-
 
 def get_pref_dir(nodepath):
     """Returns the directory of the notebook preference file"""
     return os.path.join(nodepath, NOTEBOOK_META_DIR)
 
-
 def get_trash_dir(nodepath):
     """Returns the trash directory of the notebook"""
     return os.path.join(nodepath, TRASH_DIR)
-
 
 # =============================================================================
 # HTML functions
 
 TAG_PATTERN = re.compile("<[^>]*>")
 
-
 def strip_tags(line):
     return re.sub(TAG_PATTERN, "", line)
-
 
 def read_data_as_plain_text(infile):
     """Read a Note data file as plain text"""
@@ -212,10 +194,8 @@ def read_data_as_plain_text(infile):
         # strip tags
         yield strip_tags(line)
 
-
 # =============================================================================
 # notebook functions
-
 
 def update_notebook(filename, desired_version):
     """Updates a notebook to the desired version (downgrading not implemented)"""
@@ -250,10 +230,8 @@ def update_notebook(filename, desired_version):
                     except:
                         pass
 
-
 # =============================================================================
 # classes
-
 
 class NoteBookError(Exception):
     """Exception that occurs when manipulating NoteBook's"""
@@ -269,7 +247,6 @@ class NoteBookError(Exception):
         else:
             return self.msg
 
-
 class NoteBookVersionError(NoteBookError):
     """Exception for version errors while reading notebooks"""
 
@@ -282,9 +259,7 @@ class NoteBookVersionError(NoteBookError):
         self.notebook_version = notebook_version
         self.readable_version = readable_version
 
-
 # TODO: finish
-
 
 class NoteBookAttr(object):
     def __init__(self, name, datatype, key=None, write=None, read=None):
@@ -313,7 +288,6 @@ class NoteBookAttr(object):
         else:
             self.read = read
 
-
 class NoteBookTable(object):
     def __init__(self, name):
         self.name = name
@@ -321,7 +295,6 @@ class NoteBookTable(object):
 
         # TODO: add col widths
         # NoteBooks have tables and attrs
-
 
 g_default_attrs = [
     NoteBookAttr("Title", str, "title"),
@@ -335,14 +308,11 @@ g_default_attrs = [
     NoteBookAttr("Folder Sort Direction", int, "info_sort_dir"),
 ]
 
-
 # TODO: parent might be an implict attr
-
 
 # 1. attrs should be data that is optional (although keepnote has a few
 # required entries).
 # 2. attrs can appear in listview
-
 
 class NoteBookNode(object):
     """A general base class for all nodes in a NoteBook"""
@@ -904,7 +874,6 @@ class NoteBookNode(object):
         if self.__meta_data is not None:
             self.__meta_data += data
 
-
 # basic file format for all NoteBookNode's
 g_node_meta_data_tags = [
     xmlo.Tag(
@@ -952,14 +921,12 @@ g_node_meta_data_tags = [
     ),
 ]
 
-
 class NoteBookPage(NoteBookNode):
     """Class that represents a Page in the NoteBook"""
 
     def __init__(self, path, title="", parent=None, notebook=None):
         NoteBookNode.__init__(self, path, title, parent, notebook, kind="page")
         self._meta_parser = g_page_meta_data_parser
-
 
 class NoteBookDir(NoteBookNode):
     """Class that represents Folders in NoteBook"""
@@ -968,16 +935,13 @@ class NoteBookDir(NoteBookNode):
         NoteBookNode.__init__(self, path, title, parent, notebook, kind="dir")
         self._meta_parser = g_dir_meta_data_parser
 
-
 # TODO: merge dir/page concept
 
 # file format of Pages in NoteBook
 g_page_meta_data_parser = xmlo.XmlObject(xmlo.Tag("page", tags=g_node_meta_data_tags))
 
-
 # file format of Folders in NoteBook
 g_dir_meta_data_parser = xmlo.XmlObject(xmlo.Tag("node", tags=g_node_meta_data_tags))
-
 
 class NoteBookTrash(NoteBookDir):
     """Class represents the Trash Folder in a NoteBook"""
@@ -1005,7 +969,6 @@ class NoteBookTrash(NoteBookDir):
 
         raise NoteBookError("The Trash folder cannot be deleted.")
 
-
 class NoteBookPreferences(object):
     """Preference data structure for a NoteBook"""
 
@@ -1013,7 +976,6 @@ class NoteBookPreferences(object):
 
         self.version = NOTEBOOK_FORMAT_VERSION
         self.default_font = DEFAULT_FONT
-
 
 # file format for NoteBook preferences
 g_notebook_pref_parser = xmlo.XmlObject(
@@ -1029,7 +991,6 @@ g_notebook_pref_parser = xmlo.XmlObject(
         ],
     )
 )
-
 
 class NoteBook(NoteBookDir):
     """Class represents a NoteBook"""

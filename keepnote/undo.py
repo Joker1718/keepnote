@@ -27,8 +27,6 @@ UndoStack for maintaining undo and redo actions
 import sys
 
 from keepnote.linked_list import LinkedList
-from six.moves import zip
-
 
 def cat_funcs(funcs):
     """Concatenate a list of functions [f,g,h,...] that take no arguments
@@ -45,7 +43,6 @@ def cat_funcs(funcs):
             func()
 
     return f
-
 
 class UndoStack(object):
     """UndoStack for maintaining undo and redo actions"""

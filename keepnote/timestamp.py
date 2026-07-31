@@ -27,7 +27,6 @@ timestamp module
 
 import locale
 import time
-from six.moves import range
 
 # determine UNIX Epoc (which should be 0, unless the current platform has a
 # different definition of epoc)
@@ -39,7 +38,6 @@ EPOC = time.mktime((1970, 2, 1, 0, 0, 0, 3, 1, 0)) - time.timezone - SEC_OFFSET
 ENCODING = locale.getlocale()[1]
 if ENCODING is None:
     ENCODING = "utf-8"
-
 
 """
 
@@ -55,10 +53,8 @@ if ENCODING is None:
 
 """
 
-
 (TM_YEAR, TM_MON, TM_MDAY, TM_HOUR, TM_MIN, TM_SEC, TM_WDAY, TM_YDAY, TM_ISDST) = list(range(
     9))
-
 
 """
 %a  Locale's abbreviated weekday name.
@@ -89,7 +85,6 @@ if ENCODING is None:
 %%  A literal "%" character.
 """
 
-
 DEFAULT_TIMESTAMP_FORMATS = {
     "same_day": "%I:%M %p",
     "same_month": "%a, %d %I:%M %p",
@@ -97,16 +92,13 @@ DEFAULT_TIMESTAMP_FORMATS = {
     "diff_year": "%a, %b %d, %Y",
 }
 
-
 def get_timestamp():
     """Returns the current timestamp"""
     return int(time.time() - EPOC)
 
-
 def get_localtime():
     """Returns the local time"""
     return time.localtime()
-
 
 def get_str_timestamp(timestamp, current=None, formats=DEFAULT_TIMESTAMP_FORMATS):
     """
@@ -150,11 +142,9 @@ def get_str_timestamp(timestamp, current=None, formats=DEFAULT_TIMESTAMP_FORMATS
     except:
         return "[formatting error]"
 
-
 def format_timestamp(timestamp, format):
     local = time.localtime(timestamp + EPOC)
     return time.strftime(format, local)
-
 
 def parse_timestamp(timestamp_str, format):
     # raises error if timestamp cannot be parsed

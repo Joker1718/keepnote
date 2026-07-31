@@ -27,19 +27,14 @@ Tabbed Viewer for KeepNote.
 # pygtk imports
 from gi.repository import GObject, Gtk
 
-
 # keepnote imports
 import keepnote
 from keepnote.gui import add_actions, Action
 from keepnote.gui.three_pane_viewer import ThreePaneViewer
 from keepnote.gui.viewer import Viewer
 from keepnote.gui.icons import get_node_icon
-from six.moves import map
-from six.moves import range
-
 
 _ = keepnote.translate
-
 
 class TwoWayDict(object):
     def __init__(self):
@@ -56,7 +51,6 @@ class TwoWayDict(object):
 
     def get2(self, item2, default=None):
         return self._lookup2.get(item2, default)
-
 
 class TabbedViewer(Viewer):
     """A viewer with a treeview, listview, and editor"""
@@ -556,7 +550,6 @@ class TabbedViewer(Viewer):
             ],
         ))
         return actions
-
 
 class TabLabel(gtk.HBox):
     def __init__(self, tabs, viewer, icon, text):

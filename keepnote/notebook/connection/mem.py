@@ -32,17 +32,13 @@ from io import StringIO
 # keepnote imports
 import keepnote.notebook.connection as connlib
 from keepnote.notebook.connection import NoteBookConnection
-from six.moves import range
-
 
 # =============================================================================
-
 
 class Node(object):
     def __init__(self, attr={}):
         self.attr = dict(attr)
         self.files = {}
-
 
 class File(StringIO):
     def close(self):
@@ -57,7 +53,6 @@ class File(StringIO):
 
     def __exit__(self, *args):
         self.close()
-
 
 class NoteBookConnectionMem(NoteBookConnection):
     def __init__(self):

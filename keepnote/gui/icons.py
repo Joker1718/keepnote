@@ -31,15 +31,12 @@ import os
 # pygtk imports
 from gi.repository import Gtk
 
-
 # keepnote imports
 import keepnote
 from keepnote import unicode_gtk
 import keepnote.gui
 from keepnote import get_resource
 import keepnote.notebook as notebooklib
-from six.moves import range
-
 
 # =============================================================================
 # globals/constants
@@ -52,7 +49,6 @@ _g_default_node_icon_filenames = {
     notebooklib.CONTENT_TYPE_PAGE: ("note.png", "note.png"),
 }
 _g_unknown_icons = ("note-unknown.png", "note-unknown.png")
-
 
 _colors = ["", "-red", "-orange", "-yellow", "-green", "-blue", "-violet", "-grey"]
 
@@ -87,10 +83,8 @@ DEFAULT_QUICK_PICK_ICONS = (
     ]
 )
 
-
 # =============================================================================
 # node icons
-
 
 class MimeIcons(object):
     def __init__(self):
@@ -146,18 +140,14 @@ class MimeIcons(object):
         else:
             return default
 
-
 # singleton
 _g_mime_icons = MimeIcons()
-
 
 def get_icon_filename(icon_name, default=None):
     return _g_mime_icons.get_icon_filename(icon_name, default)
 
-
 # HACK: cache icon filenames
 _icon_basename_cache = {}
-
 
 def lookup_icon_filename(notebook, basename):
     """
@@ -188,9 +178,7 @@ def lookup_icon_filename(notebook, basename):
     _icon_basename_cache[(notebook, basename)] = filename
     return filename
 
-
 # =============================================================================
-
 
 def get_default_icon_basenames(node):
     """Returns basesnames for default icons for a node"""
@@ -202,7 +190,6 @@ def get_default_icon_basenames(node):
     # if basenames is None:
     #    return _g_unknown_icons
 
-
 def get_default_icon_filenames(node):
     """Returns NoteBookNode icon filename from resource path"""
     filenames = get_default_icon_basenames(node)
@@ -213,14 +200,12 @@ def get_default_icon_filenames(node):
         lookup_icon_filename(node.get_notebook(), filenames[1]),
     ]
 
-
 def get_all_icon_basenames(notebook):
     """
     Return a list of all builtin icons and notebook-specific icons
     Icons are referred to by basename
     """
     return builtin_icons + notebook.get_icons()
-
 
 def guess_open_icon_filename(icon_file):
     """
@@ -229,7 +214,6 @@ def guess_open_icon_filename(icon_file):
     """
     path, ext = os.path.splitext(icon_file)
     return path + "-open" + ext
-
 
 def get_node_icon_filenames_basenames(node):
 
@@ -276,18 +260,14 @@ def get_node_icon_filenames_basenames(node):
 
     return basenames, filenames
 
-
 def get_node_icon_basenames(node):
     return get_node_icon_filenames_basenames(node)[0]
-
 
 def get_node_icon_filenames(node):
     """Loads the icons for a node"""
     return get_node_icon_filenames_basenames(node)[1]
 
-
 # TODO: continue to clean up class
-
 
 class NoteBookIconManager(object):
     def __init__(self):
@@ -344,10 +324,8 @@ class NoteBookIconManager(object):
         if node in self._node_icon_cache:
             del self._node_icon_cache[node]
 
-
 # singleton (for now)
 notebook_icon_manager = NoteBookIconManager()
-
 
 def get_node_icon(node, expand=False, fade=False):
     """Returns pixbuf of NoteBookNode icon from resource path"""
@@ -358,7 +336,6 @@ def get_node_icon(node, expand=False, fade=False):
         effects.add("fade")
 
     return notebook_icon_manager.get_node_icon(node, effects)
-
 
 def uncache_node_icon(node):
     notebook_icon_manager.uncache_node_icon(node)

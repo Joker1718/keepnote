@@ -38,20 +38,15 @@ from .textbuffer_tools import (
 
 # richtext imports
 from .richtextbase_tags import RichTextTag
-from six.moves import filter
-
 
 # default maximum undo levels
 MAX_UNDOS = 100
 
-
 def add_child_to_buffer(textbuffer, it, anchor):
     textbuffer.add_child(it, anchor)
 
-
 # =============================================================================
 # RichTextBaseBuffer undoable actions
-
 
 class Action(object):
     """A base class for undoable actions in RichTextBuffer"""
@@ -64,7 +59,6 @@ class Action(object):
 
     def undo(self):
         pass
-
 
 class InsertAction(Action):
     """Represents the act of inserting text"""
@@ -95,7 +89,6 @@ class InsertAction(Action):
         # assert start.get_slice(end) == self.text, \
         #       (start.get_slice(end), self.text)
         self.textbuffer.delete(start, end)
-
 
 class DeleteAction(Action):
     """Represents the act of deleting a region in a RichTextBuffer"""
@@ -137,7 +130,6 @@ class DeleteAction(Action):
             )
         )
 
-
 class InsertChildAction(Action):
     """Represents the act of inserting a child object into a RichTextBuffer"""
 
@@ -160,7 +152,6 @@ class InsertChildAction(Action):
         it2 = it.copy()
         it2.forward_char()
         self.textbuffer.delete(it, it2)
-
 
 class TagAction(Action):
     """Represents the act of applying a tag to a region in a RichTextBuffer"""
@@ -206,10 +197,8 @@ class TagAction(Action):
             ),
         ))
 
-
 # =============================================================================
 # handler class
-
 
 class UndoHandler(object):
     """TextBuffer Handler that provides undo/redo functionality"""

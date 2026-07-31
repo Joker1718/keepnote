@@ -30,7 +30,6 @@ import os
 # pygtk imports
 from gi.repository import GObject, Gtk
 
-
 # keepnote imports
 import keepnote
 from keepnote import unicode_gtk
@@ -41,10 +40,8 @@ from keepnote.gui.icons import (
     builtin_icons,
     get_node_icon_filenames,
 )
-from six.moves import zip
 
 _ = keepnote.translate
-
 
 def browse_file(parent, title, filename=None):
     """Callback for selecting file browser"""
@@ -72,7 +69,6 @@ def browse_file(parent, title, filename=None):
     dialog.destroy()
 
     return filename
-
 
 class NodeIconDialog(object):
     """Updates a notebook"""

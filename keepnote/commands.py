@@ -25,7 +25,6 @@ Command processing for KeepNote
 #
 
 # python libs
-from six.moves import range
 import errno
 import os
 import random
@@ -36,19 +35,16 @@ import _thread
 # keepnote libs
 import keepnote
 
-
 # constants
 KEEPNOTE_HEADER = "keepnote\n"
 # KEEPNOTE_EOF = "\x00"
 # KEEPNOTE_ESCAPE = "\xff"
-
 
 # TODO: ensure commands are executed in order, but don't allow malicious
 # process to DOS main process (may be minor issue)
 
 # =============================================================================
 # lock file
-
 
 def get_lock_file(lockfile):
     """
@@ -89,11 +85,9 @@ def get_lock_file(lockfile):
 
     return acquire, fd
 
-
 def write_lock_file(fd, port, passwd):
     """Write a KeepNote lock file"""
     os.write(fd, f"{port}:{passwd}")
-
 
 def read_lock_file(fd):
     """Parse a KeepNote lock file"""
@@ -102,15 +96,12 @@ def read_lock_file(fd):
     port = int(port)
     return port, passwd
 
-
 def make_passwd():
     """Generate a random password"""
     return str(random.randint(0, 1000000))
 
-
 # =============================================================================
 # sockets
-
 
 def open_socket(port=None, start_port=4000, end_port=10000, tries=10):
     """
@@ -141,7 +132,6 @@ def open_socket(port=None, start_port=4000, end_port=10000, tries=10):
 
     return s, port2
 
-
 def listen_commands(sock, connfunc, args):
     """
     Listen for new connections and handle them with new threads
@@ -158,7 +148,6 @@ def listen_commands(sock, connfunc, args):
             continue
 
         thread.start_new_thread(connfunc, (conn, addr) + args)
-
 
 def process_connection(conn, addr, passwd, execfunc):
     """
@@ -207,10 +196,8 @@ def process_connection(conn, addr, passwd, execfunc):
         sys.stderr.write(str(e) + ": error with connection\n")
         conn.close()
 
-
 # =============================================================================
 # commands read/write
-
 
 def unescape(text):
     """Unescape a string from the socket"""
@@ -232,7 +219,6 @@ def unescape(text):
 
     return "".join(text2)
 
-
 def escape(text):
     """Escape a string for sending over the socket"""
     text2 = []
@@ -248,7 +234,6 @@ def escape(text):
 
     return "".join(text2)
 
-
 def split_args(text):
     args = []
     last = 0
@@ -259,16 +244,13 @@ def split_args(text):
     args.append(text[last:])
     return args
 
-
 def parse_command(text):
     """Parse a command from the socket"""
     return [unescape(x) for x in split_args(text)]
 
-
 def format_command(argv):
     """Format a command from the socket"""
     return " ".join(escape(x) for x in argv)
-
 
 class CommandExecutor(object):
     def __init__(self):
@@ -388,7 +370,6 @@ class CommandExecutor(object):
         """Send a command to the main thread"""
         self._execfunc(self._app, argv)
 
-
 def get_command_executor(func, port=None):
     """Make a CommandExecutor object that wraps the given function"""
 
@@ -402,7 +383,6 @@ def get_command_executor(func, port=None):
         cmd_exec = CommandExecutor()
 
     return main_proc, cmd_exec
-
 
 # =============================================================================
 # old code
@@ -469,7 +449,6 @@ def parse_result(result):
 
 '''
 
-
 """
 # dbus
 try:
@@ -481,10 +460,7 @@ try:
 except ImportError:
     dbus = None
 
-
 APP_NAME = "org.ods.rasm.KeepNote"
-
-
 
 class SimpleCommandExecutor (object):
     def __init__(self, exec_func):
@@ -497,7 +473,6 @@ class SimpleCommandExecutor (object):
     def execute(self, argv):
         if self.app:
             self.exec_func(self.app, argv)
-
 
 if dbus:
     class CommandExecutor (dbus.service.Object):
@@ -515,7 +490,6 @@ if dbus:
 
             if self.app:
                 self.exec_func(self.app, argv)
-
 
 def get_command_executor(listen, exec_func):
 

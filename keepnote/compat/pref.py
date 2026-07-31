@@ -35,15 +35,11 @@ import keepnote.timestamp
 import keepnote.compat.xmlobject_v3 as xmlo
 from keepnote.util import compose
 from keepnote import orderdict
-from six.moves import map
-from six.moves import range
-
 
 OLD_USER_PREF_DIR = "takenote"
 OLD_USER_PREF_FILE = "takenote.xml"
 OLD_XDG_USER_EXTENSIONS_DIR = "takenote/extensions"
 OLD_XDG_USER_EXTENSIONS_DATA_DIR = "takenote/extensions_data"
-
 
 USER_PREF_DIR = "keepnote"
 USER_PREF_FILE = "keepnote.xml"
@@ -53,10 +49,8 @@ USER_EXTENSIONS_DATA_DIR = "extensions_data"
 XDG_USER_EXTENSIONS_DIR = "keepnote/extensions"
 XDG_USER_EXTENSIONS_DATA_DIR = "keepnote/extensions_data"
 
-
 # =============================================================================
 # preference directory compatibility
-
 
 def get_old_pref_dir1(home):
     """
@@ -65,14 +59,12 @@ def get_old_pref_dir1(home):
     """
     return os.path.join(home, "." + OLD_USER_PREF_DIR)
 
-
 def get_old_pref_dir2(home):
     """
     Returns old preference directory (type 2)
     $HOME/.config/takenote
     """
     return os.path.join(home, ".config", OLD_USER_PREF_DIR)
-
 
 def get_new_pref_dir(home):
     """
@@ -81,14 +73,12 @@ def get_new_pref_dir(home):
     """
     return os.path.join(home, ".config", USER_PREF_DIR)
 
-
 def get_home():
     """Return HOME directory"""
     home = keepnote.ensure_str(os.getenv("HOME"), FS_ENCODING)
     if home is None:
         raise EnvError("HOME environment variable must be specified")
     return home
-
 
 def get_old_user_pref_dir(home=None):
     """Returns the directory of the application preference file"""
@@ -113,7 +103,6 @@ def get_old_user_pref_dir(home=None):
     else:
         raise Exception("unknown platform '%s'" % p)
 
-
 def get_new_user_pref_dir(home=None):
     """Returns the directory of the application preference file"""
 
@@ -131,7 +120,6 @@ def get_new_user_pref_dir(home=None):
 
     else:
         raise Exception("unknown platform '%s'" % p)
-
 
 def upgrade_user_pref_dir(old_user_pref_dir, new_user_pref_dir):
     """Moves preference data from old location to new one"""
@@ -168,7 +156,6 @@ def upgrade_user_pref_dir(old_user_pref_dir, new_user_pref_dir):
         if not os.path.exists(new_ext_dir) and os.path.exists(old_ext_dir):
             shutil.copytree(old_ext_dir, new_ext_dir)
 
-
 def check_old_user_pref_dir(home=None):
     """Upgrades user preference directory if it exists in an old format"""
 
@@ -177,10 +164,8 @@ def check_old_user_pref_dir(home=None):
     if not os.path.exists(new_pref_dir) and os.path.exists(old_pref_dir):
         upgrade_user_pref_dir(old_pref_dir, new_pref_dir)
 
-
 # =============================================================================
 # XML config compatibility
-
 
 DEFAULT_WINDOW_SIZE = (1024, 600)
 DEFAULT_WINDOW_POS = (-1, -1)
@@ -188,7 +173,6 @@ DEFAULT_VSASH_POS = 200
 DEFAULT_HSASH_POS = 200
 DEFAULT_VIEW_MODE = "vertical"
 DEFAULT_AUTOSAVE_TIME = 10 * 1000  # 10 sec (in msec)
-
 
 class ExternalApp(object):
     """Class represents the information needed for calling an external application"""
@@ -198,7 +182,6 @@ class ExternalApp(object):
         self.title = title
         self.prog = prog
         self.args = args
-
 
 class KeepNotePreferences(object):
     """Preference data structure for the KeepNote application"""
@@ -339,7 +322,6 @@ class KeepNotePreferences(object):
 
         # read xml preference file
         g_keepnote_pref_parser.read(self, filename)
-
 
 g_keepnote_pref_parser = xmlo.XmlObject(
     xmlo.Tag(

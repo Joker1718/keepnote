@@ -20,9 +20,6 @@ from keepnote.gui.richtext.textbuffer_tools import \
     iter_buffer_contents, \
     PushIter, \
     TextBufferDom
-from six.moves import map
-from six.moves import range
-
 
 def display_item(item):
     """Return a string representing a buffer item"""
@@ -37,7 +34,6 @@ def display_item(item):
         return item[0]
     else:
         return item[0] + ":" + item[2]
-
 
 class BufferBase (TestCase):
 
@@ -59,7 +55,6 @@ class BufferBase (TestCase):
     def get_contents(self):
         return list(iter_buffer_contents(self.buffer,
                                          None, None, ignore_tag))
-
 
 class Html (BufferBase):
 
@@ -693,7 +688,6 @@ print([display_item(x) for x in self.get_contents()])
 
         self.assertEqual(list(map(display_item, contents)),
                          [' hello  bye'])
-
 
 class Speed (TestCase):
 

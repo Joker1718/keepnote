@@ -32,7 +32,6 @@ import threading
 # pygtk imports
 from gi.repository import GObject, Gdk
 
-
 # keepnote imports
 import keepnote
 from keepnote import log_error
@@ -45,7 +44,6 @@ import keepnote.gui.dialog_app_options
 import keepnote.gui.dialog_node_icon
 import keepnote.gui.dialog_wait
 from keepnote.gui.icons import DEFAULT_QUICK_PICK_ICONS, uncache_node_icon
-from six.moves import map
 
 _ = keepnote.translate
 
@@ -104,23 +102,18 @@ DEFAULT_COLORS_FLOAT = [
     (0, 0, 0),
 ]
 
-
 def color_float_to_int8(color):
     return (int(255 * color[0]), int(255 * color[1]), int(255 * color[2]))
 
-
 def color_int8_to_str(color):
     return f"#{color[0]:02x}{color[1]:02x}{color[2]:02x}"
-
 
 DEFAULT_COLORS = [
     color_int8_to_str(color_float_to_int8(color)) for color in DEFAULT_COLORS_FLOAT
 ]
 
-
 # =============================================================================
 # resources
-
 
 class PixbufCache(object):
     """A cache for loading pixbufs from the filesystem"""
@@ -159,15 +152,12 @@ class PixbufCache(object):
     def is_pixbuf_cached(self, key):
         return key in self._pixbufs
 
-
 # singleton
 pixbufs = PixbufCache()
-
 
 get_pixbuf = pixbufs.get_pixbuf
 cache_pixbuf = pixbufs.cache_pixbuf
 is_pixbuf_cached = pixbufs.is_pixbuf_cached
-
 
 def get_resource_image(*path_list):
     """Returns gtk.Image from resource path"""
@@ -176,12 +166,10 @@ def get_resource_image(*path_list):
     img.set_from_file(filename)
     return img
 
-
 def get_resource_pixbuf(*path_list, **options):
     """Returns cached pixbuf from resource path"""
     # raises GError
     return pixbufs.get_pixbuf(get_resource(IMAGE_DIR, *path_list), **options)
-
 
 def fade_pixbuf(pixbuf, alpha=128):
     """Returns a new faded a pixbuf"""
@@ -196,16 +184,13 @@ def fade_pixbuf(pixbuf, alpha=128):
     #                       0, 0, 1, 0xcccccc, 0x00000000)
     return pixbuf2
 
-
 # =============================================================================
 # misc. gui functions
-
 
 def get_accel_file():
     """Returns gtk accel file"""
 
     return os.path.join(keepnote.get_user_pref_dir(), ACCEL_FILE)
-
 
 def init_key_shortcuts():
     """Setup key shortcuts for the window"""
@@ -214,7 +199,6 @@ def init_key_shortcuts():
         Gtk.accel_map_load(accel_file)
     else:
         Gtk.accel_map_save(accel_file)
-
 
 def set_gtk_style(font_size=10, vsep=0):
     """
@@ -232,7 +216,6 @@ def set_gtk_style(font_size=10, vsep=0):
 
       """)
 
-
 def update_file_preview(file_chooser, preview):
     """Preview widget for file choosers"""
 
@@ -244,7 +227,6 @@ def update_file_preview(file_chooser, preview):
     except:
         have_preview = False
     file_chooser.set_preview_widget_active(have_preview)
-
 
 class FileChooserDialog(gtk.FileChooserDialog):
     """File Chooser Dialog with a persistent path"""
@@ -279,10 +261,8 @@ class FileChooserDialog(gtk.FileChooserDialog):
 
         return response
 
-
 # =============================================================================
 # menu actions
-
 
 class UIManager(gtk.UIManager):
     """Specialization of UIManager for use in KeepNote"""
@@ -352,7 +332,6 @@ class UIManager(gtk.UIManager):
                     img.show()
                     widget.set_icon_widget(img)
 
-
 class Action(gtk.Action):
     def __init__(
         self, name, stockid=None, label=None, accel="", tooltip="", func=None, icon=None
@@ -365,7 +344,6 @@ class Action(gtk.Action):
 
         if func:
             self.signal = self.connect("activate", func)
-
 
 class ToggleAction(gtk.ToggleAction):
     def __init__(
@@ -380,21 +358,17 @@ class ToggleAction(gtk.ToggleAction):
         if func:
             self.signal = self.connect("toggled", func)
 
-
 def add_actions(actiongroup, actions):
     """Add a list of Action's to an gtk.ActionGroup"""
 
     for action in actions:
         actiongroup.add_action_with_accel(action, action.accel)
 
-
 # =============================================================================
 # Application for GUI
 
-
 # TODO: implement 'close all' for notebook
 # requires listening for close.
-
 
 class KeepNote(keepnote.KeepNote):
     """GUI version of the KeepNote application instance"""
@@ -430,7 +404,6 @@ class KeepNote(keepnote.KeepNote):
         keepnote.KeepNote.set_lang(self)
 
         # setup glade with gettext
-
 
         # re-initialize dialogs
         self.init_dialogs()

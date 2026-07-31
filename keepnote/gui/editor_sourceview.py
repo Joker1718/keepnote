@@ -5,7 +5,6 @@ Editor widget in main window
 
 """
 
-
 #
 #  KeepNote
 #  Copyright (c) 2008-2009 Matt Rasmussen
@@ -27,8 +26,6 @@ Editor widget in main window
 
 # pygtk imports
 from gi.repository import GObject
-from six.moves import map
-
 
 try:
     raise ImportError()
@@ -53,7 +50,6 @@ from keepnote.gui import CONTEXT_MENU_ACCEL_PATH, Action, ToggleAction, add_acti
 from keepnote.gui.editor import KeepNoteEditor
 
 _ = keepnote.translate
-
 
 class TextEditor(KeepNoteEditor):
     def __init__(self, app):
@@ -326,7 +322,6 @@ class TextEditor(KeepNoteEditor):
                 self._app.open_webpage(url)
             except KeepNoteError as e:
                 self.emit("error", e.msg, e)
-
 
 class EditorMenus(gobject.GObject):
     def __init__(self, app, editor):

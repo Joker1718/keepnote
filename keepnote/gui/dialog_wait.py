@@ -31,12 +31,9 @@ import time
 # pygtk imports
 from gi.repository import GObject
 
-
 # keepnote imports
 import keepnote
 from keepnote import get_resource
-from six.moves import filter
-
 
 class WaitDialog(object):
     """General dialog for background tasks"""

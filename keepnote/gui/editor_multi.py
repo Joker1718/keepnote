@@ -29,15 +29,11 @@ the content-type of the node.
 
 # pygtk imports
 
-
 # keepnote imports
 import keepnote
 from keepnote.gui.editor import KeepNoteEditor
-from six.moves import range
-
 
 _ = keepnote.translate
-
 
 class MultiEditor(KeepNoteEditor):
     """
@@ -193,7 +189,6 @@ class MultiEditor(KeepNoteEditor):
         """Redo last editor action"""
         if self._editor:
             return self._editor.redo()
-
 
 class ContentEditor(MultiEditor):
     """

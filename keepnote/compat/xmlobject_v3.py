@@ -27,8 +27,6 @@ objects.
 #
 
 # python imports
-from six.moves import map
-from six.moves import range
 import sys
 import codecs
 
@@ -39,28 +37,23 @@ from xml.sax.saxutils import escape
 # keepnote imports
 from keepnote import safefile
 
-
 class XmlError(Exception):
     """Error for parsing XML"""
 
     pass
 
-
 def bool2str(b):
     """Convert a bool into a string"""
     return str(int(b))
-
 
 def str2bool(s):
     """Convert a string into a bool"""
     return bool(int(s))
 
-
 def str_no_none(x):
     if x is None:
         return ""
     return x
-
 
 class Tag(object):
     def __init__(self, name, get=None, set=None, attr=None, tags=[]):
@@ -172,9 +165,7 @@ class Tag(object):
         if self.name != "":
             out.write("</%s>\n" % self.name)
 
-
 # TODO: remove get?
-
 
 class TagMany(Tag):
     def __init__(
@@ -259,7 +250,6 @@ class TagMany(Tag):
                     child_tag.write((obj, i), out)
                 out.write("</%s>\n" % self.name)
 
-
 '''
 # TODO: remove get?
 
@@ -280,7 +270,6 @@ class TagList (TagMany):
                 tag.set_object(self._list)
             return tag
 '''
-
 
 class XmlObject(object):
     """Represents an object <--> XML document binding"""
@@ -364,7 +353,6 @@ class XmlObject(object):
         out.write("\n")
         if need_close:
             out.close()
-
 
 if __name__ == "__main__":
     import io
@@ -474,7 +462,6 @@ if __name__ == "__main__":
         pref.write(sys.stdout)
 
     # util.toc()
-
 
 '''
 def get_dom_children(node):

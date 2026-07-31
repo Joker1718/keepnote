@@ -31,13 +31,10 @@ import xml.etree.ElementTree as ET
 import keepnote
 from keepnote.listening import Listeners
 from keepnote import plist
-from six.moves import map
-
 
 # globals
 EXTENSION_EXT = ".kne"  # filename extension for KeepNote Extensions
 INFO_FILE = "info.xml"
-
 
 class DependencyError(Exception):
     """Exception for dependency error"""
@@ -49,10 +46,8 @@ class DependencyError(Exception):
     def __str__(self):
         return "Extension '{}' has failed dependency {}".format(self.ext.key, self.dep)
 
-
 # =============================================================================
 # extension functions
-
 
 def init_user_extensions(pref_dir=None, home=None):
     """
@@ -72,14 +67,12 @@ def init_user_extensions(pref_dir=None, home=None):
         # make user extensions data directory
         os.makedirs(extensions_data_dir, 0o700)
 
-
 def scan_extensions_dir(extensions_dir):
     """Iterate through the extensions in directory"""
     for filename in os.listdir(extensions_dir):
         path = os.path.join(extensions_dir, filename)
         if os.path.isdir(path):
             yield path
-
 
 def import_extension(app, name, filename):
     """Import an Extension"""
@@ -102,11 +95,9 @@ def import_extension(app, name, filename):
         infile.close()
         raise keepnote.KeepNotePreferenceError(f"cannot load extension '{filename}'", e)
 
-
 def get_extension_info_file(filename):
     """Returns an info for an extension file path"""
     return os.path.join(filename, INFO_FILE)
-
 
 def read_extension_info(filename):
     """Reads an extensions info"""
@@ -123,7 +114,6 @@ def read_extension_info(filename):
         raise keepnote.KeepNotePreferenceError("bad extension info format")
 
     return plist.load_etree(p)
-
 
 def dependency_satisfied(ext, dep):
     """
@@ -157,21 +147,17 @@ def dependency_satisfied(ext, dep):
 
     return True
 
-
 def parse_extension_version(version_str):
     return tuple(map(int, version_str.split(".")))
 
-
 def format_extension_version(version):
     return ".".join(map(str, version))
-
 
 def is_extension_install_file(filename):
     """
     Returns True if file is an extension install file
     """
     return filename.endswith(EXTENSION_EXT)
-
 
 class Extension(object):
     """KeepNote Extension"""

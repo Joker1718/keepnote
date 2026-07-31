@@ -5,7 +5,6 @@ Treemodel for treeview and listview
 
 """
 
-
 #
 #  KeepNote
 #  Copyright (c) 2008-2009 Matt Rasmussen
@@ -27,9 +26,6 @@ Treemodel for treeview and listview
 
 # pygtk imports
 from gi.repository import GObject, Gtk
-from six.moves import range
-
-
 
 def get_path_from_node(model, node, node_col):
     """
@@ -79,7 +75,6 @@ def get_path_from_node(model, node, node_col):
 
     return tuple(path)
 
-
 class TreeModelColumn(object):
     def __init__(self, name, datatype, attr=None, get=lambda node: ""):
         self.pos = None
@@ -88,7 +83,6 @@ class TreeModelColumn(object):
         self.attr = attr
         self.get_value = get
 
-
 def iter_children(model, it):
     """Iterate through the children of a row (it)"""
 
@@ -96,7 +90,6 @@ def iter_children(model, it):
     while node:
         yield node
         node = model.iter_next(node)
-
 
 class BaseTreeModel(gtk.GenericTreeModel):
     """
@@ -448,7 +441,6 @@ GObject.signal_new(
     gobject.TYPE_NONE,
     (object,),
 )
-
 
 class KeepNoteTreeModel(BaseTreeModel):
     """

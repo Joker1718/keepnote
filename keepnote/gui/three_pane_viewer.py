@@ -27,7 +27,6 @@ Classic three-paned viewer for KeepNote.
 # pygtk imports
 from gi.repository import GObject, Gtk
 
-
 # keepnote imports
 import keepnote
 from keepnote.notebook import NoteBookError
@@ -44,16 +43,12 @@ from keepnote.gui.icon_menu import IconMenu
 from keepnote.gui.viewer import Viewer
 from keepnote.gui.icons import lookup_icon_filename
 from keepnote.gui.colortool import ColorMenu
-from six.moves import map
-
 
 _ = keepnote.translate
-
 
 DEFAULT_VSASH_POS = 200
 DEFAULT_HSASH_POS = 200
 DEFAULT_VIEW_MODE = "vertical"
-
 
 class ThreePaneViewer(Viewer):
     """A viewer with a treeview, listview, and editor"""
@@ -926,7 +921,6 @@ class ThreePaneViewer(Viewer):
             <placeholder name="Editor"/>
           </placeholder>
         </toolbar>
-
 
         <menubar name="popup_menus">
           <menu action="treeview_popup">

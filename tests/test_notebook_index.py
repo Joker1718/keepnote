@@ -11,12 +11,9 @@ import traceback
 from keepnote import notebook
 
 from . import clean_dir, TMP_DIR
-from six.moves import range
-
 
 # test notebook
 _notebook_file = os.path.join(TMP_DIR, "notebook")
-
 
 def write_content(page, text):
     with page.open_file(notebook.PAGE_DATA_FILE, 'w') as out:
@@ -26,7 +23,6 @@ def write_content(page, text):
 
     # Trigger re-indexing of full text.
     page.save(True)
-
 
 class Index (unittest.TestCase):
 
