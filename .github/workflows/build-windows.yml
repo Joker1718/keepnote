@@ -45,14 +45,14 @@ jobs:
         with:
           msystem: MINGW64
           update: true
-          # Notice 'pacboy' instead of 'install'
-          pacboy: >-
-            python:p
-            gtk3:p
-            python-gobject:p
-            gobject-introspection:p
-            libffi:p
-            pkgconf:p
+          install: >-
+            mingw-w64-x86_64-python
+            mingw-w64-x86_64-python-pip
+            mingw-w64-x86_64-gtk3
+            mingw-w64-x86_64-python-gobject
+            mingw-w64-x86_64-gobject-introspection
+            mingw-w64-x86_64-libffi
+            mingw-w64-x86_64-pkgconf
 
       - name: Install PyInstaller in MSYS2
         shell: msys2 {0}
