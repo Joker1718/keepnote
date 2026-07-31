@@ -482,7 +482,7 @@ class NoteBookConnectionFS(NoteBookConnection):
         self._index_file = None
 
         # attributes to not write to disk, they can be derived
-        self._attr_suppress = set(["parentids", "childids"])
+        self._attr_suppress = {"parentids", "childids"}
 
         # NOTES:
         # - I only use the notebook object for assesing attrdefs and

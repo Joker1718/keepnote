@@ -629,7 +629,7 @@ class BaseNoteBookConnectionFS(NoteBookConnection):
         self._index_file = None
 
         # attributes to not write to disk, they can be derived
-        self._attr_suppress = set(["parentids", "childrenids"])
+        self._attr_suppress = {"parentids", "childrenids"}
         self._attr_mask = maskdict.MaskDict({}, self._attr_suppress)
 
     # ================================
@@ -698,7 +698,7 @@ class BaseNoteBookConnectionFS(NoteBookConnection):
         )
 
         keepnote.log_message(
-            "moving data to lostdir '%s' => '%s'\n" % (filename, new_filename)
+            "moving data to lostdir '{}' => '{}'\n".format(filename, new_filename)
         )
         try:
             os.rename(filename, new_filename)
@@ -1170,8 +1170,7 @@ class BaseNoteBookConnectionFS(NoteBookConnection):
         # TODO: index orphans
         # may need private method to iterate orphans
 
-        for node in self._index.index_all():
-            yield node
+        yield from self._index.index_all()
 
     def _get_index_file(self):
 

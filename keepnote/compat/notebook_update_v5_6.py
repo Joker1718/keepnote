@@ -102,7 +102,7 @@ g_default_attr_defs = [
     AttrDef("duplicate_of", unicode, "Duplicate of"),
 ]
 
-g_attr_defs_lookup = dict((attr.key, attr) for attr in g_default_attr_defs)
+g_attr_defs_lookup = {attr.key: attr for attr in g_default_attr_defs}
 
 
 def read_attr_v5(filename, attr_defs=g_attr_defs_lookup):

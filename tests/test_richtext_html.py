@@ -86,7 +86,7 @@ class Html (BufferBase):
         self.read(self.buffer, infile)
         self.write(self.buffer, outfile)
 
-        self.assertEquals(outfile.getvalue(), str_out)
+        self.assertEqual(outfile.getvalue(), str_out)
 
     #===================================================
 
@@ -131,7 +131,7 @@ class Html (BufferBase):
 
         self.buffer.clear()
         self.read(self.buffer, StringIO("<br>\n&nbsp;x"))
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['\n x'])
 
         self.buffer.clear()
@@ -139,14 +139,14 @@ class Html (BufferBase):
 
     def test_read_hr(self):
         self.read(self.buffer, StringIO("line1<hr/>line2"))
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['line1\n',
                            'anchor',
                            '\nline2'])
 
         self.buffer.clear()
         self.read(self.buffer, StringIO("line1<hr/><br/>\nline2"))
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['line1\n',
                            'anchor',
                            '\n\nline2'])
@@ -154,7 +154,7 @@ class Html (BufferBase):
         # what if <hr/> has newlines around it in HTML?
         self.buffer.clear()
         self.read(self.buffer, StringIO("line1\n<hr/>\n<br/>\nline2"))
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['line1 \n',
                            'anchor',
                            '\n \nline2'])
@@ -252,7 +252,7 @@ class Html (BufferBase):
                                              None, None, ignore_tag))
 
         # check the internal indentation structure
-        self.assertEquals([display_item(x) for x in contents],
+        self.assertEqual([display_item(x) for x in contents],
                           ['line0\n',
                            'BEGIN:indent 1 none',
                            'line1\nline2\n',
@@ -277,7 +277,7 @@ class Html (BufferBase):
                                              None, None, ignore_tag))
 
         # check the internal indentation structure
-        self.assertEquals([display_item(x) for x in contents],
+        self.assertEqual([display_item(x) for x in contents],
                           ['line0\n',
                            'BEGIN:indent 1 none',
                            'line1\nline2\n',
@@ -316,7 +316,7 @@ class Html (BufferBase):
         dom.display()
 
         # check the internal indentation structure
-        self.assertEquals([display_item(x) for x in contents],
+        self.assertEqual([display_item(x) for x in contents],
                           ['BEGIN:bullet',
                            'BEGIN:indent 1 bullet',
                            '\u2022 ',
@@ -332,7 +332,7 @@ class Html (BufferBase):
         outfile = StringIO()
         self.write(self.buffer, outfile)
 
-        self.assertEquals(outfile.getvalue(),
+        self.assertEqual(outfile.getvalue(),
                           '<ul><li>line1</li>\n'
                           '<li>end1</li>\n</ul>\nend2<br/>\n')
 
@@ -353,7 +353,7 @@ class Html (BufferBase):
             find_paragraphs(self.get_contents()),
             is_stable_tag=lambda tag: tag == P_TAG))
 
-        self.assertEquals([display_item(x) for x in contents],
+        self.assertEqual([display_item(x) for x in contents],
                           ['BEGIN:p',
                            'word1 ',
                            'BEGIN:bold',
@@ -395,7 +395,7 @@ class Html (BufferBase):
                                              None, None, ignore_tag))
 
         # check the internal indentation structure
-        self.assertEquals([display_item(x) for x in contents],
+        self.assertEqual([display_item(x) for x in contents],
                           ['BEGIN:bullet',
                            'BEGIN:indent 1 bullet',
                            '\u2022 ',
@@ -421,7 +421,7 @@ class Html (BufferBase):
                                               None, None, ignore_tag))
 
         # check the internal indentation structure
-        self.assertEquals([display_item(x) for x in contents1],
+        self.assertEqual([display_item(x) for x in contents1],
                           [display_item(x) for x in contents2])
 
     def test_bullet5(self):
@@ -446,7 +446,7 @@ class Html (BufferBase):
                                               None, None, ignore_tag))
 
         # check the internal indentation structure
-        self.assertEquals([display_item(x) for x in contents1],
+        self.assertEqual([display_item(x) for x in contents1],
                           [display_item(x) for x in contents2])
 
     def test_bullet_insert(self):
@@ -468,7 +468,7 @@ class Html (BufferBase):
                                               None, None, ignore_tag))
 
         # check the internal indentation structure
-        self.assertEquals([display_item(x) for x in contents1],
+        self.assertEqual([display_item(x) for x in contents1],
                           [display_item(x) for x in contents2])
 
     def test_bullet_apply_tag(self):
@@ -492,7 +492,7 @@ class Html (BufferBase):
                                               None, None, ignore_tag))
 
         # check the internal indentation structure
-        self.assertEquals([display_item(x) for x in contents1],
+        self.assertEqual([display_item(x) for x in contents1],
                           ['BEGIN:indent 2 none',
                            'line1\n',
                            'END:indent 2 none'])
@@ -508,7 +508,7 @@ class Html (BufferBase):
             '<ul><li>line2</li>\n'
             '</ul>\n'))
 
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['BEGIN:bullet',
                            'BEGIN:indent 1 bullet',
                            '\u2022 ',
@@ -542,7 +542,7 @@ class Html (BufferBase):
             '<li style="list-style-type: disc"></li>\n'
             '</ol>\n'))
 
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['BEGIN:bullet',
                            'BEGIN:indent 2 bullet',
                            '\u2022 ',
@@ -588,7 +588,7 @@ class Html (BufferBase):
                            'END:indent 1 bullet'])
         '''
 
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['BEGIN:bullet',
                            'BEGIN:indent 1 bullet',
                            '\u2022 ',
@@ -624,7 +624,7 @@ class Html (BufferBase):
 
         self.write(self.buffer, sys.stdout)
 
-        self.assertEquals([display_item(x) for x in self.get_contents()],
+        self.assertEqual([display_item(x) for x in self.get_contents()],
                           ['BEGIN:bullet',
                            'BEGIN:indent 1 bullet',
                            '\u2022 ',
@@ -670,7 +670,7 @@ print([display_item(x) for x in self.get_contents()])
 
         lst2 = list(it)
 
-        self.assertEquals(lst2, [0, 1, 2, 'a', 'b', 'c', 3, 4, 5, 6, 7, 8, 9])
+        self.assertEqual(lst2, [0, 1, 2, 'a', 'b', 'c', 3, 4, 5, 6, 7, 8, 9])
 
     def test_body(self):
 

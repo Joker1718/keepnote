@@ -181,7 +181,7 @@ class Extension (keepnote.gui.extension.Extension):
 def import_ncd_file(window,file):
     # is this really an .ncd file?
     counter = 10
-    fd = open(file,r'r')
+    fd = open(file)
     ncd_identified = True #False
     ncd_identifier = r'<meta name="generator" content="NoteCase 1.9.8">'
     while counter>=0:
@@ -214,7 +214,7 @@ def import_ncd_file(window,file):
    # read in file at once
     file_data = ''
     #try:
-    fd = open(file,r'r')
+    fd = open(file)
     file_data = fd.read()
     fd.close()
     
@@ -246,7 +246,7 @@ class MyParser(sgmllib.SGMLParser):
     
     def unknown_starttag(self, tag, attrs):
         if tag != "meta":
-            strattrs = "".join([' %s="%s"' % (key, value) for key, value in attrs])
+            strattrs = "".join([' {}="{}"'.format(key, value) for key, value in attrs])
             self.pieces.append("<%(tag)s%(strattrs)s>" % locals())
 
     def unknown_endtag(self, tag):

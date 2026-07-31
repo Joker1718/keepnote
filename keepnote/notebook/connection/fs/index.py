@@ -184,7 +184,7 @@ class NoteBookIndex (NodeIndex):
         except sqlite.DatabaseError as e:
             self._on_corrupt(e, sys.exc_info()[2])
 
-            keepnote.log_message("reinitializing index '{0}'\n".format(
+            keepnote.log_message("reinitializing index '{}'\n".format(
                                  self._index_file))
             self.clear()
 
@@ -266,7 +266,7 @@ class NoteBookIndex (NodeIndex):
         """
         Try to compact the index by reclaiming space
         """
-        keepnote.log_message("compacting index '{0}'\n".format(self._index_file))
+        keepnote.log_message(f"compacting index '{self._index_file}'\n")
         self.con.execute("VACUUM;")
         self.con.comment()
 
@@ -321,7 +321,7 @@ class NoteBookIndex (NodeIndex):
                 self.con.commit()
 
         except Exception as e:
-            keepnote.log_error("error index node {0} '{1}'".format(
+            keepnote.log_error("error index node {} '{}'".format(
                                nodeid, attr.get("title", "")))
             self._on_corrupt(e, sys.exc_info()[2])
 
@@ -352,7 +352,7 @@ class NoteBookIndex (NodeIndex):
 
         # TODO: handle multiple parents
 
-        visit = set([nodeid])
+        visit = {nodeid}
         path = []
         parentid = None
 
@@ -392,7 +392,7 @@ class NoteBookIndex (NodeIndex):
 
         # TODO: handle multiple parents
 
-        visit = set([nodeid])
+        visit = {nodeid}
         path = []
         parentid = None
 

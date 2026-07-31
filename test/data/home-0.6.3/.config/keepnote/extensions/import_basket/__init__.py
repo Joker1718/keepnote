@@ -190,10 +190,10 @@ def import_basket_directory(window, basket_directory):
     counter = 10
     basket_xml_file = basket_directory + os.sep + "baskets.xml"
     try:
-        fd = open(basket_xml_file, r'r')
-    except IOError as e:
+        fd = open(basket_xml_file)
+    except OSError as e:
         errno, strerror = e
-        print("I/O error(%s): %s" % (errno, strerror))
+        print("I/O error({}): {}".format(errno, strerror))
         dialog = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_INFO, gtk.BUTTONS_OK, "Sorry, this is not a data directory of Basket Notepad, baskets.xml not found!")
         dialog.run()
         dialog.destroy()
@@ -554,10 +554,10 @@ class HTMLFilter(HTMLParser.HTMLParser):
         st = ''
         if tag == "span":
             st = self.get_start_wrap()
-        return '%s<%s%s>' % (st, tag, html_attrs)
+        return '{}<{}{}>'.format(st, tag, html_attrs)
 
     def __html_startend_tag(self, tag, attrs):
-        return '<%s%s/>' % (tag, self.__html_attrs(attrs))
+        return '<{}{}/>'.format(tag, self.__html_attrs(attrs))
 
     def __html_end_tag(self, tag):
         return '</%s>' % (tag)
@@ -568,7 +568,7 @@ class HTMLFilter(HTMLParser.HTMLParser):
         _startwrap=''
         _endwrap=''
         if attrs:
-            _attrs = ' %s' % ( ' '.join( [ ('%s="%s"' % (k,v)) for k,v in attrs.items() if k != "style"] ) )
+            _attrs = ' %s' % ( ' '.join( [ ('{}="{}"'.format(k,v)) for k,v in attrs.items() if k != "style"] ) )
             if "style" in attrs:
                 _style =  attrs["style"]
 

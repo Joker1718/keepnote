@@ -999,7 +999,7 @@ class KeepNote:
                 self._external_apps_lookup[defapp.key] = defapp
 
         # place default apps first
-        lookup = dict((x.key, i) for i, x in enumerate(DEFAULT_EXTERNAL_APPS))
+        lookup = {x.key: i for i, x in enumerate(DEFAULT_EXTERNAL_APPS)}
         top = len(DEFAULT_EXTERNAL_APPS)
         self._external_apps.sort(key=lambda x: (lookup.get(x.key, top), x.key))
 

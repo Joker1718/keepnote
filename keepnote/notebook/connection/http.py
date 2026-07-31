@@ -399,7 +399,7 @@ class NoteBookConnectionHttp(NoteBookConnection):
 
 class NodeTitleCache:
     def __init__(self):
-        self._titles = defaultdict(lambda: set())
+        self._titles = defaultdict(set)
         self._nodeids = {}
         self._complete = False
 

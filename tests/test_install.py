@@ -28,7 +28,7 @@ class Install (unittest.TestCase):
         make_clean_dir(install_dir)
         make_clean_dir(home_dir)
 
-        self.system("tar zxv -C %s -f %s" % (install_dir, sdist))
+        self.system("tar zxv -C {} -f {}".format(install_dir, sdist))
 
         self.system("/usr/bin/python %s/%s/setup.py install --home=%s" %
                     (install_dir, pkg, install_dir))

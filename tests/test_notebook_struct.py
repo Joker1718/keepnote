@@ -149,8 +149,8 @@ class Test (unittest.TestCase):
         print(attr)
 
         # check orphan node dir
-        print((open(_datapath + "/conn/__NOTEBOOK__/orphans/%s/%s/node.xml"
-                   % (nodeid[:2], nodeid[2:])).read()))
+        print(open(_datapath + "/conn/__NOTEBOOK__/orphans/%s/%s/node.xml"
+                   % (nodeid[:2], nodeid[2:])).read())
 
         # move orphan out of orphandir
         attr["parentids"] = [rootid]

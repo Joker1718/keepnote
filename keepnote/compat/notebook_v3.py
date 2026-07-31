@@ -1034,8 +1034,7 @@ class NoteBookNode:
         filename = self.get_data_file()
         infile = safefile.open(filename, "r", codec="utf-8")
 
-        for line in read_data_as_plain_text(infile):
-            yield line
+        yield from read_data_as_plain_text(infile)
 
         infile.close()
 
@@ -1895,14 +1894,14 @@ class NoteBookNodeFactory:
 
                 if attr is not None:
                     out.write(
-                        '<attr key="%s">%s</attr>\n' % (key, escape(attr.write(val)))
+                        '<attr key="{}">{}</attr>\n'.format(key, escape(attr.write(val)))
                     )
                 elif key == "version":
                     # skip version attr
                     pass
                 elif isinstance(val, UnknownAttr):
                     # write unknown attrs if they are strings
-                    out.write('<attr key="%s">%s</attr>\n' % (key, escape(val.value)))
+                    out.write('<attr key="{}">{}</attr>\n'.format(key, escape(val.value)))
                 else:
                     # drop attribute
                     pass

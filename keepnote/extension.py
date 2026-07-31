@@ -46,7 +46,7 @@ class DependencyError(Exception):
         self.dep = dep
 
     def __str__(self):
-        return "Extension '%s' has failed dependency %s" % (self.ext.key, self.dep)
+        return "Extension '{}' has failed dependency {}".format(self.ext.key, self.dep)
 
 
 # =============================================================================

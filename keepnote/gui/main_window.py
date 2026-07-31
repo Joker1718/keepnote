@@ -673,7 +673,7 @@ class KeepNoteWindow(gtk.Window):
 
         """
         # init window lookup
-        win_lookup = dict((w.get_id(), w) for w in self._app.get_windows())
+        win_lookup = {w.get_id(): w for w in self._app.get_windows()}
 
         def open_in_window(winid, viewerid, notebook):
             win = win_lookup.get(winid, None)

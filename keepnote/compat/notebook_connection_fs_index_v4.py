@@ -530,7 +530,7 @@ class NoteBookIndex:
 
         # TODO: handle multiple parents
 
-        visit = set([nodeid])
+        visit = {nodeid}
         path = []
         parentid = None
 
@@ -573,7 +573,7 @@ class NoteBookIndex:
 
         # TODO: handle multiple parents
 
-        visit = set([nodeid])
+        visit = {nodeid}
         path = []
         parentid = None
 

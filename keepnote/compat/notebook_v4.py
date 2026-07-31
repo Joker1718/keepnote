@@ -1657,7 +1657,7 @@ class NoteBook(NoteBookNode):
             out.write(
                 '<?xml version="1.0" encoding="UTF-8"?>\n'
                 "<notebook>\n"
-                "<version>{0:d}</version>\n"
+                "<version>{:d}</version>\n"
                 "<pref>\n".format(data["version"])
             )
             plist.dump(data, out, indent=4, depth=4)

@@ -35,7 +35,7 @@ def list_tests(stack=0):
         if isinstance(obj, type) and issubclass(obj, unittest.TestCase):
             for attr in dir(obj):
                 if attr.startswith("test"):
-                    print("%s.%s" % (name, attr),)
+                    print("{}.{}".format(name, attr),)
                     doc = getattr(obj, attr).__doc__
                     if doc:
                         print("--", doc.split("\n")[0])
