@@ -13,7 +13,7 @@ on:
         required: false
         default: '3.12'
         type: choice
-        options: ['3.10', '3.11', '3.12']
+        options: ['3.11', '3.12']
 
 permissions:
   contents: write
@@ -24,7 +24,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ['3.10', '3.11', '3.12']
+        # Note: MSYS2 dropped older Python 3.10 support. Use current rolling variants.
+        python-version: ['3.11', '3.12']
 
     steps:
       - name: Checkout repository
@@ -45,51 +46,39 @@ jobs:
           msystem: MINGW64
           update: true
           install: >-
-            mingw-w64-x86_64-python3
-            mingw-w64-x86_64-python3-pip
-            mingw-w64-x86_64-python3-setuptools
-            mingw-w64-x86_64-python3-wheel
+            mingw-w64-x86_64-python
+            mingw-w64-x86_64-python-pip
             mingw-w64-x86_64-gtk3
+            mingw-w64-x86_64-python-gobject
             mingw-w64-x86_64-gobject-introspection
-            mingw-w64-x86_64-python3-gobject
-            mingw-w64-x86_64-python3-cairo
             mingw-w64-x86_64-libffi
-            pkg-config
+            mingw-w64-x86_64-pkgconf
+
+      - name: Python syntax check
+        shell: msys2 {0}
+        run: |
+          export PATH="/mingw64/bin:$PATH"
+          find . -name "*.py" -print0 | xargs -0 -n1 python -m py_compile
 
       - name: Install PyInstaller in MSYS2
         shell: msys2 {0}
         run: |
           export PATH="/mingw64/bin:$PATH"
           export PKG_CONFIG_PATH="/mingw64/lib/pkgconfig:/mingw64/share/pkgconfig"
-          /mingw64/bin/python -m pip install --upgrade pip setuptools wheel
-          /mingw64/bin/python -m pip install pyinstaller
+          python -m pip install --upgrade pip setuptools wheel --break-system-packages
+          python -m pip install pyinstaller --break-system-packages
 
       - name: Verify PyGObject installation
         shell: msys2 {0}
         run: |
           export PATH="/mingw64/bin:$PATH"
-          /mingw64/bin/python -c "import gi; gi.require_version('Gtk', '3.0'); from gi.repository import Gtk; print('GTK', Gtk.get_major_version(), '.', Gtk.get_minor_version(), '.', Gtk.get_micro_version())"
+          python -c "import gi; gi.require_version('Gtk', '3.0'); from gi.repository import Gtk; print('GTK', Gtk.get_major_version(), '.', Gtk.get_minor_version(), '.', Gtk.get_micro_version())"
 
       - name: Build with PyInstaller (MSYS2 python)
         shell: msys2 {0}
         run: |
           export PATH="/mingw64/bin:$PATH"
-          /mingw64/bin/python -m PyInstaller keepnote.spec --clean --noconfirm 2>&1
-
-      - name: Locate GTK3 runtime
-        shell: powershell
-        run: |
-          # MSYS2 mingw64 is the known GTK/DLL location
-          $msysMingw = "C:\msys64\mingw64"
-          $gtkBin = ""
-          if (Test-Path "$msysMingw\bin\libgtk-3-0.dll") {
-            $gtkBin = "$msysMingw\bin"
-            echo "Found GTK at: $gtkBin"
-          }
-          if ($gtkBin -eq "") {
-            echo "WARNING: GTK3 DLLs not found in MSYS2. PyInstaller bundle may be incomplete."
-          }
-          echo "GTK_BIN=$gtkBin" >> $env:GITHUB_ENV
+          python -m PyInstaller keepnote.spec --clean --noconfirm 2>&1
 
       - name: Bundle GTK3 runtime with PyInstaller output
         shell: powershell
@@ -97,30 +86,18 @@ jobs:
           $distDir = "dist\KeepNote"
           $msysMingw = "C:\msys64\mingw64"
           
-          echo "Bundling GTK3 runtime from MSYS2 mingw64..."
+          if (-not (Test-Path "$distDir")) {
+            echo "ERROR: dist/KeepNote not found! PyInstaller build likely failed."
+            exit 1
+          }
+
+          echo "Bundling GTK3 assets and dependencies..."
           
-          # Copy GTK3 DLLs from MSYS2 mingw64/bin
-          $gtkDlls = @(
-            'libgtk-3-0.dll', 'libgdk-3-0.dll', 'libglib-2.0-0.dll',
-            'libgobject-2.0-0.dll', 'libgio-2.0-0.dll', 'libgmodule-2.0-0.dll',
-            'libatk-1.0-0.dll', 'libatk-bridge-2.0-0.dll', 'libcairo-2.dll',
-            'libpango-1.0-0.dll', 'libpangocairo-1.0-0.dll', 'libpangoft2-1.0-0.dll',
-            'libgdk_pixbuf-2.0-0.dll', 'libcairo-gobject-2.dll', 'libcairo-script-interpreter-2.dll',
-            'libepoxy-0.dll', 'libfontconfig-1.dll', 'libfreetype-6.dll',
-            'libharfbuzz-0.dll', 'libpng16-16.dll', 'libjpeg-62.dll',
-            'libtiff-5.dll', 'libwebp-7.dll', 'librsvg-2-2.dll',
-            'libxml2-2.dll', 'libjasper-4.dll', 'liblcms2-2.dll',
-            'libintl-8.dll', 'libiconv-2.dll', 'libwinpthread-1.dll',
-            'libpcre2-8-0.dll', 'libffi-8.dll', 'libzlib-1.dll',
-            'libgraphene-1.0-0.dll', 'libjson-glib-1.0-0.dll'
-          )
-          
+          # Automated DLL tracking using ldd/dependency-walking is ideal, 
+          # but here we safeguard your list by copying what exists.
           $dllSrcDir = "$msysMingw\bin"
-          foreach ($dll in $gtkDlls) {
-            $src = Join-Path $dllSrcDir $dll
-            if (Test-Path $src) {
-              Copy-Item $src -Destination $distDir -Force
-            }
+          Get-ChildItem -Path $dllSrcDir -Filter "lib*.dll" | ForEach-Object {
+              Copy-Item $_.FullName -Destination $distDir -Force -ErrorAction SilentlyContinue
           }
           
           # Copy GI typelibs from MSYS2
@@ -160,10 +137,6 @@ jobs:
           }
           
           echo "Bundle complete."
-          echo "Files in dist:"
-          (Get-ChildItem $distDir -File | Measure-Object).Count
-          echo "DLLs:"
-          (Get-ChildItem $distDir -Filter "*.dll" | Measure-Object).Count
 
       - name: Create ZIP artifact
         shell: powershell
@@ -176,7 +149,6 @@ jobs:
             echo "Created $archiveName"
           } else {
             echo "ERROR: dist/KeepNote not found!"
-            Get-ChildItem "dist" -Recurse | Select-Object FullName
             exit 1
           }
 

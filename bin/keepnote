@@ -19,13 +19,11 @@
 #
 
 # python imports
-import exceptions
 import sys
 import os
 from os.path import basename, dirname, realpath, join, isdir
 import time
 import optparse
-import thread
 import threading
 import traceback
 
@@ -216,17 +214,18 @@ def parse_argv(argv):
 
 def setup_threading():
     """Initialize threading environment"""
-from gi.repository import GObject, Gdk, Gtk
+    from gi.repository import GObject, Gdk, Gtk
 
     if keepnote.get_platform() == "windows":
         # HACK: keep gui thread active
         def sleeper():
             time.sleep(.001)
             return True # repeat timer
-        gobject.timeout_add(400, sleeper)
+        GObject.timeout_add(400, sleeper)
 
     else:
         # gtk.gdk.threads_init() removed in GTK3
+        pass
 
 
 def gui_exec(function, *args, **kw):
@@ -244,7 +243,7 @@ def gui_exec(function, *args, **kw):
         finally:
             sem.release() # notify that command is done
             # gtk.gdk.threads_leave() removed in GTK3
-    gobject.idle_add(idle_func)
+    GObject.idle_add(idle_func)
 
     # wait for command to execute
     sem.acquire()
@@ -369,15 +368,15 @@ def list_commands(app):
     commands = app.get_commands()
     commands.sort(key=lambda x: x.name)
 
-    print
-    print "available commands:"
+    print()
+    print("available commands:")
     for command in commands:
-        print " " + command.name,
+        print(" " + command.name, end="")
         if command.metavar:
-            print " " + command.metavar,            
+            print(" " + command.metavar, end="")
         if command.help:
-            print " -- " + command.help,
-        print
+            print(" -- " + command.help, end="")
+        print()
 
 
 
@@ -428,10 +427,10 @@ def main(argv):
 # catch any exceptions that occur
 try:
     main(sys.argv)
-except exceptions.SystemExit, e:
+except SystemExit:
     # sys.exit() was called
     pass
-except Exception, e:
+except Exception:
     traceback.print_exc()
     sys.stderr.flush()
 
