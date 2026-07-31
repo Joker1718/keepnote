@@ -25,10 +25,7 @@ Image Resize Dialog
 #
 
 # pygtk imports
-import pygtk
 
-pygtk.require("2.0")
-import gtk.glade
 
 # keepnote imports
 import keepnote
@@ -75,7 +72,7 @@ class ImageResizeDialog:
         self.xml = gtk.glade.XML(
             get_resource("rc", "keepnote.glade"), domain=keepnote.GETTEXT_DOMAIN
         )
-        self.dialog = self.xml.get_widget("image_resize_dialog")
+        self.dialog = self.builder.get_object("image_resize_dialog")
         self.dialog.set_transient_for(self.main_window)
         self.dialog.connect("response", lambda d, r: self.on_response(r))
 
@@ -89,13 +86,13 @@ class ImageResizeDialog:
         self.owidth, self.oheight = image.get_original_size()
 
         # get widgets
-        self.width_entry = self.xml.get_widget("width_entry")
-        self.height_entry = self.xml.get_widget("height_entry")
-        self.size_width_scale = self.xml.get_widget("size_width_scale")
-        self.size_height_scale = self.xml.get_widget("size_height_scale")
-        self.aspect_check = self.xml.get_widget("aspect_check")
-        self.snap_check = self.xml.get_widget("img_snap_check")
-        self.snap_entry = self.xml.get_widget("img_snap_amount_entry")
+        self.width_entry = self.builder.get_object("width_entry")
+        self.height_entry = self.builder.get_object("height_entry")
+        self.size_width_scale = self.builder.get_object("size_width_scale")
+        self.size_height_scale = self.builder.get_object("size_height_scale")
+        self.aspect_check = self.builder.get_object("aspect_check")
+        self.snap_check = self.builder.get_object("img_snap_check")
+        self.snap_entry = self.builder.get_object("img_snap_amount_entry")
 
         # populate info
         self.width_entry.set_text(str(width))
@@ -113,7 +110,7 @@ class ImageResizeDialog:
             }
         )
 
-        self.xml.signal_autoconnect(self)
+        self.builder.connect_signals(self)
 
     def get_size(self):
         """Returns the current size setting of the dialog"""
@@ -134,7 +131,7 @@ class ImageResizeDialog:
 
     def on_response(self, response):
         """Callback for a response button in dialog"""
-        if response == gtk.RESPONSE_OK:
+        if response == Gtk.ResponseType.OK:
             width, height = self.get_size()
 
             p = self.app_pref.get("editors", "general")
@@ -147,16 +144,16 @@ class ImageResizeDialog:
             else:
                 self.main_window.error("Must specify positive integers for image size")
 
-        elif response == gtk.RESPONSE_CANCEL:
+        elif response == Gtk.ResponseType.CANCEL:
             self.dialog.destroy()
 
-        elif response == gtk.RESPONSE_APPLY:
+        elif response == Gtk.ResponseType.APPLY:
             width, height = self.get_size()
 
             if width is not None:
                 self.image.scale(width, height)
 
-        elif response == gtk.RESPONSE_REJECT:
+        elif response == Gtk.ResponseType.REJECT:
             # restore default image size
             width, height = self.image.get_original_size()
             self.width_entry.set_text(str(width))

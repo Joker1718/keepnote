@@ -29,10 +29,7 @@ import sys
 import shutil
 
 # pygtk imports
-import pygtk
 
-pygtk.require("2.0")
-import gtk.glade
 
 # keepnote imports
 import keepnote
@@ -65,15 +62,15 @@ class UpdateNoteBookDialog:
             "update_notebook_dialog",
             keepnote.GETTEXT_DOMAIN,
         )
-        self.dialog = self.xml.get_widget("update_notebook_dialog")
-        self.xml.signal_autoconnect(self)
+        self.dialog = self.builder.get_object("update_notebook_dialog")
+        self.builder.connect_signals(self)
         self.dialog.connect(
-            "close", lambda w: self.dialog.response(gtk.RESPONSE_CANCEL)
+            "close", lambda w: self.dialog.response(Gtk.ResponseType.CANCEL)
         )
         self.dialog.set_transient_for(self.main_window)
 
-        self.text = self.xml.get_widget("update_message_label")
-        self.saved = self.xml.get_widget("save_backup_check")
+        self.text = self.builder.get_object("update_message_label")
+        self.saved = self.builder.get_object("save_backup_check")
 
         if version is None:
             version = notebooklib.get_notebook_version(notebook_filename)
@@ -85,7 +82,7 @@ class UpdateNoteBookDialog:
         ret = False
         response = self.dialog.run()
 
-        if response == gtk.RESPONSE_OK:
+        if response == Gtk.ResponseType.OK:
             # do backup
             if self.saved.get_active():
                 if not self.backup(notebook_filename):
@@ -129,8 +126,8 @@ class UpdateNoteBookDialog:
         dialog = FileChooserDialog(
             _("Choose Backup Notebook Name"),
             self.main_window,
-            action=gtk.FILE_CHOOSER_ACTION_SAVE,  # CREATE_FOLDER,
-            buttons=(_("Cancel"), gtk.RESPONSE_CANCEL, _("Backup"), gtk.RESPONSE_OK),
+            action=Gtk.FileChooserAction.SAVE,  # CREATE_FOLDER,
+            buttons=(_("Cancel"), Gtk.ResponseType.CANCEL, _("Backup"), Gtk.ResponseType.OK),
             app=self.app,
             persistent_path="new_notebook_path",
         )
@@ -140,7 +137,7 @@ class UpdateNoteBookDialog:
         new_filename = dialog.get_filename()
         dialog.destroy()
 
-        if response == gtk.RESPONSE_OK and new_filename:
+        if response == Gtk.ResponseType.OK and new_filename:
             new_filename = unicode_gtk(new_filename)
 
             def func(task):

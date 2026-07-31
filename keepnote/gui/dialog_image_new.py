@@ -25,10 +25,7 @@ Image Resize Dialog
 #
 
 # pygtk imports
-import pygtk
 
-pygtk.require("2.0")
-import gtk.glade
 
 # keepnote imports
 import keepnote
@@ -45,21 +42,21 @@ class NewImageDialog:
 
     def show(self):
 
-        dialog = gtk.Dialog(
+        dialog = Gtk.Dialog(
             _("New Image"),
             self.main_window,
-            gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
-            (gtk.STOCK_CANCEL, gtk.RESPONSE_REJECT, gtk.STOCK_OK, gtk.RESPONSE_ACCEPT),
+            Gtk.DialogFlags.MODAL | Gtk.DialogFlags.DESTROY_WITH_PARENT,
+            ("Cancel", Gtk.ResponseType.REJECT, "OK", Gtk.ResponseType.ACCEPT),
         )
 
-        table = gtk.Table(3, 2)
+        table = Gtk.Table(3, 2)
         dialog.vbox.pack_start(table, False, True, 0)
 
-        label = gtk.Label(_("format:"))
+        label = Gtk.Label(_("format:"))
         table.attach(label, 0, 1, 0, 1, xoptions=0, yoptions=0, xpadding=2, ypadding=2)
 
         # make this a drop down
-        self.width = gtk.Entry()
+        self.width = Gtk.Entry()
         table.attach(
             self.width,
             1,
@@ -72,10 +69,10 @@ class NewImageDialog:
             ypadding=2,
         )
 
-        label = gtk.Label(_("width:"))
+        label = Gtk.Label(_("width:"))
         table.attach(label, 0, 1, 0, 1, xoptions=0, yoptions=0, xpadding=2, ypadding=2)
 
-        self.width = gtk.Entry()
+        self.width = Gtk.Entry()
         table.attach(
             self.width,
             1,
@@ -88,10 +85,10 @@ class NewImageDialog:
             ypadding=2,
         )
 
-        label = gtk.Label(_("height:"))
+        label = Gtk.Label(_("height:"))
         table.attach(label, 0, 1, 0, 1, xoptions=0, yoptions=0, xpadding=2, ypadding=2)
 
-        self.width = gtk.Entry()
+        self.width = Gtk.Entry()
         table.attach(
             self.width,
             1,

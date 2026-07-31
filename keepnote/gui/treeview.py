@@ -24,11 +24,8 @@ TreeView
 #
 
 # pygtk imports
-import pygtk
+from gi.repository import GObject, Gtk
 
-pygtk.require("2.0")
-import gobject
-import gtk
 
 # keepnote imports
 from keepnote.gui import treemodel
@@ -52,7 +49,7 @@ class KeepNoteTreeView(basetreeview.KeepNoteBaseTreeView):
         self.connect("button-press-event", self.on_button_press)
 
         # selection config
-        self.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+        self.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE)
 
         self.set_headers_visible(False)
 
@@ -74,7 +71,7 @@ class KeepNoteTreeView(basetreeview.KeepNoteBaseTreeView):
             return
 
         # create the treeview column
-        self.column = gtk.TreeViewColumn()
+        self.column = Gtk.TreeViewColumn()
         self.column.set_clickable(False)
         self.append_column(self.column)
 
@@ -94,7 +91,7 @@ class KeepNoteTreeView(basetreeview.KeepNoteBaseTreeView):
         if self.editing_path:
             return
 
-        if event.keyval == gtk.keysyms.Delete:
+        if event.keyval == Gdk.keyval_from_name("Delete"):
             self.emit("delete-node", self.get_selected_nodes())
             self.stop_emission("key-release-event")
 

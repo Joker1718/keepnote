@@ -36,8 +36,8 @@ import sys
 import shutil
 import re
 import traceback
-import urlparse
-import urllib2
+import urllib.parse
+import urllib.request
 import uuid
 
 # xml imports
@@ -152,7 +152,7 @@ def get_unique_filename(
     # try numbered suffixes
     i = number
     while True:
-        newname = os.path.join(path, filename + sep + unicode(i) + ext)
+        newname = os.path.join(path, filename + sep + str(i) + ext)
         if not os.path.exists(newname):
             if return_number:
                 return (newname, i)
@@ -178,7 +178,7 @@ def get_unique_filename_list(filenames, filename, ext="", sep=" ", number=2):
     # try numbered suffixes
     i = number
     while True:
-        newname = filename + sep + unicode(i) + ext
+        newname = filename + sep + str(i) + ext
         if newname not in filenames:
             return newname
         i += 1
@@ -296,7 +296,7 @@ def get_notebook_version_etree(tree):
 
 def new_nodeid():
     """Generate a new node id"""
-    return unicode(uuid.uuid4())
+    return str(uuid.uuid4())
 
 
 def get_node_url(nodeid, host=""):
@@ -410,7 +410,7 @@ class AttrDef:
         # writer function
         if write is None:
             if datatype == bool:
-                self.write = lambda x: unicode(int(x))
+                self.write = lambda x: str(int(x))
             else:
                 self.write = unicode
         else:
@@ -469,7 +469,7 @@ modified_time_attr = AttrDef("Modified", int, "modified_time", default=get_times
 g_default_attr_defs = [
     title_attr,
     AttrDef("Content type", unicode, "content_type", default=lambda: CONTENT_TYPE_DIR),
-    AttrDef("Order", int, "order", default=lambda: sys.maxint),
+    AttrDef("Order", int, "order", default=lambda: sys.maxsize),
     created_time_attr,
     modified_time_attr,
     AttrDef("Expaned", bool, "expanded", default=lambda: True),
@@ -600,7 +600,7 @@ class NoteBookNode:
         self._attr = {
             "title": title,
             "content_type": content_type,
-            "order": sys.maxint,
+            "order": sys.maxsize,
             "created_time": None,
             "modified_time": None,
             "expanded": True,
@@ -641,7 +641,7 @@ class NoteBookNode:
 
     def iter_attr(self):
         """Iterate through attributes of the node"""
-        return self._attr.iteritems()
+        return self._attr.items()
 
     def set_attr_timestamp(self, name, timestamp=None):
         """Set a timestamp attribute"""
@@ -1380,7 +1380,7 @@ class NoteBook(NoteBookDir):
     def __init__(self, rootdir=None):
         """rootdir -- Root directory of notebook"""
 
-        rootdir = keepnote.ensure_unicode(rootdir, keepnote.FS_ENCODING)
+        rootdir = keepnote.ensure_str(rootdir, keepnote.FS_ENCODING)
 
         NoteBookDir.__init__(self, rootdir, notebook=self)
         self.pref = NoteBookPreferences()
@@ -1478,7 +1478,7 @@ class NoteBook(NoteBookDir):
     def load(self, filename=None):
         """Load the NoteBook from the file-system"""
 
-        filename = keepnote.ensure_unicode(filename, keepnote.FS_ENCODING)
+        filename = keepnote.ensure_str(filename, keepnote.FS_ENCODING)
 
         if filename is not None:
             if os.path.isdir(filename):

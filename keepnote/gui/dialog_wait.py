@@ -28,11 +28,8 @@ General Wait Dialog
 import time
 
 # pygtk imports
-import pygtk
+from gi.repository import GObject
 
-pygtk.require("2.0")
-import gtk.glade
-import gobject
 
 # keepnote imports
 import keepnote
@@ -47,22 +44,23 @@ class WaitDialog:
         self._task = None
 
     def show(self, title, message, task, cancel=True):
-        self.xml = gtk.glade.XML(
+        self.builder = Gtk.Builder()
+        self.builder.add_from_file(
             get_resource("rc", "keepnote.glade"), "wait_dialog", keepnote.GETTEXT_DOMAIN
         )
-        self.dialog = self.xml.get_widget("wait_dialog")
-        self.xml.signal_autoconnect(self)
+        self.dialog = self.builder.get_object("wait_dialog")
+        self.builder.connect_signals(self)
         self.dialog.connect("close", self._on_close)
         self.dialog.set_transient_for(self.parent_window)
-        self.text = self.xml.get_widget("wait_text_label")
-        self.progressbar = self.xml.get_widget("wait_progressbar")
+        self.text = self.builder.get_object("wait_text_label")
+        self.progressbar = self.builder.get_object("wait_progressbar")
 
         self.dialog.set_title(title)
         self.text.set_text(message)
         self._task = task
         self._task.change_event.add(self._on_task_update)
 
-        cancel_button = self.xml.get_widget("cancel_button")
+        cancel_button = self.builder.get_object("cancel_button")
         cancel_button.set_sensitive(cancel)
 
         self.dialog.show()

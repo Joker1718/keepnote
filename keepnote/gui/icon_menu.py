@@ -25,11 +25,8 @@ Change Node Icon Submenu
 #
 
 # pygtk imports
-import pygtk
+from gi.repository import GObject, Gtk
 
-pygtk.require("2.0")
-import gobject
-import gtk
 
 import keepnote.gui.icons
 from keepnote.gui.icons import lookup_icon_filename
@@ -44,17 +41,17 @@ class IconMenu(gtk.Menu):
     """Icon picker menu"""
 
     def __init__(self):
-        gtk.Menu.__init__(self)
+        Gtk.Menu.__init__(self)
 
         self._notebook = None
 
         # default icon
-        self.default_icon = gtk.MenuItem("_Default Icon")
+        self.default_icon = Gtk.MenuItem("_Default Icon")
         self.default_icon.connect("activate", lambda w: self.emit("set-icon", ""))
         self.default_icon.show()
 
         # new icon
-        self.new_icon = gtk.MenuItem("_More Icons...")
+        self.new_icon = Gtk.MenuItem("_More Icons...")
         self.new_icon.show()
 
         self.width = 4
@@ -96,7 +93,7 @@ class IconMenu(gtk.Menu):
                 self.add_icon(iconfile)
 
         # separator
-        item = gtk.SeparatorMenuItem()
+        item = Gtk.SeparatorMenuItem()
         item.show()
         self.append(item)
 
@@ -124,12 +121,12 @@ class IconMenu(gtk.Menu):
             self.posi += 1
             self.posj = 0
 
-        gtk.Menu.append(self, item)
+        Gtk.Menu.append(self, item)
 
     def add_icon(self, iconfile):
-        child = gtk.MenuItem("")
+        child = Gtk.MenuItem("")
         child.remove(child.child)
-        img = gtk.Image()
+        img = Gtk.Image()
         iconfile2 = lookup_icon_filename(self._notebook, iconfile)
         img.set_from_file(iconfile2)
         child.add(img)
@@ -137,9 +134,6 @@ class IconMenu(gtk.Menu):
         child.show()
         child.connect("activate", lambda w: self.emit("set-icon", iconfile))
         self.append_grid(child)
-
-
-gobject.type_register(IconMenu)
-gobject.signal_new(
-    "set-icon", IconMenu, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (object,)
+GObject.signal_new(
+    "set-icon", IconMenu, GObject.SignalFlags.RUN_LAST, gobject.TYPE_NONE, (object,)
 )

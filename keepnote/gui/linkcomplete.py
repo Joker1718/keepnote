@@ -1,9 +1,6 @@
 # pygtk imports
-import pygtk
+from gi.repository import GObject, Gtk
 
-pygtk.require("2.0")
-import gtk
-import gobject
 
 # keepnote imports
 from keepnote import unicode_gtk
@@ -12,18 +9,18 @@ from keepnote.gui.popupwindow import PopupWindow
 
 class LinkPicker(gtk.TreeView):
     def __init__(self, maxwidth=450):
-        gtk.TreeView.__init__(self)
+        Gtk.TreeView.__init__(self)
         self._maxwidth = maxwidth
 
         self.set_headers_visible(False)
 
         # add column
-        self.column = gtk.TreeViewColumn()
+        self.column = Gtk.TreeViewColumn()
         self.append_column(self.column)
 
         # create a cell renderers
-        self.cell_icon = gtk.CellRendererPixbuf()
-        self.cell_text = gtk.CellRendererText()
+        self.cell_icon = Gtk.CellRendererPixbuf()
+        self.cell_text = Gtk.CellRendererText()
 
         # add the cells to column
         self.column.pack_start(self.cell_icon, False)
@@ -33,7 +30,7 @@ class LinkPicker(gtk.TreeView):
         self.column.add_attribute(self.cell_icon, "pixbuf", 0)
         self.column.add_attribute(self.cell_text, "text", 1)
 
-        self.list = gtk.ListStore(gtk.gdk.Pixbuf, str, object)
+        self.list = Gtk.ListStore(gtk.gdk.Pixbuf, str, object)
         self.set_model(self.list)
 
         self.maxlinks = 10
@@ -65,8 +62,8 @@ class LinkPickerPopup(PopupWindow):
         self._shown = False
 
         # use frame for border
-        frame = gtk.Frame()
-        frame.set_shadow_type(gtk.SHADOW_ETCHED_IN)
+        frame = Gtk.Frame()
+        frame.set_shadow_type(Gtk.ShadowType.ETCHED_IN)
         frame.add(self._link_picker)
         frame.show()
         self.add(frame)
@@ -90,7 +87,7 @@ class LinkPickerPopup(PopupWindow):
         """Callback for key press events"""
         model, sel = self._link_picker.get_selection().get_selected()
 
-        if event.keyval == gtk.keysyms.Down:
+        if event.keyval == Gdk.keyval_from_name("Down"):
             # move selection down
             self._cursor_move = True
 
@@ -104,7 +101,7 @@ class LinkPickerPopup(PopupWindow):
 
             return True
 
-        elif event.keyval == gtk.keysyms.Up:
+        elif event.keyval == Gdk.keyval_from_name("Up"):
             # move selection up
             self._cursor_move = True
 
@@ -118,14 +115,14 @@ class LinkPickerPopup(PopupWindow):
 
             return True
 
-        elif event.keyval == gtk.keysyms.Return:
+        elif event.keyval == Gdk.keyval_from_name("Return"):
             # accept selection
             if sel:
                 icon, title, nodeid = model[sel]
                 self.emit("pick-link", unicode_gtk(title), nodeid)
                 return True
 
-        elif event.keyval == gtk.keysyms.Escape:
+        elif event.keyval == Gdk.keyval_from_name("Escape"):
             # discard popup
             self.set_links([])
 
@@ -145,13 +142,10 @@ class LinkPickerPopup(PopupWindow):
         # self.__sel_nodes = [self.model.get_value(self.model.get_iter(path),
         #                                         self._node_col)
         #                    for path in paths]
-
-
-gobject.type_register(LinkPickerPopup)
-gobject.signal_new(
+GObject.signal_new(
     "pick-link",
     LinkPickerPopup,
-    gobject.SIGNAL_RUN_LAST,
+    GObject.SignalFlags.RUN_LAST,
     gobject.TYPE_NONE,
     (str, object),
 )

@@ -38,7 +38,7 @@ from xml.sax.saxutils import escape
 from keepnote import safefile
 
 
-class XmlError(StandardError):
+class XmlError(Exception):
     """Error for parsing XML"""
 
     pass
@@ -160,7 +160,7 @@ class Tag:
                 child_tag.write(obj, out)
         elif self._write_data:
             text = self._write_data(obj)
-            if not isinstance(text, basestring):
+            if not isinstance(text, str):
                 raise XmlError(
                     "bad text (%s,%s): %s"
                     % (self.name, str(self._object), str(type(text)))
@@ -321,7 +321,7 @@ class XmlObject:
     def read(self, obj, filename):
         """Read XML from 'filename' and store data into object 'obj'"""
 
-        if isinstance(filename, basestring):
+        if isinstance(filename, str):
             infile = open(filename)
         else:
             infile = filename
@@ -349,7 +349,7 @@ class XmlObject:
     def write(self, obj, filename):
         """Write object 'obj' to file 'filename'"""
 
-        if isinstance(filename, basestring):
+        if isinstance(filename, str):
             # out = codecs.open(filename, "w", "utf-8")
             out = safefile.open(filename, "w", codec="utf-8")
             need_close = True
@@ -466,7 +466,7 @@ if __name__ == "__main__":
        </notebook>
     """)
 
-    for i in xrange(1):  # 0000):
+    for i in range(1):  # 0000):
         pref = Pref()
         pref.read(infile)
         pref.write(sys.stdout)

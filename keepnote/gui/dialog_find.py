@@ -25,10 +25,7 @@ Find Dialog
 #
 
 # pygtk imports
-import pygtk
 
-pygtk.require("2.0")
-import gtk.glade
 
 # keepnote imports
 import keepnote

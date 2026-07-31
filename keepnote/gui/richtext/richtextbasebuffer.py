@@ -25,11 +25,8 @@ Richtext buffer base class
 #
 
 # pygtk imports
-import pygtk
+from gi.repository import GObject, Gtk
 
-pygtk.require("2.0")
-import gtk
-import gobject
 
 # import textbuffer tools
 from .textbuffer_tools import get_paragraph
@@ -51,7 +48,7 @@ class RichTextAnchor(gtk.TextChildAnchor):
     """Base class of all anchor objects in a RichTextView"""
 
     def __init__(self):
-        gtk.TextChildAnchor.__init__(self)
+        Gtk.TextChildAnchor.__init__(self)
         self._widgets = {}
         self._buffer = None
 
@@ -65,7 +62,7 @@ class RichTextAnchor(gtk.TextChildAnchor):
         return self._widgets
 
     def show(self):
-        for widget in self._widgets.itervalues():
+        for widget in self._widgets.values():
             if widget:
                 widget.show()
 
@@ -81,32 +78,29 @@ class RichTextAnchor(gtk.TextChildAnchor):
         return anchor
 
     def highlight(self):
-        for widget in self._widgets.itervalues():
+        for widget in self._widgets.values():
             if widget:
                 widget.highlight()
 
     def unhighlight(self):
-        for widget in self._widgets.itervalues():
+        for widget in self._widgets.values():
             if widget:
                 widget.unhighlight()
-
-
-gobject.type_register(RichTextAnchor)
-gobject.signal_new(
-    "selected", RichTextAnchor, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()
+GObject.signal_new(
+    "selected", RichTextAnchor, GObject.SignalFlags.RUN_LAST, gobject.TYPE_NONE, ()
 )
-gobject.signal_new(
-    "activated", RichTextAnchor, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()
+GObject.signal_new(
+    "activated", RichTextAnchor, GObject.SignalFlags.RUN_LAST, gobject.TYPE_NONE, ()
 )
-gobject.signal_new(
+GObject.signal_new(
     "popup-menu",
     RichTextAnchor,
-    gobject.SIGNAL_RUN_LAST,
+    GObject.SignalFlags.RUN_LAST,
     gobject.TYPE_NONE,
     (int, object),
 )
-gobject.signal_new(
-    "init", RichTextAnchor, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, ()
+GObject.signal_new(
+    "init", RichTextAnchor, GObject.SignalFlags.RUN_LAST, gobject.TYPE_NONE, ()
 )
 
 
@@ -117,7 +111,7 @@ class RichTextBaseBuffer(gtk.TextBuffer):
     """
 
     def __init__(self, tag_table=RichTextBaseTagTable()):
-        gtk.TextBuffer.__init__(self, tag_table)
+        Gtk.TextBuffer.__init__(self, tag_table)
         tag_table.add_textbuffer(self)
 
         # undo handler
@@ -258,14 +252,14 @@ class RichTextBaseBuffer(gtk.TextBuffer):
     def apply_tag(self, tag, start, end):
         if isinstance(tag, RichTextTag):
             tag.on_apply()
-        gtk.TextBuffer.apply_tag(self, tag, start, end)
+        Gtk.TextBuffer.apply_tag(self, tag, start, end)
 
         """
 
     def remove_tag(self, tag, start, end):
         # assert self.get_tag_table().lookup(
         # tag.get_property("name")) is not None, tag.get_property("name")
-        gtk.TextBuffer.remove_tag(self, tag, start, end)
+        Gtk.TextBuffer.remove_tag(self, tag, start, end)
 
     # ===========================================================
     # callbacks
@@ -291,7 +285,7 @@ class RichTextBaseBuffer(gtk.TextBuffer):
         """Callback for text insert"""
 
         # NOTE: GTK does not give us a proper UTF string, so fix it
-        text = unicode(text, "utf_8")
+        text = str(text, "utf_8")
 
         # check to see if insert is allowed
         if textbuffer.is_interactive() and not self.is_insert_allowed(it, text):
@@ -382,13 +376,10 @@ class RichTextBaseBuffer(gtk.TextBuffer):
             self.emit("ending-user-action")
             self._user_action_ending = False
         self.undo_stack.end_action()
-
-
-gobject.type_register(RichTextBaseBuffer)
-gobject.signal_new(
+GObject.signal_new(
     "ending-user-action",
     RichTextBaseBuffer,
-    gobject.SIGNAL_RUN_LAST,
+    GObject.SignalFlags.RUN_LAST,
     gobject.TYPE_NONE,
     (),
 )

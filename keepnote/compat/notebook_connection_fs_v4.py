@@ -46,7 +46,7 @@ DETECT: The new parent directory's mtime with be newer than the last indexed
         mtime.  The child directory being moved will often have no change in
         mtime.
 UPDATE: A directory with newer mtime needs all of its children re-indexed,
-        but their child do not need to reindex as long as their mtimes 
+        but their child do not need to reindex as int as their mtimes 
         check out.
 
 
@@ -902,7 +902,7 @@ class NoteBookConnectionFS(NoteBookConnection):
                 f"<version>{keepnote.compat.notebook_v4.NOTEBOOK_FORMAT_VERSION}</version>\n"
             )
 
-            for key, val in attr.iteritems():
+            for key, val in attr.items():
                 if key in self._attr_suppress:
                     continue
 
@@ -935,7 +935,7 @@ class NoteBookConnectionFS(NoteBookConnection):
         attr = {}
 
         try:
-            tree = ET.ElementTree(file=filename)
+            tree = ET.parse(filename)
         except Exception as e:
             if recover:
                 self._recover_attr(filename)
@@ -1233,7 +1233,7 @@ class NoteBookConnectionFS(NoteBookConnection):
 
         datatype = self._attr_defs[key].datatype
 
-        if issubclass(datatype, basestring):
+        if issubclass(datatype, str):
             index_type = "TEXT"
         elif issubclass(datatype, int):
             index_type = "INTEGER"

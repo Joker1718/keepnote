@@ -65,14 +65,14 @@ def set_env(key, val):
 
         setstr = f"{key}={val}"
         # setstr = x.encode(locale.getpreferredencoding())
-        msvcrt._putenv(setstr)
+        msvcrt._putenv_w(setstr)
 
         # win32api.SetEnvironmentVariable(key, val)
         # ctypes.windll.kernel32.SetEnvironmentVariableA(key, val)
 
         # NOTE: we only need to change the python copy of the environment
         # The data member is only available if we are on windows
-        os.environ.data[key] = val
+        os.environ[key] = val
     else:
         os.environ[key] = val
 
@@ -91,7 +91,7 @@ def set_lang(lang=None, localedir=None):
     languages = []
 
     # default language from environment
-    deflang, defencoding = locale.getdefaultlocale()
+    deflang, defencoding = locale.getlocale()
     if deflang:
         languages = [deflang + "." + defencoding] + languages
 

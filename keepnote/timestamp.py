@@ -35,7 +35,7 @@ import time
 SEC_OFFSET = 3600 * 24 * 31
 EPOC = time.mktime((1970, 2, 1, 0, 0, 0, 3, 1, 0)) - time.timezone - SEC_OFFSET
 
-ENCODING = locale.getdefaultlocale()[1]
+ENCODING = locale.getlocale()[1]
 if ENCODING is None:
     ENCODING = "utf-8"
 
@@ -153,7 +153,7 @@ def get_str_timestamp(timestamp, current=None, formats=DEFAULT_TIMESTAMP_FORMATS
 
 def format_timestamp(timestamp, format):
     local = time.localtime(timestamp + EPOC)
-    return time.strftime(format.encode(ENCODING), local).decode(ENCODING)
+    return time.strftime(format, local)
 
 
 def parse_timestamp(timestamp_str, format):

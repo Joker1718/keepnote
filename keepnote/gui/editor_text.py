@@ -25,11 +25,8 @@ Editor widget in main window
 #
 
 # pygtk imports
-import pygtk
+from gi.repository import GObject
 
-pygtk.require("2.0")
-import gtk.glade
-import gobject
 
 # keepnote imports
 import keepnote
@@ -75,13 +72,13 @@ class TextEditor(KeepNoteEditor):
         self._textview.connect("visit-url", self._on_visit_url)
 
         # scrollbars
-        self._sw = gtk.ScrolledWindow()
-        self._sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self._sw.set_shadow_type(gtk.SHADOW_IN)
+        self._sw = Gtk.ScrolledWindow()
+        self._sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        self._sw.set_shadow_type(Gtk.ShadowType.IN)
         self._sw.add(self._textview)
         self.pack_start(self._sw)
 
-        # self._socket = gtk.Socket()
+        # self._socket = Gtk.Socket()
         # self.pack_start(self._socket)
 
         # menus
@@ -325,7 +322,7 @@ class EditorMenus(gobject.GObject):
     # toolbar and menus
 
     def add_ui(self, window):
-        self._action_group = gtk.ActionGroup("Editor")
+        self._action_group = Gtk.ActionGroup("Editor")
         self._uis = []
         add_actions(self._action_group, self.get_actions())
         window.get_uimanager().insert_action_group(self._action_group, 0)
@@ -358,7 +355,7 @@ class EditorMenus(gobject.GObject):
                 # finding
                 (
                     "Find In Page",
-                    gtk.STOCK_FIND,
+                    "Find",
                     _("_Find In Page..."),
                     "<control>F",
                     None,
@@ -366,7 +363,7 @@ class EditorMenus(gobject.GObject):
                 ),
                 (
                     "Find Next In Page",
-                    gtk.STOCK_FIND,
+                    "Find",
                     _("Find _Next In Page..."),
                     "<control>G",
                     None,
@@ -374,7 +371,7 @@ class EditorMenus(gobject.GObject):
                 ),
                 (
                     "Find Previous In Page",
-                    gtk.STOCK_FIND,
+                    "Find",
                     _("Find Pre_vious In Page..."),
                     "<control><shift>G",
                     None,
@@ -382,7 +379,7 @@ class EditorMenus(gobject.GObject):
                 ),
                 (
                     "Replace In Page",
-                    gtk.STOCK_FIND_AND_REPLACE,
+                    "Find and Replace",
                     _("_Replace In Page..."),
                     "<control>R",
                     None,

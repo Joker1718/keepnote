@@ -36,10 +36,7 @@ import traceback
 import uuid
 import zipfile
 
-try:
-    import xml.etree.ElementTree as ET
-except ImportError:
-    import xml.etree.elementtree.ElementTree as ET
+import xml.etree.ElementTree as ET
 
 
 # work around pygtk changing default encoding
@@ -70,28 +67,16 @@ import keepnote.xdg
 # these are imported here, so that py2exe can auto-discover them
 
 import base64
-import htmlentitydefs
-from keepnote import tarfile
+import html.entities
+import tarfile
 import random
-import sgmllib
 import string
 import xml.dom.minidom
 import xml.sax.saxutils
 
-# make pyflakes ignore these used modules
-GETTEXT_DOMAIN
-base64
-get_unique_filename_list
-htmlentitydefs
-random
-sgmllib
-string
-tarfile
-xml
-
-# import screenshot so that py2exe discovers it
+# import screenshot for discovery by bundlers
 try:
-    import mswin.screenshot
+    from keepnote.mswin import screenshot  # noqa: F401
 except ImportError:
     pass
 
@@ -133,7 +118,7 @@ TRANSLATOR_CREDITS = (
 )
 
 
-BASEDIR = os.path.dirname(unicode(__file__, FS_ENCODING))
+BASEDIR = os.path.dirname(str(__file__, FS_ENCODING))
 PLATFORM = None
 
 USER_PREF_DIR = "keepnote"
@@ -152,7 +137,7 @@ PORTABLE_FILE = "portable.txt"
 
 
 def get_basedir():
-    return os.path.dirname(unicode(__file__, FS_ENCODING))
+    return os.path.dirname(str(__file__, FS_ENCODING))
 
 
 def set_basedir(basedir):
@@ -193,7 +178,7 @@ def is_url(text):
     return re.match("^[^:]+://", text) is not None
 
 
-def ensure_unicode(text, encoding="utf8"):
+def ensure_str(text, encoding="utf8"):
     """Ensures a string is unicode"""
 
     # let None's pass through
@@ -201,8 +186,8 @@ def ensure_unicode(text, encoding="utf8"):
         return None
 
     # make sure text is unicode
-    if not isinstance(text, unicode):
-        return unicode(text, encoding)
+    if not isinstance(text, str):
+        return str(text, encoding)
     return text
 
 
@@ -219,7 +204,7 @@ def unicode_gtk(text):
     """
     if text is None:
         return None
-    return unicode(text, "utf8")
+    return str(text, "utf8")
 
 
 def print_error_log_header(out=None):
@@ -255,11 +240,11 @@ def print_runtime_info(out=None):
         "keepnote: " + keepnote.__file__ + "\n"
     )
     try:
-        import gtk
-
-        out.write("gtk: " + gtk.__file__ + "\n")
-        out.write("gtk.gtk_version: " + repr(gtk.gtk_version) + "\n")
-    except:
+        from gi.repository import Gtk
+        out.write("gtk: " + str(Gtk.__file__) + "\n")
+        version = (Gtk.get_major_version(), Gtk.get_minor_version(), Gtk.get_micro_version())
+        out.write("gtk.gtk_version: " + repr(version) + "\n")
+    except Exception:
         out.write("gtk: NOT PRESENT\n")
 
     from keepnote.notebook.connection.fs.index import sqlite
@@ -316,7 +301,7 @@ _ = translate
 
 def get_home():
     """Returns user's HOME directory"""
-    home = ensure_unicode(os.getenv("HOME"), FS_ENCODING)
+    home = ensure_str(os.getenv("HOME"), FS_ENCODING)
     if home is None:
         raise EnvError("HOME environment variable must be specified")
     return home
@@ -376,7 +361,7 @@ def get_user_documents(home=None):
         return home
 
     elif p == "windows":
-        return unicode(mswin.get_my_documents(), FS_ENCODING)
+        return str(mswin.get_my_documents(), FS_ENCODING)
 
     else:
         return ""
@@ -407,9 +392,9 @@ def get_win_env(key):
     """Returns a windows environment variable"""
     # try both encodings
     try:
-        return ensure_unicode(os.getenv(key), DEFAULT_ENCODING)
+        return ensure_str(os.getenv(key), DEFAULT_ENCODING)
     except UnicodeDecodeError:
-        return ensure_unicode(os.getenv(key), FS_ENCODING)
+        return ensure_str(os.getenv(key), FS_ENCODING)
 
 
 # =============================================================================
@@ -424,7 +409,7 @@ def init_user_pref_dir(pref_dir=None, home=None):
 
     # make directory
     if not os.path.exists(pref_dir):
-        os.makedirs(pref_dir, 448)
+        os.makedirs(pref_dir, 0o700)
 
     # init empty pref file
     pref_file = get_user_pref_file(pref_dir)
@@ -470,7 +455,7 @@ def log_error(error=None, tracebk=None, out=None):
         traceback.print_exception(type(error), error, tracebk, file=out)
         out.flush()
     except UnicodeEncodeError:
-        out.write(error.encode("ascii", "replace"))
+        out.write(str(error))
 
 
 def log_message(message, out=None):
@@ -489,11 +474,11 @@ def log_message(message, out=None):
 # Exceptions
 
 
-class EnvError(StandardError):
+class EnvError(Exception):
     """Exception that occurs when environment variables are ill-defined"""
 
     def __init__(self, msg, error=None):
-        StandardError.__init__(self)
+        Exception.__init__(self)
         self.msg = msg
         self.error = error
 
@@ -504,9 +489,9 @@ class EnvError(StandardError):
             return self.msg
 
 
-class KeepNoteError(StandardError):
+class KeepNoteError(Exception):
     def __init__(self, msg, error=None):
-        StandardError.__init__(self, msg)
+        Exception.__init__(self, msg)
         self.msg = msg
         self.error = error
 
@@ -520,11 +505,11 @@ class KeepNoteError(StandardError):
         return self.msg
 
 
-class KeepNotePreferenceError(StandardError):
+class KeepNotePreferenceError(Exception):
     """Exception that occurs when manipulating preferences"""
 
     def __init__(self, msg, error=None):
-        StandardError.__init__(self)
+        Exception.__init__(self)
         self.msg = msg
         self.error = error
 
@@ -564,7 +549,7 @@ DEFAULT_EXTERNAL_APPS = [
 
 def get_external_app_defaults():
     if get_platform() == "windows":
-        files = ensure_unicode(
+        files = ensure_str(
             os.environ.get("PROGRAMFILES", "C:\\Program Files"), FS_ENCODING
         )
 
@@ -573,7 +558,6 @@ def get_external_app_defaults():
             ExternalApp(
                 "web_browser",
                 "Web Browser",
-                files + "\\Internet Explorer\\iexplore.exe",
             ),
             ExternalApp("file_explorer", "File Explorer", "explorer.exe"),
             ExternalApp(
@@ -585,7 +569,6 @@ def get_external_app_defaults():
             ExternalApp(
                 "image_viewer",
                 "Image Viewer",
-                files + "\\Internet Explorer\\iexplore.exe",
             ),
             ExternalApp("screen_shot", "Screen Shot", ""),
         ]
@@ -643,7 +626,7 @@ class KeepNotePreferences(Pref):
 
         try:
             # read preferences xml
-            tree = ET.ElementTree(file=get_user_pref_file(self._pref_dir))
+            tree = ET.parse(get_user_pref_file(self._pref_dir))
 
             # parse xml
             # check tree structure matches current version
@@ -892,7 +875,7 @@ class KeepNote:
         notebook.closing_event.remove(self._on_closing_notebook)
         del self._notebook_count[notebook]
 
-        for key, val in self._notebooks.iteritems():
+        for key, val in self._notebooks.items():
             if val == notebook:
                 del self._notebooks[key]
                 break
@@ -949,19 +932,19 @@ class KeepNote:
 
     def iter_notebooks(self):
         """Iterate through open notebooks"""
-        return self._notebooks.itervalues()
+        return self._notebooks.values()
 
     def save_notebooks(self, silent=False):
         """Save all opened notebooks"""
 
         # save all the notebooks
-        for notebook in self._notebooks.itervalues():
+        for notebook in self._notebooks.values():
             notebook.save()
 
     def get_node(self, nodeid):
         """Returns a node with 'nodeid' from any of the opened notebooks"""
 
-        for notebook in self._notebooks.itervalues():
+        for notebook in self._notebooks.values():
             node = notebook.get_node_by_id(nodeid)
             if node is not None:
                 return node
@@ -1050,14 +1033,14 @@ class KeepNote:
         if "%f" not in cmd:
             cmd.append(filename)
         else:
-            for i in xrange(len(cmd)):
+            for i in range(len(cmd)):
                 if cmd[i] == "%f":
                     cmd[i] = filename
 
         # create proper encoding
-        cmd = map(lambda x: unicode(x), cmd)
+        cmd = map(lambda x: str(x), cmd)
         if get_platform() == "windows":
-            cmd = [x.encode("mbcs") for x in cmd]
+            cmd = [x for x in cmd]
         else:
             cmd = [x.encode(FS_ENCODING) for x in cmd]
 
@@ -1071,8 +1054,7 @@ class KeepNote:
                     "program: '{1}'\n\n"
                     "file: '{2}'\n\n"
                     "error: {3}"
-                ).format(app.title, app.prog, filename, unicode(e)),
-                e,
+                ).format(app.title, app.prog, filename, str(e)), e,
             )
 
         # wait for process to return
@@ -1116,7 +1098,7 @@ class KeepNote:
         """Take a screenshot and save it to 'filename'"""
 
         # make sure filename is unicode
-        filename = ensure_unicode(filename, "utf-8")
+        filename = ensure_str(filename, "utf-8")
 
         if get_platform() == "windows":
             # use win32api to take screenshot
@@ -1271,7 +1253,7 @@ class KeepNote:
 
     def get_installed_extensions(self):
         """Iterates through installed extensions"""
-        return self._extensions.iterkeys()
+        return self._extensions.keys()
 
     def get_imported_extensions(self):
         """Iterates through imported extensions"""

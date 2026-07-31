@@ -26,7 +26,7 @@ Extension system with GUI relevant functions
 import sys
 
 # gtk imports
-import gtk
+from gi.repository import Gtk
 
 # keepnote imports
 import keepnote
@@ -127,7 +127,7 @@ class Extension(extension.Extension):
     ):
         # init action group
         if window not in self.__action_groups:
-            group = gtk.ActionGroup("MainWindow")
+            group = Gtk.ActionGroup("MainWindow")
             self.__action_groups[window] = group
             window.get_uimanager().insert_action_group(group, 0)
 

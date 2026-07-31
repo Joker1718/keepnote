@@ -102,7 +102,7 @@ if py3k:
     from io import BytesIO
     from configparser import ConfigParser
 
-    basestring = str
+    str = str
     unicode = str
     json_loads = lambda s: json_lds(touni(s))
     callable = lambda x: hasattr(x, "__call__")
@@ -118,7 +118,7 @@ else:  # 2.x
     from Cookie import SimpleCookie
     from itertools import imap
     import cPickle as pickle
-    from StringIO import StringIO as BytesIO
+    from io import StringIO as BytesIO
     from ConfigParser import SafeConfigParser as ConfigParser
 
     if py25:
@@ -139,14 +139,14 @@ else:  # 2.x
 
 # Some helpers for string/byte handling
 def tob(s, enc="utf8"):
-    return s.encode(enc) if isinstance(s, unicode) else bytes(s)
+    return s.encode(enc) if isinstance(s, str) else bytes(s)
 
 
 def touni(s, enc="utf8", err="strict"):
     if isinstance(s, bytes):
         return s.decode(enc, err)
     else:
-        return unicode(s or ("" if s is None else s))
+        return str(s or ("" if s is None else s))
 
 
 tonat = touni if py3k else tob
@@ -871,7 +871,7 @@ class Bottle:
         skiplist = makelist(skip)
 
         def decorator(callback):
-            if isinstance(callback, basestring):
+            if isinstance(callback, str):
                 callback = load(callback)
             for rule in makelist(path) or yieldroutes(callback):
                 for verb in makelist(method):
@@ -974,7 +974,7 @@ class Bottle:
         if isinstance(out, (tuple, list)) and isinstance(out[0], (bytes, unicode)):
             out = out[0][0:0].join(out)  # b'abc'[0:0] -> b''
         # Encode unicode strings
-        if isinstance(out, unicode):
+        if isinstance(out, str):
             out = out.encode(response.charset)
         # Byte Strings are just returned
         if isinstance(out, bytes):
@@ -1022,7 +1022,7 @@ class Bottle:
             return self._cast(first)
         elif isinstance(first, bytes):
             new_iter = itertools.chain([first], iout)
-        elif isinstance(first, unicode):
+        elif isinstance(first, str):
             encoder = lambda x: x.encode(response.charset)
             new_iter = imap(encoder, itertools.chain([first], iout))
         else:
@@ -1756,7 +1756,7 @@ class BaseResponse:
 
         if secret:
             value = touni(cookie_encode((name, value), secret))
-        elif not isinstance(value, basestring):
+        elif not isinstance(value, str):
             raise TypeError("Secret key missing for non-string Cookie.")
 
         if len(value) > 4096:
@@ -2012,19 +2012,19 @@ class MultiDict(DictMixin):
             return [(k, v[-1]) for k, v in self.dict.items()]
 
         def iterkeys(self):
-            return self.dict.iterkeys()
+            return self.dict.keys()
 
         def itervalues(self):
-            return (v[-1] for v in self.dict.itervalues())
+            return (v[-1] for v in self.dict.values())
 
         def iteritems(self):
-            return ((k, v[-1]) for k, v in self.dict.iteritems())
+            return ((k, v[-1]) for k, v in self.dict.items())
 
         def iterallitems(self):
-            return ((k, v) for k, vl in self.dict.iteritems() for v in vl)
+            return ((k, v) for k, vl in self.dict.items() for v in vl)
 
         def allitems(self):
-            return [(k, v) for k, vl in self.dict.iteritems() for v in vl]
+            return [(k, v) for k, vl in self.dict.items() for v in vl]
 
     def get(self, key, default=None, index=-1, type=None):
         """Return the most recent value for a key.
@@ -2075,7 +2075,7 @@ class FormsDict(MultiDict):
     recode_unicode = True
 
     def _fix(self, s, encoding=None):
-        if isinstance(s, unicode) and self.recode_unicode:  # Python 3 WSGI
+        if isinstance(s, str) and self.recode_unicode:  # Python 3 WSGI
             return s.encode("latin1").decode(encoding or self.input_encoding)
         elif isinstance(s, bytes):  # Python 2 WSGI
             return s.decode(encoding or self.input_encoding)
@@ -2093,18 +2093,18 @@ class FormsDict(MultiDict):
             copy.append(self._fix(key, enc), self._fix(value, enc))
         return copy
 
-    def getunicode(self, name, default=None, encoding=None):
+    def getstr(self, name, default=None, encoding=None):
         """Return the value as a unicode string, or the default."""
         try:
             return self._fix(self[name], encoding)
         except (UnicodeError, KeyError):
             return default
 
-    def __getattr__(self, name, default=unicode()):
+    def __getattr__(self, name, default=str()):
         # Without this guard, pickle generates a cryptic TypeError:
         if name.startswith("__") and name.endswith("__"):
             return super().__getattr__(name)
-        return self.getunicode(name, default=default)
+        return self.getstr(name, default=default)
 
 
 class HeaderDict(MultiDict):
@@ -2454,7 +2454,7 @@ class FileUpload:
         or dashes are removed. The filename is limited to 255 characters.
         """
         fname = self.raw_filename
-        if not isinstance(fname, unicode):
+        if not isinstance(fname, str):
             fname = fname.decode("utf8", "ignore")
         fname = normalize("NFKD", fname).encode("ASCII", "ignore").decode("ASCII")
         fname = os.path.basename(fname.replace("\\", os.path.sep))
@@ -2480,7 +2480,7 @@ class FileUpload:
         :param overwrite: If True, replace existing files. (default: False)
         :param chunk_size: Bytes to read at a time. (default: 64kb)
         """
-        if isinstance(destination, basestring):  # Except file-likes here
+        if isinstance(destination, str):  # Except file-likes here
             if os.path.isdir(destination):
                 destination = os.path.join(destination, self.filename)
             if not overwrite and os.path.exists(destination):
@@ -2617,7 +2617,7 @@ def http_date(value):
         value = value.utctimetuple()
     elif isinstance(value, (int, float)):
         value = time.gmtime(value)
-    if not isinstance(value, basestring):
+    if not isinstance(value, str):
         value = time.strftime("%a, %d %b %Y %H:%M:%S GMT", value)
     return value
 
@@ -3276,19 +3276,19 @@ def run(
         if debug is not None:
             _debug(debug)
         app = app or default_app()
-        if isinstance(app, basestring):
+        if isinstance(app, str):
             app = load_app(app)
         if not callable(app):
             raise ValueError("Application is not callable: %r" % app)
 
         for plugin in plugins or []:
-            if isinstance(plugin, basestring):
+            if isinstance(plugin, str):
                 plugin = load(plugin)
             app.install(plugin)
 
         if server in server_names:
             server = server_names.get(server)
-        if isinstance(server, basestring):
+        if isinstance(server, str):
             server = load(server)
         if isinstance(server, type):
             server = server(host=host, port=port, **kargs)

@@ -31,16 +31,16 @@ def list_tests(stack=0):
     # get environment
     var = __import__("__main__").__dict__
 
-    for name, obj in var.iteritems():
+    for name, obj in var.items():
         if isinstance(obj, type) and issubclass(obj, unittest.TestCase):
             for attr in dir(obj):
                 if attr.startswith("test"):
-                    print "%s.%s" % (name, attr),
+                    print("%s.%s" % (name, attr),)
                     doc = getattr(obj, attr).__doc__
                     if doc:
-                        print "--", doc.split("\n")[0]
+                        print("--", doc.split("\n")[0])
                     else:
-                        print
+                        print()
 
 
 def test_main():

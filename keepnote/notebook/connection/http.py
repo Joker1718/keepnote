@@ -28,10 +28,10 @@ Serving/accessing KeepNote notebooks over HTTP
 # python imports
 from collections import defaultdict
 import contextlib
-import httplib
+import http.client
 import json
 import urllib
-import urlparse
+import urllib.parse
 
 # keepnote imports
 from keepnote import plist
@@ -451,7 +451,7 @@ class NodeTitleCache:
 
     def get(self, query):
         query = query.lower()
-        for title in self._titles.iterkeys():
+        for title in self._titles.keys():
             if query in title:
                 for nodeid in self._titles[title]:
                     yield (nodeid, self._nodeids[nodeid])

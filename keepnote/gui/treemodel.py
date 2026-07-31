@@ -26,11 +26,8 @@ Treemodel for treeview and listview
 #
 
 # pygtk imports
-import pygtk
+from gi.repository import GObject, Gtk
 
-pygtk.require("2.0")
-import gobject
-import gtk
 
 
 def get_path_from_node(model, node, node_col):
@@ -108,7 +105,7 @@ class BaseTreeModel(gtk.GenericTreeModel):
     """
 
     def __init__(self, roots=[]):
-        gtk.GenericTreeModel.__init__(self)
+        Gtk.GenericTreeModel.__init__(self)
         self.set_property("leak-references", False)
 
         self._notebook = None
@@ -217,7 +214,7 @@ class BaseTreeModel(gtk.GenericTreeModel):
 
     def clear(self):
         """Clear all rows from model"""
-        for i in xrange(len(self._roots) - 1, -1, -1):
+        for i in range(len(self._roots) - 1, -1, -1):
             self.row_deleted((i,))
 
         self._roots = []
@@ -436,20 +433,17 @@ class BaseTreeModel(gtk.GenericTreeModel):
         else:
             parent = child.get_parent()
             return parent
-
-
-gobject.type_register(BaseTreeModel)
-gobject.signal_new(
+GObject.signal_new(
     "node-changed-start",
     BaseTreeModel,
-    gobject.SIGNAL_RUN_LAST,
+    GObject.SignalFlags.RUN_LAST,
     gobject.TYPE_NONE,
     (object,),
 )
-gobject.signal_new(
+GObject.signal_new(
     "node-changed-end",
     BaseTreeModel,
-    gobject.SIGNAL_RUN_LAST,
+    GObject.SignalFlags.RUN_LAST,
     gobject.TYPE_NONE,
     (object,),
 )

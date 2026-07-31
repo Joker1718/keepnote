@@ -223,7 +223,7 @@ class UndoHandler:
         """Callback for text insert"""
 
         # NOTE: GTK does not give us a proper UTF string, so fix it
-        text = unicode(text, "utf_8")
+        text = str(text, "utf_8")
         length = len(text)
 
         # setup next action

@@ -30,19 +30,14 @@ from itertools import chain
 import os
 import re
 import random
-import StringIO
-import urlparse
+from io import StringIO
+import urllib.parse
 import uuid
 from xml.sax.saxutils import escape
 
 # pygtk imports
-import pygtk
+from gi.repository import GObject, Gdk, Gtk, Pango
 
-pygtk.require("2.0")
-import gtk
-import gobject
-import pango
-from gtk import gdk
 import gtk.keysyms  # this is necessary for py2exe discovery
 
 # try to import spell check
@@ -151,7 +146,7 @@ def parse_utf(text):
         return text.decode("utf16")
     else:
         text = text.replace("\x00", "")
-        return unicode(text, "utf8")
+        return str(text, "utf8")
 
 
 def parse_ie_html_format(text):
@@ -223,14 +218,14 @@ def replace_vars(text, values):
 # =============================================================================
 
 
-class RichTextError(StandardError):
+class RichTextError(Exception):
     """Class for errors with RichText"""
 
     # NOTE: this is only used for saving and loading in textview
     # should this stay here?
 
     def __init__(self, msg, error):
-        StandardError.__init__(self, msg)
+        Exception.__init__(self, msg)
         self.msg = msg
         self.error = error
 
@@ -245,7 +240,7 @@ class RichTextMenu(gtk.Menu):
     """A popup menu for child widgets in a RichTextView"""
 
     def __inti__(self):
-        gtk.Menu.__init__(self)
+        Gtk.Menu.__init__(self)
         self._child = None
 
     def set_child(self, child):
@@ -398,7 +393,7 @@ class RichTextView(gtk.TextView):
     """A RichText editor widget"""
 
     def __init__(self, textbuffer=None):
-        gtk.TextView.__init__(self, textbuffer)
+        Gtk.TextView.__init__(self, textbuffer)
 
         self._textbuffer = None
         self._buffer_callbacks = []
@@ -464,17 +459,17 @@ class RichTextView(gtk.TextView):
         self._image_menu = RichTextMenu()
         self._image_menu.attach_to_widget(self, lambda w, m: None)
 
-        item = gtk.ImageMenuItem(gtk.STOCK_CUT)
+        item = Gtk.ImageMenuItem("Cut")
         item.connect("activate", lambda w: self.emit("cut-clipboard"))
         self._image_menu.append(item)
         item.show()
 
-        item = gtk.ImageMenuItem(gtk.STOCK_COPY)
+        item = Gtk.ImageMenuItem("Copy")
         item.connect("activate", lambda w: self.emit("copy-clipboard"))
         self._image_menu.append(item)
         item.show()
 
-        item = gtk.ImageMenuItem(gtk.STOCK_DELETE)
+        item = Gtk.ImageMenuItem("Delete")
 
         def func(widget):
             if self._textbuffer:
@@ -493,9 +488,9 @@ class RichTextView(gtk.TextView):
 
         # change buffer
         if textbuffer:
-            gtk.TextView.set_buffer(self, textbuffer)
+            Gtk.TextView.set_buffer(self, textbuffer)
         else:
-            gtk.TextView.set_buffer(self, self._blank_buffer)
+            Gtk.TextView.set_buffer(self, self._blank_buffer)
         self._textbuffer = textbuffer
 
         # tell new buffer we are attached
@@ -538,7 +533,7 @@ class RichTextView(gtk.TextView):
         if self._textbuffer is None:
             return
 
-        if event.keyval == gtk.keysyms.ISO_Left_Tab:
+        if event.keyval == Gdk.keyval_from_name("ISO_Left_Tab"):
             # shift+tab is pressed
             it = self._textbuffer.get_iter_at_mark(self._textbuffer.get_insert())
 
@@ -548,7 +543,7 @@ class RichTextView(gtk.TextView):
                 self.unindent()
                 return True
 
-        if event.keyval == gtk.keysyms.Tab:
+        if event.keyval == Gdk.keyval_from_name("Tab"):
             # tab is pressed
             it = self._textbuffer.get_iter_at_mark(self._textbuffer.get_insert())
 
@@ -561,7 +556,7 @@ class RichTextView(gtk.TextView):
                 self.indent()
                 return True
 
-        if event.keyval == gtk.keysyms.Delete:
+        if event.keyval == Gdk.keyval_from_name("Delete"):
             # delete key pressed
 
             # TODO: make sure selection with delete does not fracture
@@ -708,7 +703,7 @@ class RichTextView(gtk.TextView):
         else:
             start, end = sel
             text = start.get_text(end)
-        print "get", repr(text)
+print("get", repr(text))
         selection_data.set_text(text.encode("utf8"), -1)
 
         #self.emit("cut-clipboard")
@@ -1093,13 +1088,13 @@ class RichTextView(gtk.TextView):
 
     """
     def serialize(self, register_buf, content_buf, start, end, data):
-        print "serialize", content_buf
+print("serialize", content_buf)
         self.a = u"SERIALIZED"
         return self.a
 
     def deserialize(self, register_buf, content_buf, it, data,
                     create_tags, udata):
-        print "deserialize"
+print("deserialize")
     """
 
     # =====================================================
@@ -1113,19 +1108,19 @@ class RichTextView(gtk.TextView):
         pos = 3
 
         # insert additional menu options after paste
-        item = gtk.ImageMenuItem(stock_id=gtk.STOCK_PASTE, accel_group=None)
+        item = Gtk.ImageMenuItem(stock_id="Paste", accel_group=None)
         item.child.set_text(_("Paste As Plain Text"))
         item.connect("activate", lambda item: self.paste_clipboard_as_text())
         item.show()
         menu.insert(item, pos)
 
-        item = gtk.ImageMenuItem(stock_id=gtk.STOCK_PASTE, accel_group=None)
+        item = Gtk.ImageMenuItem(stock_id="Paste", accel_group=None)
         item.child.set_text(_("Paste As Quote"))
         item.connect("activate", lambda item: self.paste_clipboard_as_quote())
         item.show()
         menu.insert(item, pos + 1)
 
-        item = gtk.ImageMenuItem(stock_id=gtk.STOCK_PASTE, accel_group=None)
+        item = Gtk.ImageMenuItem(stock_id="Paste", accel_group=None)
         item.child.set_text(_("Paste As Plain Text Quote"))
         item.connect(
             "activate", lambda item: self.paste_clipboard_as_quote(plain_text=True)
@@ -1510,9 +1505,9 @@ class RichTextView(gtk.TextView):
             # // PIXELS_PER_PANGO_UNIT)
             # set_text_scale(native_size / 10.0)
 
-            f = pango.FontDescription(font)
+            f = Pango.FontDescription(font)
             f.set_size(int(f.get_size() * get_text_scale()))
-            self.modify_font(f)
+            self.override_font(f)
         except:
             # TODO: think about how to handle this error
             pass
@@ -1534,22 +1529,21 @@ class RichTextView(gtk.TextView):
 
 
 # register new signals
-gobject.type_register(RichTextView)
-gobject.signal_new(
-    "modified", RichTextView, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (bool,)
+GObject.signal_new(
+    "modified", RichTextView, GObject.SignalFlags.RUN_LAST, gobject.TYPE_NONE, (bool,)
 )
-gobject.signal_new(
-    "font-change", RichTextView, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (object,)
+GObject.signal_new(
+    "font-change", RichTextView, GObject.SignalFlags.RUN_LAST, gobject.TYPE_NONE, (object,)
 )
-gobject.signal_new(
+GObject.signal_new(
     "child-activated",
     RichTextView,
-    gobject.SIGNAL_RUN_LAST,
+    GObject.SignalFlags.RUN_LAST,
     gobject.TYPE_NONE,
     (object,),
 )
-gobject.signal_new(
-    "visit-url", RichTextView, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)
+GObject.signal_new(
+    "visit-url", RichTextView, GObject.SignalFlags.RUN_LAST, gobject.TYPE_NONE, (str,)
 )
 
 

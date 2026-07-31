@@ -40,18 +40,14 @@ from keepnote import unicode_gtk
 from keepnote.notebook import NoteBookError
 from keepnote import notebook as notebooklib
 from keepnote import tasklib
-from keepnote import tarfile
+import tarfile
 from keepnote.gui import extension
 from keepnote.gui import dialog_app_options
 
 # pygtk imports
 try:
-    import pygtk
+    from gi.repository import GObject, Gdk
 
-    pygtk.require("2.0")
-    from gtk import gdk
-    import gtk.glade
-    import gobject
 except ImportError:
     # do not fail on gtk import error,
     # extension should be usable for non-graphical uses
@@ -268,7 +264,7 @@ class Extension(extension.Extension):
 
         # init menu
         if menu.get_submenu() is None:
-            submenu = gtk.Menu()
+            submenu = Gtk.Menu()
             submenu.show()
             menu.set_submenu(submenu)
         menu = menu.get_submenu()
@@ -281,16 +277,16 @@ class Extension(extension.Extension):
 
         # populate menu
         for file_type in self._file_types:
-            item = gtk.MenuItem(f"New {file_type.name}")
+            item = Gtk.MenuItem(f"New {file_type.name}")
             item.connect("activate", make_func(file_type))
             item.show()
             menu.append(item)
 
-        item = gtk.SeparatorMenuItem()
+        item = Gtk.SeparatorMenuItem()
         item.show()
         menu.append(item)
 
-        item = gtk.MenuItem("Add New File Type")
+        item = Gtk.MenuItem("Add New File Type")
         item.connect("activate", lambda w: self.on_new_file_type(window))
         item.show()
         menu.append(item)
@@ -335,59 +331,59 @@ class NewFileSection(dialog_app_options.Section):
 
         # setup UI
         w = self.get_default_widget()
-        h = gtk.HBox(False, 5)
+        h = Gtk.HBox(False, 5)
         w.add(h)
 
         # left column (file type list)
-        v = gtk.VBox(False, 5)
+        v = Gtk.VBox(False, 5)
         h.pack_start(v, False, True, 0)
 
-        self.filetype_store = gtk.ListStore(str, object)
-        self.filetype_listview = gtk.TreeView(self.filetype_store)
+        self.filetype_store = Gtk.ListStore(str, object)
+        self.filetype_listview = Gtk.TreeView(self.filetype_store)
         self.filetype_listview.set_headers_visible(False)
         self.filetype_listview.get_selection().connect(
             "changed", self.on_listview_select
         )
 
-        sw = gtk.ScrolledWindow()
-        sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        sw.set_shadow_type(gtk.SHADOW_IN)
+        sw = Gtk.ScrolledWindow()
+        sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        sw.set_shadow_type(Gtk.ShadowType.IN)
         sw.add(self.filetype_listview)
         sw.set_size_request(160, 200)
         v.pack_start(sw, False, True, 0)
 
         # create the treeview column
-        column = gtk.TreeViewColumn()
+        column = Gtk.TreeViewColumn()
         self.filetype_listview.append_column(column)
-        cell_text = gtk.CellRendererText()
+        cell_text = Gtk.CellRendererText()
         column.pack_start(cell_text, True)
         column.add_attribute(cell_text, "text", 0)
 
         # add/del buttons
-        h2 = gtk.HBox(False, 5)
+        h2 = Gtk.HBox(False, 5)
         v.pack_start(h2, False, True, 0)
 
-        button = gtk.Button("New")
+        button = Gtk.Button("New")
         button.connect("clicked", self.on_new_filetype)
         h2.pack_start(button, True, True, 0)
 
-        button = gtk.Button("Delete")
+        button = Gtk.Button("Delete")
         button.connect("clicked", self.on_delete_filetype)
         h2.pack_start(button, True, True, 0)
 
         # right column (file type editor)
-        v = gtk.VBox(False, 5)
+        v = Gtk.VBox(False, 5)
         h.pack_start(v, False, True, 0)
 
-        table = gtk.Table(3, 2)
+        table = Gtk.Table(3, 2)
         self.filetype_editor = table
         v.pack_start(table, False, True, 0)
 
         # file type name
-        label = gtk.Label("File type name:")
+        label = Gtk.Label("File type name:")
         table.attach(label, 0, 1, 0, 1, xoptions=0, yoptions=0, xpadding=2, ypadding=2)
 
-        self.filetype = gtk.Entry()
+        self.filetype = Gtk.Entry()
         table.attach(
             self.filetype,
             1,
@@ -401,10 +397,10 @@ class NewFileSection(dialog_app_options.Section):
         )
 
         # default filename
-        label = gtk.Label("Default filename:")
+        label = Gtk.Label("Default filename:")
         table.attach(label, 0, 1, 1, 2, xoptions=0, yoptions=0, xpadding=2, ypadding=2)
 
-        self.filename = gtk.Entry()
+        self.filename = Gtk.Entry()
         table.attach(
             self.filename,
             1,
@@ -418,10 +414,10 @@ class NewFileSection(dialog_app_options.Section):
         )
 
         # example new file
-        label = gtk.Label("Example new file:")
+        label = Gtk.Label("Example new file:")
         table.attach(label, 0, 1, 2, 3, xoptions=0, yoptions=0, xpadding=2, ypadding=2)
 
-        self.example_file = gtk.Entry()
+        self.example_file = Gtk.Entry()
         table.attach(
             self.example_file,
             1,
@@ -435,9 +431,9 @@ class NewFileSection(dialog_app_options.Section):
         )
 
         # browse button
-        button = gtk.Button(_("Browse..."))
+        button = Gtk.Button(_("Browse..."))
         button.set_image(
-            gtk.image_new_from_stock(gtk.STOCK_OPEN, gtk.ICON_SIZE_SMALL_TOOLBAR)
+            Gtk.image_new_from_stock("Open", gtk.ICON_SIZE_SMALL_TOOLBAR)
         )
         button.show()
         button.connect(

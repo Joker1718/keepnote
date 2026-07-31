@@ -27,11 +27,8 @@ Apple's property list xml serialization
 #
 
 # python imports
-try:
-    import xml.etree.ElementTree as ET
-except ImportError:
-    import xml.etree.elementtree.ElementTree as ET
-from StringIO import StringIO
+import xml.etree.ElementTree as ET
+from io import StringIO
 import base64
 import datetime
 import re
@@ -63,7 +60,7 @@ _unmarshallers = {
     "key": lambda x: x.text or "",
     # simple types
     "string": lambda x: x.text or "",
-    "data": lambda x: Data(base64.decodestring(x.text or "")),
+    "data": lambda x: Data(base64.decodebytes(x.text or "")),
     "date": lambda x: datetime.datetime(*map(int, re.findall(r"\d+", x.text))),
     "true": lambda x: True,
     "false": lambda x: False,
@@ -116,7 +113,7 @@ def dump(elm, out=sys.stdout, indent=0, depth=0, suppress=False):
         out.write("<dict>")
         if indent:
             out.write("\n")
-        for key, val in elm.iteritems():
+        for key, val in elm.items():
             if indent:
                 out.write(" " * (depth + indent))
             out.write(f"<key>{key}</key>")
@@ -135,7 +132,7 @@ def dump(elm, out=sys.stdout, indent=0, depth=0, suppress=False):
             out.write(" " * depth)
         out.write("</array>")
 
-    elif isinstance(elm, basestring):
+    elif isinstance(elm, str):
         out.write(f"<string>{escape(elm)}</string>")
 
     elif isinstance(elm, bool):
@@ -144,7 +141,7 @@ def dump(elm, out=sys.stdout, indent=0, depth=0, suppress=False):
         else:
             out.write("<false/>")
 
-    elif isinstance(elm, (int, long)):
+    elif isinstance(elm, (int)):
         out.write(f"<integer>{elm:d}</integer>")
 
     elif isinstance(elm, float):
@@ -155,7 +152,7 @@ def dump(elm, out=sys.stdout, indent=0, depth=0, suppress=False):
 
     elif isinstance(elm, Data):
         out.write("<data>")
-        base64.encode(StringIO(elm), out)
+        out.write(base64.encodebytes(elm))
         out.write("</data>")
 
     elif isinstance(elm, datetime.datetime):
@@ -177,7 +174,7 @@ def dumps(elm, indent=0):
 def dump_etree(elm):
     if isinstance(elm, dict):
         elm2 = ET.Element("dict")
-        for key, val in elm.iteritems():
+        for key, val in elm.items():
             key2 = ET.Element("key")
             key2.text = key
             elm2.append(key2)
@@ -188,7 +185,7 @@ def dump_etree(elm):
         for item in elm:
             elm2.append(dump_etree(item))
 
-    elif isinstance(elm, basestring):
+    elif isinstance(elm, str):
         elm2 = ET.Element("string")
         elm2.text = elm
 
@@ -211,7 +208,7 @@ def dump_etree(elm):
 
     elif isinstance(elm, Data):
         elm2 = ET.Element("data")
-        elm2.text = base64.encodestring(elm)
+        elm2.text = base64.encodebytes(elm)
 
     elif isinstance(elm, datetime.datetime):
         raise Exception("not implemented")

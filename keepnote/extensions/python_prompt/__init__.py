@@ -40,10 +40,8 @@ from keepnote.gui import extension
 
 # pygtk imports
 try:
-    import pygtk
+    from gi.repository import Gtk
 
-    pygtk.require("2.0")
-    import gtk
 
     from keepnote.gui import dialog_app_options
 

@@ -25,11 +25,8 @@ Classic three-paned viewer for KeepNote.
 #
 
 # pygtk imports
-import pygtk
+from gi.repository import GObject, Gtk
 
-pygtk.require("2.0")
-import gobject
-import gtk
 
 # keepnote imports
 import keepnote
@@ -122,7 +119,7 @@ class ThreePaneViewer(Viewer):
         )
         self.editor.view_nodes([])
 
-        self.editor_pane = gtk.VBox(False, 5)
+        self.editor_pane = Gtk.VBox(False, 5)
         self.editor_pane.pack_start(self.editor, True, True, 0)
 
         # =====================================
@@ -131,26 +128,26 @@ class ThreePaneViewer(Viewer):
         # TODO: make sure to add underscore for these variables
 
         # create a horizontal paned widget
-        self.hpaned = gtk.HPaned()
+        self.hpaned = Gtk.HPaned()
         self.pack_start(self.hpaned, True, True, 0)
         self.hpaned.set_position(DEFAULT_HSASH_POS)
 
         # layout major widgets
-        self.paned2 = gtk.VPaned()
+        self.paned2 = Gtk.VPaned()
         self.hpaned.add2(self.paned2)
         self.paned2.set_position(DEFAULT_VSASH_POS)
 
         # treeview and scrollbars
-        sw = gtk.ScrolledWindow()
-        sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        sw.set_shadow_type(gtk.SHADOW_IN)
+        sw = Gtk.ScrolledWindow()
+        sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        sw.set_shadow_type(Gtk.ShadowType.IN)
         sw.add(self.treeview)
         self.hpaned.add1(sw)
 
         # listview with scrollbars
-        self.listview_sw = gtk.ScrolledWindow()
-        self.listview_sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self.listview_sw.set_shadow_type(gtk.SHADOW_IN)
+        self.listview_sw = Gtk.ScrolledWindow()
+        self.listview_sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        self.listview_sw.set_shadow_type(Gtk.ShadowType.IN)
         self.listview_sw.add(self.listview)
         self.paned2.add1(self.listview_sw)
         # self.paned2.child_set_property(self.listview_sw, "shrink", True)
@@ -282,10 +279,10 @@ class ThreePaneViewer(Viewer):
         # remake paned2
         if mode == "vertical":
             # create a vertical paned widget
-            self.paned2 = gtk.VPaned()
+            self.paned2 = Gtk.VPaned()
         else:
             # create a horizontal paned widget
-            self.paned2 = gtk.HPaned()
+            self.paned2 = Gtk.HPaned()
 
         self.paned2.set_position(vsash)
         self.paned2.show()
@@ -717,7 +714,7 @@ class ThreePaneViewer(Viewer):
         assert window == self._main_window
 
         self._ui_ready = True
-        self._action_group = gtk.ActionGroup("Viewer")
+        self._action_group = Gtk.ActionGroup("Viewer")
         self._uis = []
         add_actions(self._action_group, self._get_actions())
         self._main_window.get_uimanager().insert_action_group(self._action_group, 0)
@@ -999,7 +996,7 @@ class ThreePaneViewer(Viewer):
                 ("listview_popup", None, "", "", None, lambda w: None),
                 (
                     "Copy Tree",
-                    gtk.STOCK_COPY,
+                    "Copy",
                     _("Copy _Tree"),
                     "<control><shift>C",
                     _("Copy entire tree"),
@@ -1007,7 +1004,7 @@ class ThreePaneViewer(Viewer):
                 ),
                 (
                     "New Page",
-                    gtk.STOCK_NEW,
+                    "New",
                     _("New _Page"),
                     "<control>N",
                     _("Create a new page"),
@@ -1016,7 +1013,7 @@ class ThreePaneViewer(Viewer):
                 ),
                 (
                     "New Child Page",
-                    gtk.STOCK_NEW,
+                    "New",
                     _("New _Child Page"),
                     "<control><shift>N",
                     _("Create a new child page"),
@@ -1025,7 +1022,7 @@ class ThreePaneViewer(Viewer):
                 ),
                 (
                     "New Folder",
-                    gtk.STOCK_DIRECTORY,
+                    "Directory",
                     _("New _Folder"),
                     "<control><shift>M",
                     _("Create a new folder"),
@@ -1034,7 +1031,7 @@ class ThreePaneViewer(Viewer):
                 ),
                 (
                     "Attach File",
-                    gtk.STOCK_ADD,
+                    "Add",
                     _("_Attach File..."),
                     "",
                     _("Attach a file to the notebook"),
@@ -1042,7 +1039,7 @@ class ThreePaneViewer(Viewer):
                 ),
                 (
                     "Back",
-                    gtk.STOCK_GO_BACK,
+                    "Go Back",
                     _("_Back"),
                     "",
                     None,
@@ -1050,7 +1047,7 @@ class ThreePaneViewer(Viewer):
                 ),
                 (
                     "Forward",
-                    gtk.STOCK_GO_FORWARD,
+                    "Go Forward",
                     _("_Forward"),
                     "",
                     None,
@@ -1058,7 +1055,7 @@ class ThreePaneViewer(Viewer):
                 ),
                 (
                     "Go to Note",
-                    gtk.STOCK_JUMP_TO,
+                    "Jump To",
                     _("Go to _Note"),
                     "",
                     None,
@@ -1066,7 +1063,7 @@ class ThreePaneViewer(Viewer):
                 ),
                 (
                     "Go to Parent Note",
-                    gtk.STOCK_GO_BACK,
+                    "Go Back",
                     _("Go to _Parent Note"),
                     "<shift><alt>Left",
                     None,
@@ -1082,7 +1079,7 @@ class ThreePaneViewer(Viewer):
                 ),
                 (
                     "Go to Previous Note",
-                    gtk.STOCK_GO_UP,
+                    "Go Up",
                     _("Go to _Previous Note"),
                     "<alt>Up",
                     None,
@@ -1090,7 +1087,7 @@ class ThreePaneViewer(Viewer):
                 ),
                 (
                     "Expand Note",
-                    gtk.STOCK_ADD,
+                    "Add",
                     _("E_xpand Note"),
                     "<alt>Right",
                     None,
@@ -1098,7 +1095,7 @@ class ThreePaneViewer(Viewer):
                 ),
                 (
                     "Collapse Note",
-                    gtk.STOCK_REMOVE,
+                    "Remove",
                     _("_Collapse Note"),
                     "<alt>Left",
                     None,
@@ -1106,7 +1103,7 @@ class ThreePaneViewer(Viewer):
                 ),
                 (
                     "Expand All Child Notes",
-                    gtk.STOCK_ADD,
+                    "Add",
                     _("Expand _All Child Notes"),
                     "<shift><alt>Right",
                     None,
@@ -1114,7 +1111,7 @@ class ThreePaneViewer(Viewer):
                 ),
                 (
                     "Collapse All Child Notes",
-                    gtk.STOCK_REMOVE,
+                    "Remove",
                     _("Collapse A_ll Child Notes"),
                     "<shift><alt>Left",
                     None,
@@ -1146,7 +1143,7 @@ class ThreePaneViewer(Viewer):
                 ),
                 (
                     "Delete Note",
-                    gtk.STOCK_DELETE,
+                    "Delete",
                     _("_Delete"),
                     "",
                     None,
@@ -1154,7 +1151,7 @@ class ThreePaneViewer(Viewer):
                 ),
                 (
                     "Rename Note",
-                    gtk.STOCK_EDIT,
+                    "Edit",
                     _("_Rename"),
                     "",
                     None,

@@ -27,7 +27,7 @@ This module provides a pure-memory implementation of the notebook
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-from StringIO import StringIO
+from io import StringIO
 
 # keepnote imports
 import keepnote.notebook.connection as connlib
@@ -179,7 +179,7 @@ class NoteBookConnectionMem(NoteBookConnection):
             raise connlib.FileError()
 
         seen = set()
-        for name in node.files.iterkeys():
+        for name in node.files.keys():
             if name.startswith(filename) and name != filename:
                 part = name[len(filename) :]
                 index = part.find("/")
@@ -220,7 +220,7 @@ class NoteBookConnectionMem(NoteBookConnection):
             assert query[1] == "title"
             return [
                 (nodeid, node.attr["title"])
-                for nodeid, node in self._nodes.iteritems()
+                for nodeid, node in self._nodes.items()
                 if query[2] in node.attr.get("title", "")
             ]
 

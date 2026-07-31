@@ -29,12 +29,8 @@ import os
 import re
 
 # pygtk imports
-import pygtk
+from gi.repository import GObject, Gdk
 
-pygtk.require("2.0")
-from gtk import gdk
-import gtk.glade
-import gobject
 
 # keepnote imports
 import keepnote
@@ -191,9 +187,9 @@ class RichTextEditor(KeepNoteEditor):
         self._textview.connect("key-press-event", self._on_key_press_event)
 
         # scrollbars
-        self._sw = gtk.ScrolledWindow()
-        self._sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self._sw.set_shadow_type(gtk.SHADOW_IN)
+        self._sw = Gtk.ScrolledWindow()
+        self._sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        self._sw.set_shadow_type(Gtk.ShadowType.IN)
         self._sw.add(self._textview)
         self.pack_start(self._sw)
 
@@ -434,10 +430,10 @@ class RichTextEditor(KeepNoteEditor):
             self._link_picker
             and self._link_picker.shown()
             and (
-                event.keyval == gtk.keysyms.Down
-                or event.keyval == gtk.keysyms.Up
-                or event.keyval == gtk.keysyms.Return
-                or event.keyval == gtk.keysyms.Escape
+                event.keyval == Gdk.keyval_from_name("Down")
+                or event.keyval == Gdk.keyval_from_name("Up")
+                or event.keyval == Gdk.keyval_from_name("Return")
+                or event.keyval == Gdk.keyval_from_name("Escape")
             )
         ):
             return self._link_picker.on_key_press_event(textview, event)
@@ -617,14 +613,14 @@ class RichTextEditor(KeepNoteEditor):
         dialog = FileChooserDialog(
             _("Insert Image From File"),
             self.get_toplevel(),
-            action=gtk.FILE_CHOOSER_ACTION_OPEN,
-            buttons=(_("Cancel"), gtk.RESPONSE_CANCEL, _("Insert"), gtk.RESPONSE_OK),
+            action=Gtk.FileChooserAction.OPEN,
+            buttons=(_("Cancel"), Gtk.ResponseType.CANCEL, _("Insert"), Gtk.ResponseType.OK),
             app=self._app,
             persistent_path="insert_image_path",
         )
 
         # add image filters
-        filter = gtk.FileFilter()
+        filter = Gtk.FileFilter()
         filter.set_name("Images")
         filter.add_mime_type("image/png")
         filter.add_mime_type("image/jpeg")
@@ -636,20 +632,20 @@ class RichTextEditor(KeepNoteEditor):
         filter.add_pattern("*.xpm")
         dialog.add_filter(filter)
 
-        filter = gtk.FileFilter()
+        filter = Gtk.FileFilter()
         filter.set_name("All files")
         filter.add_pattern("*")
         dialog.add_filter(filter)
 
         # setup preview
-        preview = gtk.Image()
+        preview = Gtk.Image()
         dialog.set_preview_widget(preview)
         dialog.connect("update-preview", update_file_preview, preview)
 
         # run dialog
         response = dialog.run()
 
-        if response == gtk.RESPONSE_OK:
+        if response == Gtk.ResponseType.OK:
             filename = unicode_gtk(dialog.get_filename())
             dialog.destroy()
             if filename is None:
@@ -745,15 +741,15 @@ class RichTextEditor(KeepNoteEditor):
         dialog = FileChooserDialog(
             _("Save Image As..."),
             self.get_toplevel(),
-            action=gtk.FILE_CHOOSER_ACTION_SAVE,
-            buttons=(_("Cancel"), gtk.RESPONSE_CANCEL, _("Save"), gtk.RESPONSE_OK),
+            action=Gtk.FileChooserAction.SAVE,
+            buttons=(_("Cancel"), Gtk.ResponseType.CANCEL, _("Save"), Gtk.ResponseType.OK),
             app=self._app,
             persistent_path="save_image_path",
         )
-        dialog.set_default_response(gtk.RESPONSE_OK)
+        dialog.set_default_response(Gtk.ResponseType.OK)
         response = dialog.run()
 
-        if response == gtk.RESPONSE_OK:
+        if response == Gtk.ResponseType.OK:
             if not dialog.get_filename():
                 self.emit("error", _("Must specify a filename for the image."), None)
             else:
@@ -772,29 +768,29 @@ class RichTextEditor(KeepNoteEditor):
         # TODO: move to EditorMenus?
         # TODO: add accelerators back
         menu.set_accel_path(CONTEXT_MENU_ACCEL_PATH)
-        item = gtk.SeparatorMenuItem()
+        item = Gtk.SeparatorMenuItem()
         item.show()
         menu.append(item)
 
         # image/edit
-        item = gtk.MenuItem(_("_View Image..."))
+        item = Gtk.MenuItem(_("_View Image..."))
         item.connect("activate", self._on_view_image)
         item.child.set_markup_with_mnemonic(_("<b>_View Image...</b>"))
         item.show()
         menu.append(item)
 
-        item = gtk.MenuItem(_("_Edit Image..."))
+        item = Gtk.MenuItem(_("_Edit Image..."))
         item.connect("activate", self._on_edit_image)
         item.show()
         menu.append(item)
 
-        item = gtk.MenuItem(_("_Resize Image..."))
+        item = Gtk.MenuItem(_("_Resize Image..."))
         item.connect("activate", self._on_resize_image)
         item.show()
         menu.append(item)
 
         # image/save
-        item = gtk.ImageMenuItem(_("_Save Image As..."))
+        item = Gtk.ImageMenuItem(_("_Save Image As..."))
         item.connect("activate", self._on_save_image_as)
         item.show()
         menu.append(item)
@@ -945,11 +941,11 @@ class EditorMenus(gobject.GObject):
         """Callback for opening Choose Font Dialog"""
         font = self._editor.get_textview().get_font()
 
-        dialog = gtk.FontSelectionDialog(_("Choose Font"))
+        dialog = Gtk.FontSelectionDialog(_("Choose Font"))
         dialog.set_font_name(f"{font.family} {font.size:d}")
         response = dialog.run()
 
-        if response == gtk.RESPONSE_OK:
+        if response == Gtk.ResponseType.OK:
             self._editor.get_textview().set_font(dialog.get_font_name())
             self._editor.get_textview().grab_focus()
 
@@ -979,7 +975,7 @@ class EditorMenus(gobject.GObject):
     # toolbar and menus
 
     def add_ui(self, window):
-        self._action_group = gtk.ActionGroup("Editor")
+        self._action_group = Gtk.ActionGroup("Editor")
         self._uis = []
         add_actions(self._action_group, self.get_actions())
         window.get_uimanager().insert_action_group(self._action_group, 0)
@@ -1051,7 +1047,7 @@ class EditorMenus(gobject.GObject):
                     # finding
                     (
                         "Find In Page",
-                        gtk.STOCK_FIND,
+                        "Find",
                         _("_Find In Page..."),
                         "<control>F",
                         None,
@@ -1059,7 +1055,7 @@ class EditorMenus(gobject.GObject):
                     ),
                     (
                         "Find Next In Page",
-                        gtk.STOCK_FIND,
+                        "Find",
                         _("Find _Next In Page..."),
                         "<control>G",
                         None,
@@ -1067,7 +1063,7 @@ class EditorMenus(gobject.GObject):
                     ),
                     (
                         "Find Previous In Page",
-                        gtk.STOCK_FIND,
+                        "Find",
                         _("Find Pre_vious In Page..."),
                         "<control><shift>G",
                         None,
@@ -1077,7 +1073,7 @@ class EditorMenus(gobject.GObject):
                     ),
                     (
                         "Replace In Page",
-                        gtk.STOCK_FIND_AND_REPLACE,
+                        "Find and Replace",
                         _("_Replace In Page..."),
                         "<control>R",
                         None,
@@ -1088,7 +1084,7 @@ class EditorMenus(gobject.GObject):
             )
             + BothAction(
                 "Bold",
-                gtk.STOCK_BOLD,
+                "Bold",
                 _("_Bold"),
                 "<control>B",
                 _("Bold"),
@@ -1097,7 +1093,7 @@ class EditorMenus(gobject.GObject):
             )
             + BothAction(
                 "Italic",
-                gtk.STOCK_ITALIC,
+                "Italic",
                 _("_Italic"),
                 "<control>I",
                 _("Italic"),
@@ -1106,7 +1102,7 @@ class EditorMenus(gobject.GObject):
             )
             + BothAction(
                 "Underline",
-                gtk.STOCK_UNDERLINE,
+                "Underline",
                 _("_Underline"),
                 "<control>U",
                 _("Underline"),
@@ -1544,8 +1540,8 @@ class EditorMenus(gobject.GObject):
 
         # font size
         DEFAULT_FONT_SIZE = 10
-        font_size_button = gtk.SpinButton(
-            gtk.Adjustment(value=DEFAULT_FONT_SIZE, lower=2, upper=500, step_incr=1)
+        font_size_button = Gtk.SpinButton(
+            Gtk.Adjustment(value=DEFAULT_FONT_SIZE, lower=2, upper=500, step_incr=1)
         )
         font_size_button.set_size_request(-1, 25)
         font_size_button.set_value(DEFAULT_FONT_SIZE)
@@ -1625,20 +1621,20 @@ class ComboToolItem(gtk.ToolItem):
     __gtype_name__ = "ComboToolItem"
 
     def __init__(self):
-        gtk.ToolItem.__init__(self)
+        Gtk.ToolItem.__init__(self)
 
         self.set_border_width(2)
         self.set_homogeneous(False)
         self.set_expand(False)
 
-        self.combobox = gtk.combo_box_entry_new_text()
+        self.combobox = Gtk.combo_box_entry_new_text()
         for text in ["a", "b", "c", "d", "e", "f"]:
             self.combobox.append_text(text)
         self.combobox.show()
         self.add(self.combobox)
 
     def do_set_tooltip(self, tooltips, tip_text=None, tip_private=None):
-        gtk.ToolItem.set_tooltip(self, tooltips, tip_text, tip_private)
+        Gtk.ToolItem.set_tooltip(self, tooltips, tip_text, tip_private)
 
         tooltips.set_tip(self.combobox, tip_text, tip_private)
 
@@ -1647,7 +1643,7 @@ class ComboToolAction(gtk.Action):
     __gtype_name__ = "ComboToolAction"
 
     def __init__(self, name, label, tooltip, stock_id):
-        gtk.Action.__init__(self, name, label, tooltip, stock_id)
+        Gtk.Action.__init__(self, name, label, tooltip, stock_id)
 
 
 ComboToolAction.set_tool_item_type(ComboToolItem)

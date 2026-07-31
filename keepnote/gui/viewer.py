@@ -28,11 +28,8 @@ Base class for a viewer
 import uuid
 
 # pygtk imports
-import pygtk
+from gi.repository import GObject, Gtk
 
-pygtk.require("2.0")
-import gtk
-import gobject
 
 # keepnote imports
 import keepnote
@@ -44,10 +41,10 @@ _ = keepnote.translate
 
 class Viewer(gtk.VBox):
     def __init__(self, app, parent, viewerid=None, viewer_name="viewer"):
-        gtk.VBox.__init__(self, False, 0)
+        Gtk.VBox.__init__(self, False, 0)
         self._app = app
         self._main_window = parent
-        self._viewerid = viewerid if viewerid else unicode(uuid.uuid4())
+        self._viewerid = viewerid if viewerid else str(uuid.uuid4())
         self._viewer_name = viewer_name
 
         self._notebook = None
@@ -60,7 +57,7 @@ class Viewer(gtk.VBox):
         return self._viewerid
 
     def set_id(self, viewerid):
-        self._viewerid = viewerid if viewerid else unicode(uuid.uuid4())
+        self._viewerid = viewerid if viewerid else str(uuid.uuid4())
 
     def get_name(self):
         return self._viewer_name
@@ -160,24 +157,21 @@ class Viewer(gtk.VBox):
 
     def remove_ui(self, window):
         pass
-
-
-gobject.type_register(Viewer)
-gobject.signal_new(
-    "error", Viewer, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, object)
+GObject.signal_new(
+    "error", Viewer, GObject.SignalFlags.RUN_LAST, gobject.TYPE_NONE, (str, object)
 )
-gobject.signal_new(
-    "status", Viewer, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str, str)
+GObject.signal_new(
+    "status", Viewer, GObject.SignalFlags.RUN_LAST, gobject.TYPE_NONE, (str, str)
 )
-gobject.signal_new(
-    "history-changed", Viewer, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (object,)
+GObject.signal_new(
+    "history-changed", Viewer, GObject.SignalFlags.RUN_LAST, gobject.TYPE_NONE, (object,)
 )
-gobject.signal_new(
-    "window-request", Viewer, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (str,)
+GObject.signal_new(
+    "window-request", Viewer, GObject.SignalFlags.RUN_LAST, gobject.TYPE_NONE, (str,)
 )
-gobject.signal_new(
-    "modified", Viewer, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (bool,)
+GObject.signal_new(
+    "modified", Viewer, GObject.SignalFlags.RUN_LAST, gobject.TYPE_NONE, (bool,)
 )
-gobject.signal_new(
-    "current-node", Viewer, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (object,)
+GObject.signal_new(
+    "current-node", Viewer, GObject.SignalFlags.RUN_LAST, gobject.TYPE_NONE, (object,)
 )

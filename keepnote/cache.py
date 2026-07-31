@@ -58,7 +58,7 @@ class LRUDict(dict):
                 self.__delitem__(minkey)
 
     def __getitem__(self, key):
-        val = dict.__getitem(self, key)
+        val = dict.__getitem__(self, key)
 
         self._age_lookup[key] = self._age
         self._ages.append((self._age, key))

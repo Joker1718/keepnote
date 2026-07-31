@@ -33,7 +33,7 @@ import xml.etree.ElementTree as ET
 
 def new_nodeid():
     """Generate a new node id"""
-    return unicode(uuid.uuid4())
+    return str(uuid.uuid4())
 
 
 def iter_child_node_paths(path):
@@ -67,7 +67,7 @@ class AttrDef:
 
         # writer function
         if datatype == bool:
-            self.write = lambda x: unicode(int(x))
+            self.write = lambda x: str(int(x))
         else:
             self.write = unicode
 
@@ -89,7 +89,7 @@ g_default_attr_defs = [
     AttrDef("nodeid", unicode, "Node ID", default=new_nodeid),
     AttrDef("content_type", unicode, "Content type", default=lambda: CONTENT_TYPE_DIR),
     AttrDef("title", unicode, "Title"),
-    AttrDef("order", int, "Order", default=lambda: sys.maxint),
+    AttrDef("order", int, "Order", default=lambda: sys.maxsize),
     AttrDef("created_time", int, "Created time", default=get_timestamp),
     AttrDef("modified_time", int, "Modified time", default=get_timestamp),
     AttrDef("expanded", bool, "Expaned", default=lambda: True),
@@ -109,7 +109,7 @@ def read_attr_v5(filename, attr_defs=g_attr_defs_lookup):
 
     attr = {}
 
-    tree = ET.ElementTree(file=filename)
+    tree = ET.parse(filename)
 
     # check root
     root = tree.getroot()
@@ -166,7 +166,7 @@ def convert_node_attr(filename, filename2, attr_defs=g_attr_defs_lookup):
 
 
 def update(filename):
-    filename = unicode(filename)
+    filename = str(filename)
 
     def walk(path):
         nodepath = os.path.join(path, "node.xml")
@@ -177,7 +177,7 @@ def update(filename):
     walk(filename)
 
     preffile = os.path.join(filename, "notebook.nbk")
-    etree = ET.ElementTree(file=preffile)
+    etree = ET.parse(preffile)
     root = etree.getroot()
     root.find("version").text = "6"
     etree.write(preffile, encoding="utf-8")

@@ -26,10 +26,10 @@ Serving KeepNote notebooks over HTTP
 #
 
 # python imports
-from cStringIO import StringIO
-from httplib import BAD_REQUEST
-from httplib import FORBIDDEN
-from httplib import NOT_FOUND
+from io import BytesIO
+from http.client import BAD_REQUEST
+from http.client import FORBIDDEN
+from http.client import NOT_FOUND
 import json
 import mimetypes
 import os

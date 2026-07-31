@@ -38,11 +38,11 @@ class PushIter:
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         if len(self._queue) > 0:
             return self._queue.pop()
         else:
-            return self._it.next()
+            return self.next(_it)
 
     def push(self, item):
         """Push a new item onto the front of the iteration stream"""
@@ -65,7 +65,7 @@ def compose(*funcs):
     compose(f,g)(x) <==> f(g(x))
     """
     funcs = reversed(funcs)
-    f = funcs.next()
+    f = next(funcs)
     for g in funcs:
         f = compose2(g, f)
     return f

@@ -29,10 +29,8 @@ import mimetypes
 import os
 
 # pygtk imports
-import pygtk
+from gi.repository import Gtk
 
-pygtk.require("2.0")
-import gtk
 
 # keepnote imports
 import keepnote
@@ -95,7 +93,7 @@ DEFAULT_QUICK_PICK_ICONS = (
 
 class MimeIcons:
     def __init__(self):
-        self.theme = gtk.icon_theme_get_default()
+        self.theme = Gtk.icon_theme_get_default()
         if self.theme is None:
             icons = []
         else:
@@ -119,14 +117,14 @@ class MimeIcons:
 
         # try gnome mime
         items = mime_type.split("/")
-        for i in xrange(len(items), 0, -1):
+        for i in range(len(items), 0, -1):
             icon_name = "gnome-mime-" + "-".join(items[:i])
             if icon_name in self._icons:
                 self._cache[mime_type] = icon_name
-                return unicode(icon_name)
+                return str(icon_name)
 
         # try simple mime
-        for i in xrange(len(items), 0, -1):
+        for i in range(len(items), 0, -1):
             icon_name = "-".join(items[:i])
             if icon_name in self._icons:
                 self._cache[mime_type] = icon_name

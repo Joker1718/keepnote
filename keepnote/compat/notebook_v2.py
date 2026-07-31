@@ -271,11 +271,11 @@ def new_nodeid():
 # classes
 
 
-class NoteBookError(StandardError):
+class NoteBookError(Exception):
     """Exception that occurs when manipulating NoteBook's"""
 
     def __init__(self, msg, error=None):
-        StandardError.__init__(self)
+        Exception.__init__(self)
         self.msg = msg
         self.error = error
 
@@ -319,7 +319,7 @@ class NoteBookAttr:
         # writer function
         if write is None:
             if datatype == bool:
-                self.write = lambda x: unicode(int(x))
+                self.write = lambda x: str(int(x))
             else:
                 self.write = unicode
         else:
@@ -513,7 +513,7 @@ class NoteBookNode:
         self._attr = {
             "title": title,
             "content_type": content_type,
-            "order": sys.maxint,
+            "order": sys.maxsize,
             "created_time": None,
             "modified_time": None,
             "expanded": False,
@@ -550,7 +550,7 @@ class NoteBookNode:
 
     def iter_attr(self):
         """Iterate through attributes"""
-        return self._attr.iteritems()
+        return self._attr.items()
 
     def set_attr_timestamp(self, name, timestamp=None):
         """Set a timestamp attribute"""
@@ -1073,7 +1073,7 @@ class NoteBook(NoteBookDir):
     def load(self, filename=None):
         """Load the NoteBook from the file-system"""
         if filename is not None:
-            filename = unicode(filename)
+            filename = str(filename)
 
             if os.path.isdir(filename):
                 self._set_basename(filename)

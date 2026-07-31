@@ -31,8 +31,8 @@ import sys
 import shutil
 import re
 import traceback
-import urlparse
-import urllib2
+import urllib.parse
+import urllib.request
 import uuid
 
 # xml imports
@@ -116,7 +116,7 @@ def get_unique_filename(
     # try numbered suffixes
     i = number
     while True:
-        newname = os.path.join(path, filename + sep + unicode(i) + ext)
+        newname = os.path.join(path, filename + sep + str(i) + ext)
         if not os.path.exists(newname):
             if return_number:
                 return (newname, i)
@@ -137,7 +137,7 @@ def get_unique_filename_list(filenames, filename, ext="", sep=" ", number=2):
     # try numbered suffixes
     i = number
     while True:
-        newname = filename + sep + unicode(i) + ext
+        newname = filename + sep + str(i) + ext
         if newname not in filenames:
             return newname
         i += 1
@@ -178,13 +178,13 @@ def normalize_notebook_dirname(filename, longpath=None):
     If the filename contains 'path/to/the-notebook/notebook.nbk', then
     return 'path/to/the-notebook'.
 
-    If the platform is windows (or longpath=True), then return the long
+    If the platform is windows (or longpath=True), then return the int
     file name prefix '\\\\?\\'.
     """
 
-    filename = keepnote.ensure_unicode(filename, keepnote.FS_ENCODING)
+    filename = keepnote.ensure_str(filename, keepnote.FS_ENCODING)
 
-    # allow long file paths in windows
+    # allow int file paths in windows
     if longpath is True or (longpath is None and keepnote.get_platform() == "windows"):
         filename = "\\\\?\\" + filename
 
@@ -245,7 +245,7 @@ def get_notebook_version(filename):
         filename = get_pref_file(filename)
 
     try:
-        tree = ET.ElementTree(file=filename)
+        tree = ET.parse(filename)
     except OSError as e:
         raise NoteBookError(_("Cannot read notebook preferences"), e)
     except Exception as e:
@@ -274,7 +274,7 @@ def get_notebook_version_etree(tree):
 
 def new_nodeid():
     """Generate a new node id"""
-    return unicode(uuid.uuid4())
+    return str(uuid.uuid4())
 
 
 def get_node_url(nodeid, host=""):
@@ -361,11 +361,11 @@ def new_page(parent, title=None, index=None):
 # errors
 
 
-class NoteBookError(StandardError):
+class NoteBookError(Exception):
     """Exception that occurs when manipulating NoteBook's"""
 
     def __init__(self, msg, error=None):
-        StandardError.__init__(self)
+        Exception.__init__(self)
         self.msg = msg
         self.error = error
 
@@ -413,7 +413,7 @@ class AttrDef:
 
         # writer function
         if datatype == bool:
-            self.write = lambda x: unicode(int(x))
+            self.write = lambda x: str(int(x))
         else:
             self.write = unicode
 
@@ -435,7 +435,7 @@ g_default_attr_defs = [
     AttrDef("nodeid", unicode, "Node ID", default=new_nodeid),
     AttrDef("content_type", unicode, "Content type", default=lambda: CONTENT_TYPE_DIR),
     AttrDef("title", unicode, "Title"),
-    AttrDef("order", int, "Order", default=lambda: sys.maxint),
+    AttrDef("order", int, "Order", default=lambda: sys.maxsize),
     AttrDef("created_time", int, "Created time", default=get_timestamp),
     AttrDef("modified_time", int, "Modified time", default=get_timestamp),
     AttrDef("expanded", bool, "Expaned", default=lambda: True),
@@ -584,7 +584,7 @@ class NoteBookNode:
 
     def iter_attr(self):
         """Iterate through attributes of the node"""
-        return self._attr.iteritems()
+        return self._attr.items()
 
     def _init_attr(self, attr):
         """Initialize attributes from a dict"""
@@ -939,7 +939,7 @@ class NoteBookNode:
         self._children = list(self._iter_children())
 
         # assign orders
-        self._children.sort(key=lambda x: x._attr.get("order", sys.maxint))
+        self._children.sort(key=lambda x: x._attr.get("order", sys.maxsize))
         self._set_child_order()
 
     def _iter_children(self):
@@ -1180,7 +1180,7 @@ class NoteBook(NoteBookNode):
         )
 
         self.pref = NoteBookPreferences()
-        rootdir = keepnote.ensure_unicode(rootdir, keepnote.FS_ENCODING)
+        rootdir = keepnote.ensure_str(rootdir, keepnote.FS_ENCODING)
         self._basename = rootdir
         self._dirty = set()
         self._trash = None
@@ -1524,7 +1524,7 @@ class NoteBook(NoteBookNode):
             # determine open icon filename
             newfilename_open = startname
             if number:
-                newfilename_open += "-" + unicode(number)
+                newfilename_open += "-" + str(number)
             else:
                 number = 2
             newfilename_open += "-open" + ext

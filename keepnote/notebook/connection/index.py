@@ -56,7 +56,7 @@ def match_words(infile, words):
                 matches[word] = True
 
     # return True if all words are found (AND)
-    for val in matches.itervalues():
+    for val in matches.values():
         if not val:
             return False
 
@@ -237,7 +237,7 @@ class NodeIndex:
         #            """)
 
         # initialize attribute tables
-        for attr in self._attrs.itervalues():
+        for attr in self._attrs.values():
             attr.init(cur)
 
     def drop_attrs(self, cur):
@@ -261,7 +261,7 @@ class NodeIndex:
     def add_node_attr(self, cur, nodeid, attr, fulltext=True):
 
         # update attrs
-        for attrindex in self._attrs.itervalues():
+        for attrindex in self._attrs.values():
             attrindex.add_node(cur, nodeid, attr)
 
         # update fulltext
@@ -272,7 +272,7 @@ class NodeIndex:
     def remove_node_attr(self, cur, nodeid):
 
         # update attrs
-        for attr in self._attrs.itervalues():
+        for attr in self._attrs.values():
             attr.remove_node(cur, nodeid)
 
         self._remove_text(cur, nodeid)
@@ -324,7 +324,7 @@ class NodeIndex:
             if match_words(infile, words):
                 yield nodeid
             else:
-                # return frequently so that search does not block long
+                # return frequently so that search does not block int
                 yield None
 
             children = self._nconn._list_children_nodeids(nodeid)

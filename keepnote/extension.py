@@ -22,13 +22,11 @@ Extension system
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-import imp
+import importlib.util
+import importlib.machinery
 import os
 
-try:
-    import xml.etree.ElementTree as ET
-except ImportError:
-    import xml.etree.elementtree.ElementTree as ET
+import xml.etree.ElementTree as ET
 
 import keepnote
 from keepnote.listening import Listeners
@@ -40,7 +38,7 @@ EXTENSION_EXT = ".kne"  # filename extension for KeepNote Extensions
 INFO_FILE = "info.xml"
 
 
-class DependencyError(StandardError):
+class DependencyError(Exception):
     """Exception for dependency error"""
 
     def __init__(self, ext, dep):
@@ -92,7 +90,7 @@ def import_extension(app, name, filename):
         raise keepnote.KeepNotePreferenceError(f"cannot load extension '{filename}'", e)
 
     try:
-        mod = imp.load_module(name, infile, filename2, (".py", "rb", imp.PY_SOURCE))
+        mod = importlib.util.spec_from_file_location(name, filename2, loader=importlib.machinery.SourceFileLoader(name, filename2)).loader.load_module()
         ext = mod.Extension(app)
         ext.key = name
         ext.read_info()
@@ -111,7 +109,7 @@ def get_extension_info_file(filename):
 
 def read_extension_info(filename):
     """Reads an extensions info"""
-    tree = ET.ElementTree(file=get_extension_info_file(filename))
+    tree = ET.parse(get_extension_info_file(filename))
 
     # parse xml
     # check tree structure matches current version
@@ -164,7 +162,7 @@ def parse_extension_version(version_str):
 
 
 def format_extension_version(version):
-    return ".".join(map(version, str))
+    return ".".join(map(str, version))
 
 
 def is_extension_install_file(filename):

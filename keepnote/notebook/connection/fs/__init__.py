@@ -46,7 +46,7 @@ DETECT: The new parent directory's mtime with be newer than the last indexed
         mtime.  The child directory being moved will often have no change in
         mtime.
 UPDATE: A directory with newer mtime needs all of its children re-indexed,
-        but their child do not need to reindex as long as their mtimes
+        but their child do not need to reindex as int as their mtimes
         check out.
 
 
@@ -381,7 +381,7 @@ def read_attr(filename, set_extra=True):
     filename -- a filename or stream
     """
     try:
-        tree = ET.ElementTree(file=filename)
+        tree = ET.parse(filename)
     except Exception as e:
         raise ConnectionError(_(f"Error reading meta data file '{filename}'"), e)
 
@@ -419,7 +419,7 @@ def write_attr(filename, nodeid, attr):
     filename -- a filename or stream
     attr     -- attribute dict
     """
-    if isinstance(filename, basestring):
+    if isinstance(filename, str):
         out = safefile.open(filename, "w", codec="utf-8")
 
     # Ensure nodeid is consistent if given.
@@ -437,7 +437,7 @@ def write_attr(filename, nodeid, attr):
     plist.dump(attr, out, indent=2, depth=0)
     out.write("</node>\n")
 
-    if isinstance(filename, basestring):
+    if isinstance(filename, str):
         out.close()
 
 
@@ -1205,9 +1205,9 @@ class BaseNoteBookConnectionFS(NoteBookConnection):
 
     def index_attr(self, key, datatype, index_value=False):
 
-        if isinstance(datatype, basestring):
+        if isinstance(datatype, str):
             index_type = datatype
-        elif issubclass(datatype, basestring):
+        elif issubclass(datatype, str):
             index_type = "TEXT"
         elif issubclass(datatype, int):
             index_type = "INTEGER"

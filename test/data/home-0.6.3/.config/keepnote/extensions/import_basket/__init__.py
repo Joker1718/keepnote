@@ -41,7 +41,7 @@ pygtk.require('2.0')
 #from xml.dom.ext.reader import HtmlLib
 import shutil
 import sgmllib
-import htmlentitydefs,re
+import html.entities,re
 import base64
 import string,random
 import glob
@@ -56,7 +56,7 @@ def strip_accents(str):
     """
         remove all non ascii characters from a string
     """
-    nkfd_form = unicodedata.normalize('NFKD', unicode(str))
+    nkfd_form = unicodedata.normalize('NFKD', str(str))
     only_ascii = nkfd_form.encode('ASCII', 'ignore')
     return only_ascii
 
@@ -65,7 +65,7 @@ try:
     from xml.etree import ElementTree
     from xml.etree.ElementTree import XML, fromstring, tostring
     import xml.etree.ElementTree as ET # Python 2.5
-except ImportError, e:
+except ImportError as e:
     # Python version < 2.5
     from elementtree import ElementTree
     from elementtree.ElementTree import XML, fromstring, tostring
@@ -99,7 +99,7 @@ def unescape(text):
                 else:
                     return unichr(int(text[2:-1]))
             except ValueError:
-                print "erreur de valeur"
+                print("erreur de valeur")
                 pass
         else:
             # named entity
@@ -112,9 +112,9 @@ def unescape(text):
                     text = "&amp;lt;"
                 else:
                     # print text[1:-1]
-                    text = unichr(htmlentitydefs.name2codepoint[text[1:-1]])
+                    text = unichr(html.entities.name2codepoint[text[1:-1]])
             except KeyError:
-                print "keyerror"
+                print("keyerror")
                 pass
         return text # leave as is
     return re.sub(r"&#?\w+;", fixup, text)
@@ -191,9 +191,9 @@ def import_basket_directory(window, basket_directory):
     basket_xml_file = basket_directory + os.sep + "baskets.xml"
     try:
         fd = open(basket_xml_file, r'r')
-    except IOError, e:
+    except IOError as e:
         errno, strerror = e
-        print "I/O error(%s): %s" % (errno, strerror)
+        print("I/O error(%s): %s" % (errno, strerror))
         dialog = gtk.MessageDialog(None, gtk.DIALOG_MODAL, gtk.MESSAGE_INFO, gtk.BUTTONS_OK, "Sorry, this is not a data directory of Basket Notepad, baskets.xml not found!")
         dialog.run()
         dialog.destroy()
@@ -226,7 +226,7 @@ def import_basket_directory(window, basket_directory):
     else:
         index = None
     rootKeepNoteNode = parent.new_child(notebooklib.CONTENT_TYPE_DIR, notebooklib.DEFAULT_DIR_NAME, index)
-    rootKeepNoteNode.rename(unicode("Basket Notepad",'utf8'))
+    rootKeepNoteNode.rename(str("Basket Notepad", 'utf8'))
     
     BasketIndexParser.import_basket(basket_xml_file, rootKeepNoteNode, basket_directory, window)
 
@@ -338,15 +338,15 @@ class BasketIndexParser():
         # we then create the filename with an random name but set the node title correctly
         if type(name) is not unicode:
             try:
-                name = unicode(name, "utf-8")
+                name = str(name, "utf-8")
                 #xnode.rename(name)
             except UnicodeEncodeError:
-                name = unicode(name, "latin-1")
+                name = str(name, "latin-1")
                 #xnode.rename("".join(random.sample(string.letters+string.digits, 8)))
                 #xnode.set_attr('title',unescape(name))
         nname = strip_accents(name)
         if nname != name:
-            print "oldname: %s newname: %s"%(repr(name),nname)
+            print("oldname: %s newname: %s"%(repr(name),nname))
         xnode.rename(nname)
         return xnode
 
@@ -568,18 +568,18 @@ class HTMLFilter(HTMLParser.HTMLParser):
         _startwrap=''
         _endwrap=''
         if attrs:
-            _attrs = ' %s' % ( ' '.join( [ ('%s="%s"' % (k,v)) for k,v in attrs.iteritems() if k != "style"] ) )
-            if attrs.has_key("style"):
+            _attrs = ' %s' % ( ' '.join( [ ('%s="%s"' % (k,v)) for k,v in attrs.items() if k != "style"] ) )
+            if "style" in attrs:
                 _style =  attrs["style"]
 
                 _not_style={} 
                 for x in _style.split(";"):
                     if x and x not in ("font-size", "font-family", "text-align", "justify", "color", "background-color"):
                         _not_style[x.split(":")[0].strip()] = x.split(":")[1].strip()
-                if _not_style and _not_style.has_key("text-decoration") and _not_style["text-decoration"]=="underline":
+                if _not_style and "text-decoration" in _not_style and _not_style["text-decoration"]=="underline":
                     self._do_underline = True
                 
-                if _not_style and _not_style.has_key("font-weight"):
+                if _not_style and "font-weight" in _not_style:
                     self._do_bold = True
                 
                 _style_list = _style.split(";")
@@ -648,7 +648,7 @@ def guess_encoding(data):
     except (AttributeError, IndexError):
         pass
     try:
-        encodings.append(locale.getdefaultlocale()[1])
+        encodings.append(locale.getlocale()[1])
     except (AttributeError, IndexError):
         pass
     #
@@ -660,7 +660,7 @@ def guess_encoding(data):
         if not enc:
             continue
         try:
-            decoded = unicode(data, enc)
+            decoded = str(data, enc)
             successful_encoding = enc
 
         except (UnicodeError, LookupError):
@@ -700,7 +700,7 @@ def text_file_read(filename):
         try:
             unicode_text, encoding = guess_encoding(the_text)
         except UnicodeError:
-            print "Sorry - we can't work out the encoding."
+            print("Sorry - we can't work out the encoding.")
             raise
     else:                   
         # we found a BOM so we know the encoding

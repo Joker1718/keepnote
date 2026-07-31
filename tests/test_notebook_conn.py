@@ -1,5 +1,5 @@
 # python imports
-from StringIO import StringIO
+from io import StringIO
 import sys
 import unittest
 
@@ -14,7 +14,7 @@ _tmpdir = TMP_DIR + '/notebook_conn/'
 
 
 def display_notebook(node, depth=0, out=sys.stdout):
-    print >>out, " " * depth + node.get_attr("title")
+    print(" " * depth + node.get_attr("title"), file=out)
     for child in node.get_children():
         display_notebook(child, depth+2, out)
 

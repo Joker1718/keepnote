@@ -254,11 +254,11 @@ def update_notebook(filename, desired_version):
 # classes
 
 
-class NoteBookError(StandardError):
+class NoteBookError(Exception):
     """Exception that occurs when manipulating NoteBook's"""
 
     def __init__(self, msg, error=None):
-        StandardError.__init__(self)
+        Exception.__init__(self)
         self.msg = msg
         self.error = error
 
@@ -297,7 +297,7 @@ class NoteBookAttr:
         # writer function
         if write is None:
             if datatype == bool:
-                self.write = lambda x: unicode(int(x))
+                self.write = lambda x: str(int(x))
             else:
                 self.write = unicode
         else:
@@ -357,7 +357,7 @@ class NoteBookNode:
         self._attr = {
             "title": title,
             "kind": kind,
-            "order": sys.maxint,
+            "order": sys.maxsize,
             "created_time": None,
             "modified_time": None,
             "expanded": False,
@@ -815,7 +815,7 @@ class NoteBookNode:
             out.write(XML_HEADER)
             out.write("<node>\n<version>2</version>\n")
 
-            for key, val in self._attr.iteritems():
+            for key, val in self._attr.items():
                 attr = self._notebook.notebook_attrs.get(key, None)
 
                 if attr is not None:

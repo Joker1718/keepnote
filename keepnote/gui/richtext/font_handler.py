@@ -25,11 +25,8 @@ Font handler for RichText buffer.
 #
 
 # pygtk imports
-import pygtk
+from gi.repository import GObject, Gtk
 
-pygtk.require("2.0")
-import gtk
-import gobject
 
 from .undo_handler import InsertAction
 
@@ -62,7 +59,7 @@ class FontHandler(gobject.GObject):
 
         self._buf = textbuffer
         self._current_tags = []
-        self._default_attr = gtk.TextAttributes()
+        self._default_attr = Gtk.TextAttributes()
         self._font_class = RichTextBaseFont
 
         self._insert_mark = self._buf.get_insert()
@@ -253,7 +250,7 @@ class FontHandler(gobject.GObject):
         current_tags = set(self._current_tags)
 
         # get the text attributes and font at the iter
-        attr = gtk.TextAttributes()
+        attr = Gtk.TextAttributes()
         self._default_attr.copy_values(attr)
         it.get_attributes(attr)
         tags = it.get_tags()
@@ -264,9 +261,6 @@ class FontHandler(gobject.GObject):
 
         font.set_font(attr, tags, current_tags, self._buf.tag_table)
         return font
-
-
-gobject.type_register(FontHandler)
-gobject.signal_new(
-    "font-change", FontHandler, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (object,)
+GObject.signal_new(
+    "font-change", FontHandler, GObject.SignalFlags.RUN_LAST, gobject.TYPE_NONE, (object,)
 )

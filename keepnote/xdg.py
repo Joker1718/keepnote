@@ -45,24 +45,24 @@ g_config_dirs = None
 g_data_dirs = None
 
 
-class XdgError (StandardError):
+class XdgError (Exception):
     pass
 
 
 FS_ENCODING = object()
 
 
-def ensure_unicode(text, encoding="utf8"):
+def ensure_str(text, encoding="utf8"):
     """Ensures a string is unicode"""
 
     if text is None:
         return None
 
-    if not isinstance(text, unicode):
+    if not isinstance(text, str):
         if encoding == FS_ENCODING:
-            return unicode(text, sys.getfilesystemencoding())
+            return str(text, sys.getfilesystemencoding())
         else:
-            return unicode(text, encoding)
+            return str(text, encoding)
     return text
 
 
@@ -81,17 +81,16 @@ def get_config_dirs(home=None, cache=True):
         return g_config_dirs
 
     # get user config dir
-    config = ensure_unicode(os.getenv(ENV_CONFIG), FS_ENCODING)
+    config = ensure_str(os.getenv(ENV_CONFIG), FS_ENCODING)
     if config is None:
         if home is None:
-            home = ensure_unicode(os.getenv("HOME"), FS_ENCODING)
+            home = ensure_str(os.getenv("HOME"), FS_ENCODING)
             if home is None:
                 raise XdgError("HOME environment variable must be specified")
         config = os.path.join(home, DEFAULT_CONFIG_DIR)
 
     # get alternate user config dirs
-    config_dirs = ensure_unicode(os.getenv(ENV_CONFIG_DIRS,
-                                           DEFAULT_CONFIG_DIRS),
+    config_dirs = ensure_str(os.getenv(ENV_CONFIG_DIRS, DEFAULT_CONFIG_DIRS),
                                  FS_ENCODING)
 
     if config_dirs == "":
@@ -121,16 +120,16 @@ def get_data_dirs(home=None, cache=True):
         return g_data_dirs
 
     # get user config dir
-    data = ensure_unicode(os.getenv(ENV_DATA), FS_ENCODING)
+    data = ensure_str(os.getenv(ENV_DATA), FS_ENCODING)
     if data is None:
         if home is None:
-            home = ensure_unicode(os.getenv("HOME"), FS_ENCODING)
+            home = ensure_str(os.getenv("HOME"), FS_ENCODING)
             if home is None:
                 raise XdgError("HOME environment variable must be specified")
         data = os.path.join(home, DEFAULT_DATA_DIR)
 
     # get alternate user config dirs
-    data_dirs = ensure_unicode(os.getenv(ENV_DATA_DIRS, DEFAULT_DATA_DIRS),
+    data_dirs = ensure_str(os.getenv(ENV_DATA_DIRS, DEFAULT_DATA_DIRS),
                                FS_ENCODING)
     if data_dirs == "":
         data_dirs = DEFAULT_DATA_DIRS

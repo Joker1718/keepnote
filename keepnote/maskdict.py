@@ -95,7 +95,7 @@ class MaskDict(dict):
         return (key for key in self._dict if key not in self._mask)
 
     def __repr__(self):
-        return repr(dict(self.iteritems()))
+        return repr(dict(self.items()))
 
     def __str__(self):
-        return str(dict(self.iteritems()))
+        return str(dict(self.items()))

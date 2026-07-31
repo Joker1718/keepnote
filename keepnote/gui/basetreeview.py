@@ -28,12 +28,8 @@ base class for treeview
 import urllib
 
 # pygtk imports
-import pygtk
+from gi.repository import GObject, Gdk, Gtk
 
-pygtk.require("2.0")
-import gtk
-import gobject
-from gtk import gdk
 
 # keepnote imports
 import keepnote
@@ -75,7 +71,7 @@ def parse_utf(text):
         return text.decode("utf16")
     else:
         text = text.replace("\x00", "")
-        return unicode(text, "utf8")
+        return str(text, "utf8")
 
 
 def compute_new_path(model, target, drop_position):
@@ -83,13 +79,13 @@ def compute_new_path(model, target, drop_position):
     path = model.get_path(target)
 
     if (
-        drop_position == gtk.TREE_VIEW_DROP_INTO_OR_BEFORE
-        or drop_position == gtk.TREE_VIEW_DROP_INTO_OR_AFTER
+        drop_position == Gtk.TreeViewDropPosition.INTO_OR_BEFORE
+        or drop_position == Gtk.TreeViewDropPosition.INTO_OR_AFTER
     ):
         return path + (0,)
-    elif drop_position == gtk.TREE_VIEW_DROP_BEFORE:
+    elif drop_position == Gtk.TreeViewDropPosition.BEFORE:
         return path
-    elif drop_position == gtk.TREE_VIEW_DROP_AFTER:
+    elif drop_position == Gtk.TreeViewDropPosition.AFTER:
         return path[:-1] + (path[-1] + 1,)
     else:
         raise Exception(f"unknown drop position {str(drop_position)}")
@@ -111,7 +107,7 @@ class KeepNoteBaseTreeView(gtk.TreeView):
     """Base class for treeviews of a NoteBook notes"""
 
     def __init__(self):
-        gtk.TreeView.__init__(self)
+        Gtk.TreeView.__init__(self)
 
         self.model = None
         self.rich_model = None
@@ -169,25 +165,25 @@ class KeepNoteBaseTreeView(gtk.TreeView):
 
         # configure drag and drop events
         self.enable_model_drag_source(
-            gtk.gdk.BUTTON1_MASK, [DROP_TREE_MOVE], gtk.gdk.ACTION_MOVE
+            Gdk.ModifierType.BUTTON1_MASK, [DROP_TREE_MOVE], Gdk.DragAction.MOVE
         )
         self.drag_source_set(
-            gtk.gdk.BUTTON1_MASK, [DROP_TREE_MOVE], gtk.gdk.ACTION_MOVE
+            Gdk.ModifierType.BUTTON1_MASK, [DROP_TREE_MOVE], Gdk.DragAction.MOVE
         )
         self.enable_model_drag_dest(
             [DROP_TREE_MOVE, DROP_URI],
-            gtk.gdk.ACTION_MOVE | gtk.gdk.ACTION_COPY | gtk.gdk.ACTION_LINK,
+            Gdk.DragAction.MOVE | Gdk.DragAction.COPY | Gdk.DragAction.LINK,
         )
 
         self.drag_dest_set(
             gtk.DEST_DEFAULT_HIGHLIGHT | gtk.DEST_DEFAULT_MOTION,
             [DROP_TREE_MOVE, DROP_URI],
-            gtk.gdk.ACTION_DEFAULT
-            | gtk.gdk.ACTION_MOVE
-            | gtk.gdk.ACTION_COPY
-            | gtk.gdk.ACTION_LINK
-            | gtk.gdk.ACTION_PRIVATE
-            | gtk.gdk.ACTION_ASK,
+            Gdk.DragAction.DEFAULT
+            | Gdk.DragAction.MOVE
+            | Gdk.DragAction.COPY
+            | Gdk.DragAction.LINK
+            | Gdk.DragAction.PRIVATE
+            | Gdk.DragAction.ASK,
         )
 
     def set_master_node(self, node):
@@ -239,7 +235,7 @@ class KeepNoteBaseTreeView(gtk.TreeView):
         # set new model
         self.model = model
         self.rich_model = None
-        gtk.TreeView.set_model(self, self.model)
+        Gtk.TreeView.set_model(self, self.model)
 
         # set new model
         if self.model is not None:
@@ -333,7 +329,7 @@ class KeepNoteBaseTreeView(gtk.TreeView):
         self, column, attr, editable=False, validator=TextRendererValidator()
     ):
         # cell renderer text
-        cell = gtk.CellRendererText()
+        cell = Gtk.CellRendererText()
         cell.set_fixed_height_from_font(1)
         column.pack_start(cell, True)
         column.add_attribute(cell, "text", self.rich_model.get_column_by_name(attr).pos)
@@ -370,7 +366,7 @@ class KeepNoteBaseTreeView(gtk.TreeView):
 
     def _add_pixbuf_render(self, column, attr, attr_open=None):
 
-        cell = gtk.CellRendererPixbuf()
+        cell = Gtk.CellRendererPixbuf()
         column.pack_start(cell, False)
         column.add_attribute(
             cell, "pixbuf", self.rich_model.get_column_by_name(attr).pos
@@ -1018,7 +1014,7 @@ class KeepNoteBaseTreeView(gtk.TreeView):
         # setup the drag icon
         if self._get_icon:
             pixbuf = self._get_icon(source)
-            pixbuf = pixbuf.scale_simple(40, 40, gtk.gdk.INTERP_BILINEAR)
+            pixbuf = pixbuf.scale_simple(40, 40, Gdk.InterpType.BILINEAR)
             self.drag_source_set_icon_pixbuf(pixbuf)
 
         # clear the destination row
@@ -1252,8 +1248,8 @@ class KeepNoteBaseTreeView(gtk.TreeView):
             ptr = ptr.get_parent()
 
         drop_into = (
-            drop_position == gtk.TREE_VIEW_DROP_INTO_OR_BEFORE
-            or drop_position == gtk.TREE_VIEW_DROP_INTO_OR_AFTER
+            drop_position == Gtk.TreeViewDropPosition.INTO_OR_BEFORE
+            or drop_position == Gtk.TreeViewDropPosition.INTO_OR_AFTER
         )
 
         return (
@@ -1272,90 +1268,87 @@ class KeepNoteBaseTreeView(gtk.TreeView):
                 and target_node.get_parent() == source_node.get_parent()
             )
         )
-
-
-gobject.type_register(KeepNoteBaseTreeView)
-gobject.signal_new(
+GObject.signal_new(
     "goto-node",
     KeepNoteBaseTreeView,
-    gobject.SIGNAL_RUN_LAST,
+    GObject.SignalFlags.RUN_LAST,
     gobject.TYPE_NONE,
     (object,),
 )
-gobject.signal_new(
+GObject.signal_new(
     "activate-node",
     KeepNoteBaseTreeView,
-    gobject.SIGNAL_RUN_LAST,
+    GObject.SignalFlags.RUN_LAST,
     gobject.TYPE_NONE,
     (object,),
 )
-gobject.signal_new(
+GObject.signal_new(
     "delete-node",
     KeepNoteBaseTreeView,
-    gobject.SIGNAL_RUN_LAST,
+    GObject.SignalFlags.RUN_LAST,
     gobject.TYPE_NONE,
     (object,),
 )
-gobject.signal_new(
+GObject.signal_new(
     "goto-parent-node",
     KeepNoteBaseTreeView,
-    gobject.SIGNAL_RUN_LAST,
+    GObject.SignalFlags.RUN_LAST,
     gobject.TYPE_NONE,
     (),
 )
-gobject.signal_new(
+GObject.signal_new(
     "copy-clipboard",
     KeepNoteBaseTreeView,
-    gobject.SIGNAL_RUN_LAST,
+    GObject.SignalFlags.RUN_LAST,
     gobject.TYPE_NONE,
     (),
 )
-gobject.signal_new(
+GObject.signal_new(
     "copy-tree-clipboard",
     KeepNoteBaseTreeView,
-    gobject.SIGNAL_RUN_LAST,
+    GObject.SignalFlags.RUN_LAST,
     gobject.TYPE_NONE,
     (),
 )
-gobject.signal_new(
+GObject.signal_new(
     "cut-clipboard",
     KeepNoteBaseTreeView,
-    gobject.SIGNAL_RUN_LAST,
+    GObject.SignalFlags.RUN_LAST,
     gobject.TYPE_NONE,
     (),
 )
-gobject.signal_new(
+GObject.signal_new(
     "paste-clipboard",
     KeepNoteBaseTreeView,
-    gobject.SIGNAL_RUN_LAST,
+    GObject.SignalFlags.RUN_LAST,
     gobject.TYPE_NONE,
     (),
 )
-gobject.signal_new(
+GObject.signal_new(
     "select-nodes",
     KeepNoteBaseTreeView,
-    gobject.SIGNAL_RUN_LAST,
+    GObject.SignalFlags.RUN_LAST,
     gobject.TYPE_NONE,
     (object,),
 )
-gobject.signal_new(
+GObject.signal_new(
     "edit-node",
     KeepNoteBaseTreeView,
-    gobject.SIGNAL_RUN_LAST,
+    GObject.SignalFlags.RUN_LAST,
     gobject.TYPE_NONE,
     (object, str, str),
 )
-gobject.signal_new(
+GObject.signal_new(
     "drop-file",
     KeepNoteBaseTreeView,
-    gobject.SIGNAL_RUN_LAST,
+    GObject.SignalFlags.RUN_LAST,
     gobject.TYPE_NONE,
     (object, int, str),
 )
-gobject.signal_new(
+GObject.signal_new(
     "error",
     KeepNoteBaseTreeView,
-    gobject.SIGNAL_RUN_LAST,
+    GObject.SignalFlags.RUN_LAST,
     gobject.TYPE_NONE,
     (
         str,

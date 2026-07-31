@@ -1,6 +1,6 @@
 import json
 import socket
-import thread
+import _thread
 import urllib
 
 from keepnote import notebook as notebooklib

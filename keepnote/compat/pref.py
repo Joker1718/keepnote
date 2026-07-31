@@ -82,7 +82,7 @@ def get_new_pref_dir(home):
 
 def get_home():
     """Return HOME directory"""
-    home = keepnote.ensure_unicode(os.getenv("HOME"), FS_ENCODING)
+    home = keepnote.ensure_str(os.getenv("HOME"), FS_ENCODING)
     if home is None:
         raise EnvError("HOME environment variable must be specified")
     return home

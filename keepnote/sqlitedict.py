@@ -160,7 +160,7 @@ class SqliteDict(DictMixin):
 
     def update(self, items=(), **kwds):
         try:
-            items = [(k, encode(v)) for k, v in items.iteritems()]
+            items = [(k, encode(v)) for k, v in items.items()]
         except AttributeError:
             pass
 
@@ -170,16 +170,16 @@ class SqliteDict(DictMixin):
             self.update(kwds)
 
     def keys(self):
-        return list(self.iterkeys())
+        return list(self.keys())
 
     def values(self):
-        return list(self.itervalues())
+        return list(self.values())
 
     def items(self):
-        return list(self.iteritems())
+        return list(self.items())
 
     def __iter__(self):
-        return self.iterkeys()
+        return self.keys()
 
     def clear(self):
         CLEAR_ALL = f'DELETE FROM {self.tablename};' # avoid VACUUM, as it gives "OperationalError: database schema has changed"
@@ -335,7 +335,7 @@ if __name__ in '__main___':
         d['abc'] = 'lmno'
         d['xyz'] = 'pdq'
         assert len(d) == 2
-        assert list(d.iteritems()) == [('abc', 'lmno'), ('xyz', 'pdq')]
+        assert list(d.items()) == [('abc', 'lmno'), ('xyz', 'pdq')]
         assert d.items() == [('abc', 'lmno'), ('xyz', 'pdq')]
         assert d.values() == ['lmno', 'pdq']
         assert d.keys() == ['abc', 'xyz']

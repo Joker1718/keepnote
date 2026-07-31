@@ -206,7 +206,7 @@ class FSRaw (TestConnBase):
         make_clean_dir(filename)
 
         nodedirs = fs_raw.NodeFS(filename)
-        for i in xrange(1000):
+        for i in range(1000):
             nodeid = str(uuid.uuid4())
             nodedirs.create_nodedir(nodeid)
 

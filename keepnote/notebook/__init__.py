@@ -29,8 +29,8 @@ import mimetypes
 import os
 import sys
 import re
-import urlparse
-import urllib2
+import urllib.parse
+import urllib.request
 import uuid
 import xml.etree.ElementTree as ET
 
@@ -118,7 +118,7 @@ def get_unique_filename(
     # try numbered suffixes
     i = number
     while True:
-        newname = os.path.join(path, filename + sep + unicode(i) + ext)
+        newname = os.path.join(path, filename + sep + str(i) + ext)
         if not os.path.exists(newname):
             return (newname, i) if return_number else newname
         i += 1
@@ -145,7 +145,7 @@ def get_unique_filename_list(
     # try numbered suffixes
     i = number
     while True:
-        newname = filename + sep + unicode(i) + ext
+        newname = filename + sep + str(i) + ext
         if newname not in filenames:
             return (newname, i) if return_number else newname
         i += 1
@@ -186,12 +186,12 @@ def normalize_notebook_dirname(filename, longpath=None):
     If the filename contains 'path/to/the-notebook/notebook.nbk', then
     return 'path/to/the-notebook'.
 
-    If the platform is windows (or longpath=True), then return the long
+    If the platform is windows (or longpath=True), then return the int
     file name prefix '\\\\?\\'.
     """
-    filename = keepnote.ensure_unicode(filename, keepnote.FS_ENCODING)
+    filename = keepnote.ensure_str(filename, keepnote.FS_ENCODING)
 
-    # allow long file paths in windows
+    # allow int file paths in windows
     if longpath is True or (longpath is None and keepnote.get_platform() == "windows"):
         filename = "\\\\?\\" + filename
 
@@ -252,7 +252,7 @@ def get_notebook_version(filename):
         filename = get_pref_file(filename)
 
     try:
-        tree = ET.ElementTree(file=filename)
+        tree = ET.parse(filename)
     except OSError as e:
         raise NoteBookError(_("Cannot read notebook preferences"), e)
     except Exception as e:
@@ -281,7 +281,7 @@ def get_notebook_version_etree(tree):
 
 def new_nodeid():
     """Generate a new node id"""
-    return unicode(uuid.uuid4())
+    return str(uuid.uuid4())
 
 
 def get_node_url(nodeid, host=""):
@@ -368,11 +368,11 @@ def attach_file(filename, node, index=None):
 # errors
 
 
-class NoteBookError(StandardError):
+class NoteBookError(Exception):
     """Exception that occurs when manipulating NoteBook's"""
 
     def __init__(self, msg, error=None):
-        StandardError.__init__(self)
+        Exception.__init__(self)
         self.msg = msg
         self.error = error
 
@@ -456,7 +456,7 @@ class AttrDefs:
             self.add(parse_attr_def(item))
 
     def format(self):
-        return [attr_def.format() for attr_def in self._attr_defs.itervalues()]
+        return [attr_def.format() for attr_def in self._attr_defs.values()]
 
 
 def format_attr_def(attr_def):
@@ -483,7 +483,7 @@ g_default_attr_defs = [
     AttrDef("nodeid", "string", "Node ID"),
     AttrDef("content_type", "string", "Content type", default=CONTENT_TYPE_DIR),
     AttrDef("title", "string", "Title"),
-    AttrDef("order", "integer", "Order", default=sys.maxint),
+    AttrDef("order", "integer", "Order", default=sys.maxsize),
     AttrDef("created_time", "timestamp", "Created time"),
     AttrDef("modified_time", "timestamp", "Modified time"),
     AttrDef("expanded", "bool", "Expaned", default=True),
@@ -534,7 +534,7 @@ class AttrTables:
             self.add(parse_attr_table(item))
 
     def format(self):
-        return [attr_table.format() for attr_table in self._attr_tables.itervalues()]
+        return [attr_table.format() for attr_table in self._attr_tables.values()]
 
 
 g_default_attr_tables = [
@@ -654,7 +654,7 @@ class NoteBookNode:
 
     def iter_attr(self):
         """Iterate through attributes of the node"""
-        return self._attr.iteritems()
+        return self._attr.items()
 
     def _init_attr(self):
         """Initialize attributes from a dict"""
@@ -726,7 +726,7 @@ class NoteBookNode:
             self._attr["nodeid"] = new_nodeid()
         self._attr["parentids"] = [self._parent._attr["nodeid"]]
         self._attr["childrenids"] = []
-        self._attr.setdefault("order", sys.maxint)
+        self._attr.setdefault("order", sys.maxsize)
 
         self._init_attr()
 
@@ -1013,7 +1013,7 @@ class NoteBookNode:
         self._children = list(self._iter_children())
 
         # assign orders
-        self._children.sort(key=lambda x: x._attr.get("order", sys.maxint))
+        self._children.sort(key=lambda x: x._attr.get("order", sys.maxsize))
         self._set_child_order()
 
     def _iter_children(self):
@@ -1593,7 +1593,7 @@ class NoteBook(NoteBookNode):
             # determine open icon filename
             newfilename_open = startname
             if number:
-                newfilename_open += "-" + unicode(number)
+                newfilename_open += "-" + str(number)
             else:
                 number = 2
             newfilename_open += "-open" + ext

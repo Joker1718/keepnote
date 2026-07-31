@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from StringIO import StringIO
+from io import StringIO
 import unittest
 
 from keepnote import plist

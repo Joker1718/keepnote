@@ -25,19 +25,16 @@ Font selector widget
 #
 
 # pygtk imports
-import pygtk
 
-pygtk.require("2.0")
-import gtk.glade
 
 
 class FontSelector(gtk.ComboBox):
     """ComboBox for selection Font family"""
 
     def __init__(self):
-        gtk.ComboBox.__init__(self)
+        Gtk.ComboBox.__init__(self)
 
-        self._list = gtk.ListStore(str)
+        self._list = Gtk.ListStore(str)
         self.set_model(self._list)
 
         self._families = sorted(
@@ -48,7 +45,7 @@ class FontSelector(gtk.ComboBox):
         for f in self._families:
             self._list.append([f])
 
-        cell = gtk.CellRendererText()
+        cell = Gtk.CellRendererText()
         self.pack_start(cell, True)
         self.add_attribute(cell, "text", 0)
 

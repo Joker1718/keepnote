@@ -27,16 +27,12 @@ Richtext buffer class
 # python imports
 import os
 import tempfile
-import urllib2
+import urllib.request
 from itertools import chain
 
 # pygtk imports
-import pygtk
+from gi.repository import GObject, Gdk, Gtk
 
-pygtk.require("2.0")
-import gobject
-import gtk
-from gtk import gdk
 
 # TODO: remove
 # keepnote imports
@@ -123,16 +119,16 @@ class BaseWidget(gtk.EventBox):
     """Widgets in RichTextBuffer must support this interface"""
 
     def __init__(self):
-        gtk.EventBox.__init__(self)
+        Gtk.EventBox.__init__(self)
 
         # TODO: will this be configurable?
         # set to white background
-        self.modify_bg(gtk.STATE_NORMAL, gdk.Color(*DEFAULT_BGCOLOR))
+        self.override_background_color(Gtk.StateType.NORMAL, gdk.Color(*DEFAULT_BGCOLOR))
 
-        # gtk.STATE_ACTIVE
-        # gtk.STATE_PRELIGHT
-        # gtk.STATE_SELECTED
-        # gtk.STATE_INSENSITIVE
+        # Gtk.StateType.ACTIVE
+        # Gtk.StateType.PRELIGHT
+        # Gtk.StateType.SELECTED
+        # Gtk.StateType.INSENSITIVE
 
     def highlight(self):
         pass
@@ -141,11 +137,11 @@ class BaseWidget(gtk.EventBox):
         pass
 
     def show(self):
-        gtk.EventBox.show_all(self)
+        Gtk.EventBox.show_all(self)
 
 
-# gobject.type_register(BaseWidget)
-# gobject.signal_new("init", BaseWidget, gobject.SIGNAL_RUN_LAST,
+#
+# GObject.signal_new("init", BaseWidget, GObject.SignalFlags.RUN_LAST,
 #                   gobject.TYPE_NONE, ())
 
 
@@ -154,12 +150,12 @@ class RichTextSep(BaseWidget):
 
     def __init__(self):
         BaseWidget.__init__(self)
-        self._sep = gtk.HSeparator()
+        self._sep = Gtk.HSeparator()
         self.add(self._sep)
         self._size = None
 
-        self._sep.modify_bg(gtk.STATE_NORMAL, gdk.Color(*DEFAULT_HR_COLOR))
-        self._sep.modify_fg(gtk.STATE_NORMAL, gdk.Color(*DEFAULT_HR_COLOR))
+        self._sep.override_background_color(Gtk.StateType.NORMAL, gdk.Color(*DEFAULT_HR_COLOR))
+        self._sep.override_color(Gtk.StateType.NORMAL, gdk.Color(*DEFAULT_HR_COLOR))
 
         self.connect("size-request", self._on_resize)
         self.connect("parent-set", self._on_parent_set)
@@ -223,7 +219,7 @@ class BaseImage(BaseWidget):
 
     def __init__(self, *args, **kargs):
         BaseWidget.__init__(self)
-        self._img = gtk.Image(*args, **kargs)
+        self._img = Gtk.Image(*args, **kargs)
         self._img.show()
         self.add(self._img)
 
@@ -361,7 +357,7 @@ class RichTextImage(RichTextAnchor):
             if self.is_size_set():
                 self.scale(self._size[0], self._size[1], False)
 
-            for widget in self.get_all_widgets().itervalues():
+            for widget in self.get_all_widgets().values():
                 widget.set_from_pixbuf(self._pixbuf)
 
     def set_from_stream(self, stream):
@@ -380,13 +376,13 @@ class RichTextImage(RichTextAnchor):
             if self.is_size_set():
                 self.scale(self._size[0], self._size[1], False)
 
-            for widget in self.get_all_widgets().itervalues():
+            for widget in self.get_all_widgets().values():
                 widget.set_from_pixbuf(self._pixbuf)
 
     def set_no_image(self):
         """Set the 'no image' icon"""
-        for widget in self.get_all_widgets().itervalues():
-            widget.set_from_stock(gtk.STOCK_MISSING_IMAGE, gtk.ICON_SIZE_MENU)
+        for widget in self.get_all_widgets().values():
+            widget.set_from_stock("Missing Image", gtk.ICON_SIZE_MENU)
         self._pixbuf_original = None
         self._pixbuf = None
 
@@ -400,7 +396,7 @@ class RichTextImage(RichTextAnchor):
         if self.is_size_set():
             self.scale(self._size[0], self._size[1], True)
         else:
-            for widget in self.get_all_widgets().itervalues():
+            for widget in self.get_all_widgets().values():
                 widget.set_from_pixbuf(self._pixbuf)
 
     def set_from_url(self, url, filename=None):
@@ -467,7 +463,7 @@ class RichTextImage(RichTextAnchor):
             if self._pixbuf != self._pixbuf_original:
                 self._pixbuf = self._pixbuf_original
                 if self._pixbuf is not None and set_widget:
-                    for widget in self.get_all_widgets().itervalues():
+                    for widget in self.get_all_widgets().values():
                         widget.set_from_pixbuf(self._pixbuf)
 
         elif self._pixbuf_original is not None:
@@ -484,11 +480,11 @@ class RichTextImage(RichTextAnchor):
                 height = int(factor * height2)
 
             self._pixbuf = self._pixbuf_original.scale_simple(
-                width, height, gtk.gdk.INTERP_BILINEAR
+                width, height, Gdk.InterpType.BILINEAR
             )
 
             if set_widget:
-                for widget in self.get_all_widgets().itervalues():
+                for widget in self.get_all_widgets().values():
                     widget.set_from_pixbuf(self._pixbuf)
 
         if self._buffer is not None:
@@ -498,7 +494,7 @@ class RichTextImage(RichTextAnchor):
     # GUI callbacks
 
     def _on_image_destroy(self, widget):
-        for key, value in self._widgets.iteritems():
+        for key, value in self._widgets.items():
             if value == widget:
                 del self._widgets[key]
                 break
@@ -567,8 +563,8 @@ class RichTextFont(RichTextBaseFont):
             # TODO: replace this hard-coding
             self.family = "Sans"
             self.size = 10
-            # weight = pango.WEIGHT_NORMAL
-            # style = pango.STYLE_NORMAL
+            # weight = Pango.WEIGHT_NORMAL
+            # style = Pango.STYLE_NORMAL
 
         # get colors
         self.fg_color = color_to_string(attr.fg_color)
@@ -994,26 +990,23 @@ class RichTextBuffer(RichTextBaseBuffer):
             for child in self._anchors_highlighted:
                 child.unhighlight()
             self._anchors_highlighted.clear()
-
-
-gobject.type_register(RichTextBuffer)
-gobject.signal_new(
-    "child-added", RichTextBuffer, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (object,)
+GObject.signal_new(
+    "child-added", RichTextBuffer, GObject.SignalFlags.RUN_LAST, gobject.TYPE_NONE, (object,)
 )
-gobject.signal_new(
+GObject.signal_new(
     "child-activated",
     RichTextBuffer,
-    gobject.SIGNAL_RUN_LAST,
+    GObject.SignalFlags.RUN_LAST,
     gobject.TYPE_NONE,
     (object,),
 )
-gobject.signal_new(
+GObject.signal_new(
     "child-menu",
     RichTextBuffer,
-    gobject.SIGNAL_RUN_LAST,
+    GObject.SignalFlags.RUN_LAST,
     gobject.TYPE_NONE,
     (object, object, object),
 )
-gobject.signal_new(
-    "font-change", RichTextBuffer, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, (object,)
+GObject.signal_new(
+    "font-change", RichTextBuffer, GObject.SignalFlags.RUN_LAST, gobject.TYPE_NONE, (object,)
 )

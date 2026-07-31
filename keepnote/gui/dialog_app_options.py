@@ -28,11 +28,8 @@ Application Options Dialog
 import os
 
 # pygtk imports
-import pygtk
+from gi.repository import Gdk, Gtk
 
-pygtk.require("2.0")
-import gtk.glade
-from gtk import gdk
 
 # keepnote imports
 import keepnote
@@ -47,14 +44,14 @@ import keepnote.gui.extension
 _ = keepnote.translate
 
 
-def on_browse(parent, title, filename, entry, action=gtk.FILE_CHOOSER_ACTION_OPEN):
+def on_browse(parent, title, filename, entry, action=Gtk.FileChooserAction.OPEN):
     """Callback for selecting file browser associated with a text entry"""
 
-    dialog = gtk.FileChooserDialog(
+    dialog = Gtk.FileChooserDialog(
         title,
         parent,
         action=action,
-        buttons=(_("Cancel"), gtk.RESPONSE_CANCEL, _("Open"), gtk.RESPONSE_OK),
+        buttons=(_("Cancel"), Gtk.ResponseType.CANCEL, _("Open"), Gtk.ResponseType.OK),
     )
     dialog.set_transient_for(parent)
     dialog.set_modal(True)
@@ -65,7 +62,7 @@ def on_browse(parent, title, filename, entry, action=gtk.FILE_CHOOSER_ACTION_OPE
     if os.path.isabs(filename):
         dialog.set_filename(filename)
 
-    if dialog.run() == gtk.RESPONSE_OK and dialog.get_filename():
+    if dialog.run() == Gtk.ResponseType.OK and dialog.get_filename():
         entry.set_text(dialog.get_filename())
 
     dialog.destroy()
@@ -80,12 +77,12 @@ class Section:
         self.label = label
         self.icon = icon
 
-        self.frame = gtk.Frame("")
+        self.frame = Gtk.Frame("")
         self.frame.get_label_widget().set_text(f"<b>{label}</b>")
         self.frame.get_label_widget().set_use_markup(True)
-        self.frame.set_property("shadow-type", gtk.SHADOW_NONE)
+        self.frame.set_property("shadow-type", Gtk.ShadowType.NONE)
 
-        self.__align = gtk.Alignment()
+        self.__align = Gtk.Alignment()
         self.__align.set_padding(10, 0, 10, 0)
         self.__align.show()
         self.frame.add(self.__align)
@@ -109,45 +106,42 @@ class GeneralSection(Section):
 
         self.notebook = None
 
-        self.xml = gtk.glade.XML(
-            get_resource("rc", "keepnote.glade"),
-            "general_frame",
-            keepnote.GETTEXT_DOMAIN,
-        )
-        self.xml.signal_autoconnect(self)
-        self.xml.signal_autoconnect(
+        self.builder = Gtk.Builder()
+        self.builder.add_from_file(get_resource("rc", "keepnote.glade"))
+        self.builder.connect_signals(self)
+        self.builder.connect_signals(
             {
                 "on_default_notebook_button_clicked": lambda w: on_browse(
                     self.dialog,
                     _("Choose Default Notebook"),
                     "",
-                    self.xml.get_widget("default_notebook_entry"),
+                    self.builder.get_object("default_notebook_entry"),
                 ),
             }
         )
-        self.frame = self.xml.get_widget("general_frame")
+        self.frame = self.builder.get_object("general_frame")
 
     def on_default_notebook_radio_changed(self, radio):
         """Default notebook radio changed"""
-        default = self.xml.get_widget("default_notebook_radio")
-        default_tab = self.xml.get_widget("default_notebook_table")
+        default = self.builder.get_object("default_notebook_radio")
+        default_tab = self.builder.get_object("default_notebook_table")
         default_tab.set_sensitive(default.get_active())
 
     def on_autosave_check_toggled(self, widget):
         """The autosave option controls sensitivity of autosave time"""
-        self.xml.get_widget("autosave_entry").set_sensitive(widget.get_active())
-        self.xml.get_widget("autosave_label").set_sensitive(widget.get_active())
+        self.builder.get_object("autosave_entry").set_sensitive(widget.get_active())
+        self.builder.get_object("autosave_label").set_sensitive(widget.get_active())
 
     def on_systray_check_toggled(self, widget):
         """Systray option controls sensitivity of sub-options"""
-        self.xml.get_widget("skip_taskbar_check").set_sensitive(widget.get_active())
-        self.xml.get_widget("minimize_on_start_check").set_sensitive(
+        self.builder.get_object("skip_taskbar_check").set_sensitive(widget.get_active())
+        self.builder.get_object("minimize_on_start_check").set_sensitive(
             widget.get_active()
         )
 
     def on_set_default_notebook_button_clicked(self, widget):
         if self.notebook:
-            self.xml.get_widget("default_notebook_entry").set_text(
+            self.builder.get_object("default_notebook_entry").set_text(
                 self.notebook.get_path()
             )
 
@@ -159,109 +153,109 @@ class GeneralSection(Section):
 
         # populate default notebook
         if app.pref.get("use_last_notebook", default=True):
-            self.xml.get_widget("last_notebook_radio").set_active(True)
+            self.builder.get_object("last_notebook_radio").set_active(True)
         elif app.pref.get("default_notebooks", default=[]) == []:
-            self.xml.get_widget("no_default_notebook_radio").set_active(True)
+            self.builder.get_object("no_default_notebook_radio").set_active(True)
         else:
-            self.xml.get_widget("default_notebook_radio").set_active(True)
-            self.xml.get_widget("default_notebook_entry").set_text(
+            self.builder.get_object("default_notebook_radio").set_active(True)
+            self.builder.get_object("default_notebook_entry").set_text(
                 (app.pref.get("default_notebooks", default=[]) + [""])[0]
             )
 
         # populate autosave
-        self.xml.get_widget("autosave_check").set_active(app.pref.get("autosave"))
-        self.xml.get_widget("autosave_entry").set_text(
+        self.builder.get_object("autosave_check").set_active(app.pref.get("autosave"))
+        self.builder.get_object("autosave_entry").set_text(
             str(int(app.pref.get("autosave_time") / 1000))
         )
 
-        self.xml.get_widget("autosave_entry").set_sensitive(app.pref.get("autosave"))
-        self.xml.get_widget("autosave_label").set_sensitive(app.pref.get("autosave"))
+        self.builder.get_object("autosave_entry").set_sensitive(app.pref.get("autosave"))
+        self.builder.get_object("autosave_label").set_sensitive(app.pref.get("autosave"))
 
         # use systray icon
-        self.xml.get_widget("systray_check").set_active(
+        self.builder.get_object("systray_check").set_active(
             app.pref.get("window", "use_systray")
         )
-        self.xml.get_widget("skip_taskbar_check").set_active(
+        self.builder.get_object("skip_taskbar_check").set_active(
             app.pref.get("window", "skip_taskbar")
         )
-        self.xml.get_widget("skip_taskbar_check").set_sensitive(
+        self.builder.get_object("skip_taskbar_check").set_sensitive(
             app.pref.get("window", "use_systray")
         )
 
-        self.xml.get_widget("minimize_on_start_check").set_active(
+        self.builder.get_object("minimize_on_start_check").set_active(
             app.pref.get("window", "minimize_on_start")
         )
-        self.xml.get_widget("minimize_on_start_check").set_sensitive(
+        self.builder.get_object("minimize_on_start_check").set_sensitive(
             app.pref.get("window", "use_systray")
         )
 
-        self.xml.get_widget("window_keep_above_check").set_active(
+        self.builder.get_object("window_keep_above_check").set_active(
             app.pref.get("window", "keep_above")
         )
 
         # set window 'always on top'
-        self.xml.get_widget("window_stick_check").set_active(
+        self.builder.get_object("window_stick_check").set_active(
             app.pref.get("window", "stick")
         )
 
-        self.xml.get_widget("use_fulltext_check").set_active(
+        self.builder.get_object("use_fulltext_check").set_active(
             app.pref.get("use_fulltext_search", default=True)
         )
 
     def save_options(self, app):
-        if self.xml.get_widget("last_notebook_radio").get_active():
+        if self.builder.get_object("last_notebook_radio").get_active():
             app.pref.set("use_last_notebook", True)
-        elif self.xml.get_widget("default_notebook_radio").get_active():
+        elif self.builder.get_object("default_notebook_radio").get_active():
             app.pref.set("use_last_notebook", False)
             app.pref.set(
                 "default_notebooks",
-                [unicode_gtk(self.xml.get_widget("default_notebook_entry").get_text())],
+                [unicode_gtk(self.builder.get_object("default_notebook_entry").get_text())],
             )
         else:
             app.pref.set("use_last_notebook", False)
             app.pref.set("default_notebooks", [])
 
         # save autosave
-        app.pref.set("autosave", self.xml.get_widget("autosave_check").get_active())
+        app.pref.set("autosave", self.builder.get_object("autosave_check").get_active())
         try:
             app.pref.set(
                 "autosave_time",
-                int(self.xml.get_widget("autosave_entry").get_text()) * 1000,
+                int(self.builder.get_object("autosave_entry").get_text()) * 1000,
             )
         except:
             pass
 
         # use systray icon
         app.pref.set(
-            "window", "use_systray", self.xml.get_widget("systray_check").get_active()
+            "window", "use_systray", self.builder.get_object("systray_check").get_active()
         )
         app.pref.set(
             "window",
             "skip_taskbar",
-            self.xml.get_widget("skip_taskbar_check").get_active(),
+            self.builder.get_object("skip_taskbar_check").get_active(),
         )
 
         app.pref.set(
             "window",
             "minimize_on_start",
-            self.xml.get_widget("minimize_on_start_check").get_active(),
+            self.builder.get_object("minimize_on_start_check").get_active(),
         )
 
         # window 'always above'
         app.pref.set(
             "window",
             "keep_above",
-            self.xml.get_widget("window_keep_above_check").get_active(),
+            self.builder.get_object("window_keep_above_check").get_active(),
         )
 
         # window 'stick to all desktops'
         app.pref.set(
-            "window", "stick", self.xml.get_widget("window_stick_check").get_active()
+            "window", "stick", self.builder.get_object("window_stick_check").get_active()
         )
 
         app.pref.set(
             "use_fulltext_search",
-            self.xml.get_widget("use_fulltext_check").get_active(),
+            self.builder.get_object("use_fulltext_check").get_active(),
         )
 
 
@@ -270,12 +264,12 @@ class LookAndFeelSection(Section):
         Section.__init__(self, key, dialog, app, label, icon)
 
         w = self.get_default_widget()
-        v = gtk.VBox(False, 5)
+        v = Gtk.VBox(False, 5)
         v.show()
         w.add(v)
 
         def add_check(label):
-            c = gtk.CheckButton(label)
+            c = Gtk.CheckButton(label)
             c.show()
             v.pack_start(c, False, False, 0)
             return c
@@ -287,13 +281,13 @@ class LookAndFeelSection(Section):
 
         # app font size
         font_size = 10
-        h = gtk.HBox(False, 5)
+        h = Gtk.HBox(False, 5)
         h.show()
-        l = gtk.Label(_("Application Font Size:"))
+        l = Gtk.Label(_("Application Font Size:"))
         l.show()
         h.pack_start(l, False, False, 0)
-        self.app_font_size = gtk.SpinButton(
-            gtk.Adjustment(value=font_size, lower=2, upper=500, step_incr=1)
+        self.app_font_size = Gtk.SpinButton(
+            Gtk.Adjustment(value=font_size, lower=2, upper=500, step_incr=1)
         )
         self.app_font_size.set_value(font_size)
         # font_size_button.set_editable(False)
@@ -302,12 +296,12 @@ class LookAndFeelSection(Section):
         v.pack_start(h, False, False, 0)
 
         # view mode combo
-        h = gtk.HBox(False, 5)
+        h = Gtk.HBox(False, 5)
         h.show()
-        l = gtk.Label(_("Listview Layout:"))
+        l = Gtk.Label(_("Listview Layout:"))
         l.show()
         h.pack_start(l, False, False, 0)
-        c = gtk.combo_box_new_text()
+        c = Gtk.combo_box_new_text()
         c.show()
         c.append_text(_("Vertical"))
         c.append_text(_("Horizontal"))
@@ -353,17 +347,17 @@ class LanguageSection(Section):
         Section.__init__(self, key, dialog, app, label, icon)
 
         w = self.get_default_widget()
-        v = gtk.VBox(False, 5)
+        v = Gtk.VBox(False, 5)
         v.show()
         w.add(v)
 
         # language combo
-        h = gtk.HBox(False, 5)
+        h = Gtk.HBox(False, 5)
         h.show()
-        l = gtk.Label(_("Language:"))
+        l = Gtk.Label(_("Language:"))
         l.show()
         h.pack_start(l, False, False, 0)
-        c = gtk.combo_box_new_text()
+        c = Gtk.combo_box_new_text()
         c.show()
 
         # populate language options
@@ -403,14 +397,14 @@ class HelperAppsSection(Section):
         self.entries = {}
         w = self.get_default_widget()
 
-        self.table = gtk.Table(max(len(list(app.iter_external_apps())), 1), 2)
+        self.table = Gtk.Table(max(len(list(app.iter_external_apps())), 1), 2)
         self.table.show()
         w.add(self.table)
 
         # set icon
         try:
             self.icon = keepnote.gui.get_pixbuf(
-                get_icon_filename(gtk.STOCK_EXECUTE), size=(15, 15)
+                get_icon_filename("Execute"), size=(15, 15)
             )
         except:
             pass
@@ -427,8 +421,8 @@ class HelperAppsSection(Section):
             prog = app.prog
 
             # program label
-            label = gtk.Label(app_title + ":")
-            label.set_justify(gtk.JUSTIFY_RIGHT)
+            label = Gtk.Label(app_title + ":")
+            label.set_justify(Gtk.Justification.RIGHT)
             label.set_alignment(1.0, 0.5)
             label.show()
             self.table.attach(
@@ -444,7 +438,7 @@ class HelperAppsSection(Section):
             )
 
             # program entry
-            entry = gtk.Entry()
+            entry = Gtk.Entry()
             entry.set_text(prog)
             entry.set_width_chars(30)
             entry.show()
@@ -467,9 +461,9 @@ class HelperAppsSection(Section):
                     self.dialog, _("Choose %s") % title, "", self.entries[key]
                 )
 
-            button = gtk.Button(_("Browse..."))
+            button = Gtk.Button(_("Browse..."))
             button.set_image(
-                gtk.image_new_from_stock(gtk.STOCK_OPEN, gtk.ICON_SIZE_SMALL_TOOLBAR)
+                Gtk.image_new_from_stock("Open", gtk.ICON_SIZE_SMALL_TOOLBAR)
             )
             button.show()
             button.connect("clicked", button_clicked(key, app_title, prog))
@@ -496,17 +490,14 @@ class DatesSection(Section):
     def __init__(self, key, dialog, app, label="", icon="time.png"):
         Section.__init__(self, key, dialog, app, label, icon)
 
-        self.date_xml = gtk.glade.XML(
-            get_resource("rc", "keepnote.glade"),
-            "date_time_frame",
-            keepnote.GETTEXT_DOMAIN,
-        )
-        self.date_xml.signal_autoconnect(self)
-        self.frame = self.date_xml.get_widget("date_time_frame")
+        self.date_builder = Gtk.Builder()
+        self.date_builder.add_from_file(get_resource("rc", "keepnote.glade"))
+        self.date_builder.connect_signals(self)
+        self.frame = self.date_builder.get_object("date_time_frame")
 
     def load_options(self, app):
         for name in ["same_day", "same_month", "same_year", "diff_year"]:
-            self.date_xml.get_widget(f"date_{name}_entry").set_text(
+            self.date_builder.get_object(f"date_{name}_entry").set_text(
                 app.pref.get("timestamp_formats", name)
             )
 
@@ -516,7 +507,7 @@ class DatesSection(Section):
             app.pref.set(
                 "timestamp_formats",
                 name,
-                unicode_gtk(self.date_xml.get_widget(f"date_{name}_entry").get_text()),
+                unicode_gtk(self.date_builder.get_object(f"date_{name}_entry").get_text()),
             )
 
 
@@ -525,17 +516,17 @@ class EditorSection(Section):
         Section.__init__(self, key, dialog, app, label, icon)
 
         w = self.get_default_widget()
-        v = gtk.VBox(False, 5)
+        v = Gtk.VBox(False, 5)
         v.show()
         w.add(v)
 
         # language combo
-        h = gtk.HBox(False, 5)
+        h = Gtk.HBox(False, 5)
         h.show()
-        l = gtk.Label(_("Quote format:"))
+        l = Gtk.Label(_("Quote format:"))
         l.show()
         h.pack_start(l, False, False, 0)
-        e = gtk.Entry()
+        e = Gtk.Entry()
         e.show()
         e.set_width_chars(40)
 
@@ -562,7 +553,7 @@ class AllNoteBooksSection(Section):
         Section.__init__(self, key, dialog, app, label, icon)
 
         w = self.get_default_widget()
-        l = gtk.Label(
+        l = Gtk.Label(
             _(
                 "This section contains options that are saved on a per "
                 "notebook basis (e.g. notebook-specific font).   A "
@@ -583,31 +574,28 @@ class NoteBookSection(Section):
         self.notebook = notebook
 
         # add notebook font widget
-        self.notebook_xml = gtk.glade.XML(
-            get_resource("rc", "keepnote.glade"),
-            "notebook_frame",
-            keepnote.GETTEXT_DOMAIN,
-        )
-        self.notebook_xml.signal_autoconnect(self)
-        self.frame = self.notebook_xml.get_widget("notebook_frame")
+        self.notebook_builder = Gtk.Builder()
+        self.notebook_builder.add_from_file(get_resource("rc", "keepnote.glade"))
+        self.notebook_builder.connect_signals(self)
+        self.frame = self.notebook_builder.get_object("notebook_frame")
 
-        notebook_font_spot = self.notebook_xml.get_widget("notebook_font_spot")
+        notebook_font_spot = self.notebook_builder.get_object("notebook_font_spot")
         self.notebook_font_family = FontSelector()
         notebook_font_spot.add(self.notebook_font_family)
         self.notebook_font_family.show()
 
         # populate notebook font
-        self.notebook_font_size = self.notebook_xml.get_widget("notebook_font_size")
+        self.notebook_font_size = self.notebook_builder.get_object("notebook_font_size")
         self.notebook_font_size.set_value(10)
-        self.notebook_index_dir = self.notebook_xml.get_widget("index_dir_entry")
-        self.notebook_xml.get_widget("index_dir_browse").connect(
+        self.notebook_index_dir = self.notebook_builder.get_object("index_dir_entry")
+        self.notebook_builder.get_object("index_dir_browse").connect(
             "clicked",
             lambda w: on_browse(
                 self.dialog,
                 _("Choose alternative notebook index directory"),
                 "",
                 self.notebook_index_dir,
-                action=gtk.FILE_CHOOSER_ACTION_SELECT_FOLDER,
+                action=Gtk.FileChooserAction.SELECT_FOLDER,
             ),
         )
 
@@ -624,7 +612,7 @@ class NoteBookSection(Section):
             self.notebook_font_size.set_value(size)
 
             self.notebook_index_dir.set_text(
-                self.notebook.pref.get("index_dir", default="", type=basestring)
+                self.notebook.pref.get("index_dir", default="", type=str)
             )
 
     def save_options(self, app):
@@ -647,41 +635,41 @@ class ExtensionsSection(Section):
 
         self.app = app
         self.entries = {}
-        self.frame = gtk.Frame("")
+        self.frame = Gtk.Frame("")
         self.frame.get_label_widget().set_text("<b>Extensions</b>")
         self.frame.get_label_widget().set_use_markup(True)
-        self.frame.set_property("shadow-type", gtk.SHADOW_NONE)
+        self.frame.set_property("shadow-type", Gtk.ShadowType.NONE)
 
-        align = gtk.Alignment()
+        align = Gtk.Alignment()
         align.set_padding(10, 0, 10, 0)
         align.show()
         self.frame.add(align)
 
-        v = gtk.VBox(False, 0)
+        v = Gtk.VBox(False, 0)
         v.show()
         align.add(v)
 
         # extension list scrollbar
-        self.sw = gtk.ScrolledWindow()
-        self.sw.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self.sw.set_shadow_type(gtk.SHADOW_IN)
+        self.sw = Gtk.ScrolledWindow()
+        self.sw.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        self.sw.set_shadow_type(Gtk.ShadowType.IN)
         self.sw.show()
         v.pack_start(self.sw, True, True, 0)
 
         # extension list
-        self.extlist = gtk.VBox(False, 0)
+        self.extlist = Gtk.VBox(False, 0)
         self.extlist.show()
         self.sw.add_with_viewport(self.extlist)
 
         # hbox
-        h = gtk.HBox(False, 0)
+        h = Gtk.HBox(False, 0)
         h.show()
         v.pack_start(h, True, True, 0)
 
         # install button
-        self.install_button = gtk.Button("Install new extension")
+        self.install_button = Gtk.Button("Install new extension")
         self.install_button.set_relief(gtk.RELIEF_NONE)
-        self.install_button.modify_fg(gtk.STATE_NORMAL, gtk.gdk.Color(0, 0, 65535))
+        self.install_button.override_color(Gtk.StateType.NORMAL, Gdk.RGBA(0, 0, 65535))
         self.install_button.connect("clicked", self._on_install)
         self.install_button.show()
         h.pack_start(self.install_button, False, True, 0)
@@ -689,7 +677,7 @@ class ExtensionsSection(Section):
         # set icon
         try:
             self.icon = keepnote.gui.get_pixbuf(
-                get_icon_filename(gtk.STOCK_ADD), size=(15, 15)
+                get_icon_filename("Add"), size=(15, 15)
             )
         except:
             pass
@@ -742,28 +730,28 @@ class ExtensionsSection(Section):
     def _on_install(self, widget):
 
         # open file dialog
-        dialog = gtk.FileChooserDialog(
+        dialog = Gtk.FileChooserDialog(
             _("Install New Extension"),
             self.dialog,
-            action=gtk.FILE_CHOOSER_ACTION_OPEN,
-            buttons=(_("Cancel"), gtk.RESPONSE_CANCEL, _("Open"), gtk.RESPONSE_OK),
+            action=Gtk.FileChooserAction.OPEN,
+            buttons=(_("Cancel"), Gtk.ResponseType.CANCEL, _("Open"), Gtk.ResponseType.OK),
         )
         dialog.set_transient_for(self.dialog)
         dialog.set_modal(True)
 
-        file_filter = gtk.FileFilter()
+        file_filter = Gtk.FileFilter()
         file_filter.add_pattern("*.kne")
         file_filter.set_name(_("KeepNote Extension (*.kne)"))
         dialog.add_filter(file_filter)
 
-        file_filter = gtk.FileFilter()
+        file_filter = Gtk.FileFilter()
         file_filter.add_pattern("*")
         file_filter.set_name(_("All files (*.*)"))
         dialog.add_filter(file_filter)
 
         response = dialog.run()
 
-        if response == gtk.RESPONSE_OK and dialog.get_filename():
+        if response == Gtk.ResponseType.OK and dialog.get_filename():
             # install extension
             self.app.install_extension(dialog.get_filename())
             self.load_options(self.app)
@@ -773,64 +761,64 @@ class ExtensionsSection(Section):
 
 class ExtensionWidget(gtk.EventBox):
     def __init__(self, app, ext):
-        gtk.EventBox.__init__(self)
+        Gtk.EventBox.__init__(self)
 
         self.app = app
         self.enabled = ext.is_enabled()
         self.ext = ext
 
-        self.modify_bg(gtk.STATE_NORMAL, gtk.gdk.Color(65535, 65535, 65535))
+        self.override_background_color(Gtk.StateType.NORMAL, Gdk.RGBA(65535, 65535, 65535))
 
-        frame = gtk.Frame(None)
-        frame.set_property("shadow-type", gtk.SHADOW_OUT)
+        frame = Gtk.Frame(None)
+        frame.set_property("shadow-type", Gtk.ShadowType.OUT)
         frame.show()
         self.add(frame)
 
         # name
-        frame2 = gtk.Frame("")
-        frame2.set_property("shadow-type", gtk.SHADOW_NONE)
+        frame2 = Gtk.Frame("")
+        frame2.set_property("shadow-type", Gtk.ShadowType.NONE)
         frame2.get_label_widget().set_text(f"<b>{ext.name}</b> ({ext.type}/{ext.key})")
         frame2.get_label_widget().set_use_markup(True)
         frame2.show()
         frame.add(frame2)
 
         # margin
-        align = gtk.Alignment()
+        align = Gtk.Alignment()
         align.set_padding(10, 10, 10, 10)
         align.show()
         frame2.add(align)
 
         # vbox
-        v = gtk.VBox(False, 5)
+        v = Gtk.VBox(False, 5)
         v.show()
         align.add(v)
 
         # description
-        l = gtk.Label(ext.description)
-        l.set_justify(gtk.JUSTIFY_LEFT)
+        l = Gtk.Label(ext.description)
+        l.set_justify(Gtk.Justification.LEFT)
         l.set_alignment(0.0, 0.0)
         l.show()
         v.pack_start(l, True, True, 0)
 
         # hbox
-        h = gtk.HBox(False, 0)
+        h = Gtk.HBox(False, 0)
         h.show()
         v.pack_start(h, True, True, 0)
 
         # enable button
-        self.enable_check = gtk.CheckButton(_("Enabled"))
+        self.enable_check = Gtk.CheckButton(_("Enabled"))
         self.enable_check.set_active(self.enabled)
         self.enable_check.show()
         self.enable_check.connect("toggled", lambda w: self._on_enabled(ext))
         h.pack_start(self.enable_check, False, True, 0)
 
         # divider
-        l = gtk.Label("|")
+        l = Gtk.Label("|")
         l.show()
         h.pack_start(l, False, True, 0)
 
         # uninstall button
-        self.uninstall_button = gtk.Button(_("Uninstall"))
+        self.uninstall_button = Gtk.Button(_("Uninstall"))
         self.uninstall_button.set_relief(gtk.RELIEF_NONE)
         self.uninstall_button.set_sensitive(app.can_uninstall(ext))
         self.uninstall_button.show()
@@ -855,15 +843,12 @@ class ApplicationOptionsDialog:
 
         self._sections = []
 
-        self.xml = gtk.glade.XML(
-            get_resource("rc", "keepnote.glade"),
-            "app_options_dialog",
-            keepnote.GETTEXT_DOMAIN,
-        )
-        self.dialog = self.xml.get_widget("app_options_dialog")
+        self.builder = Gtk.Builder()
+        self.builder.add_from_file(get_resource("rc", "keepnote.glade"))
+        self.dialog = self.builder.get_object("app_options_dialog")
         self.dialog.connect("delete-event", self._on_delete_event)
-        self.tabs = self.xml.get_widget("app_options_tabs")
-        self.xml.signal_autoconnect(
+        self.tabs = self.builder.get_object("app_options_tabs")
+        self.builder.connect_signals(
             {
                 "on_cancel_button_clicked": lambda w: self.on_cancel_button_clicked(),
                 "on_ok_button_clicked": lambda w: self.on_ok_button_clicked(),
@@ -872,16 +857,16 @@ class ApplicationOptionsDialog:
         )
 
         # setup treeview
-        self.overview = self.xml.get_widget("app_config_treeview")
-        self.overview_store = gtk.TreeStore(str, object, gdk.Pixbuf)
+        self.overview = self.builder.get_object("app_config_treeview")
+        self.overview_store = Gtk.TreeStore(str, object, gdk.Pixbuf)
         self.overview.set_model(self.overview_store)
         self.overview.connect("cursor-changed", self.on_overview_select)
 
         # create the treeview column
-        column = gtk.TreeViewColumn()
+        column = Gtk.TreeViewColumn()
         self.overview.append_column(column)
-        cell_text = gtk.CellRendererText()
-        cell_icon = gtk.CellRendererPixbuf()
+        cell_text = Gtk.CellRendererText()
+        cell_icon = Gtk.CellRendererPixbuf()
         column.pack_start(cell_icon, True)
         column.add_attribute(cell_icon, "pixbuf", 2)
         column.pack_start(cell_text, True)
@@ -1029,7 +1014,7 @@ class ApplicationOptionsDialog:
         if icon is None:
             icon = "note.png"
 
-        if isinstance(icon, basestring):
+        if isinstance(icon, str):
             pixbuf = keepnote.gui.get_resource_pixbuf(icon, size=size)
         else:
             pixbuf = icon

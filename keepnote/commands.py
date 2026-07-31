@@ -30,7 +30,7 @@ import os
 import random
 import socket
 import sys
-import thread
+import _thread
 
 # keepnote libs
 import keepnote
@@ -253,7 +253,7 @@ def escape(text):
 def split_args(text):
     args = []
     last = 0
-    for i in xrange(len(text)):
+    for i in range(len(text)):
         if text[i] == " " and (i == 0 or text[i - 1] != "\\"):
             args.append(text[last:i])
             last = i + 1

@@ -28,7 +28,7 @@
 
 # python imports
 import sgmllib
-import htmlentitydefs,re
+import html.entities,re
 import base64
 import string,random
 
@@ -67,7 +67,7 @@ def unescape(text):
             else:
                return unichr(int(text[2:-1]))
          except ValueError:
-            print "erreur de valeur"
+            print("erreur de valeur")
             pass
       else:
          # named entity
@@ -80,9 +80,9 @@ def unescape(text):
                text = "&amp;lt;"
             else:
                # print text[1:-1]
-               text = unichr(htmlentitydefs.name2codepoint[text[1:-1]])
+               text = unichr(html.entities.name2codepoint[text[1:-1]])
          except KeyError:
-            print "keyerror"
+            print("keyerror")
             pass
       return text # leave as is
    return re.sub(r"&#?\w+;", fixup, text)
@@ -172,7 +172,7 @@ class Extension (keepnote.gui.extension.Extension):
                 if notebook is not None:
                     import_ncd_file(window, ncd_file)
                 else:
-                    print "WARNING: you need an notebook before you can import"
+                    print("WARNING: you need an notebook before you can import")
             # self.close_notebook()
         dialog.destroy()
 
@@ -209,7 +209,7 @@ def import_ncd_file(window,file):
     else:
         index = None
     node = parent.new_child(notebooklib.CONTENT_TYPE_DIR,notebooklib.DEFAULT_DIR_NAME,index)
-    node.rename(unicode(file.split(os.sep)[-1],'utf8'))
+    node.rename(str(file.split(os.sep)[-1], 'utf8'))
     
    # read in file at once
     file_data = ''
@@ -262,7 +262,7 @@ class MyParser(sgmllib.SGMLParser):
         # Reconstruct the original entity reference.
         self.pieces.append("&%(ref)s" % locals())
         # standard HTML entities are closed with a semicolon; other entities are not
-        if htmlentitydefs.entitydefs.has_key(ref):
+        if html.entities.ref in entitydefs:
             self.pieces.append(";")
 
     def start_img(self, attrs):

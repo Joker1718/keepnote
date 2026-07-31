@@ -3,7 +3,7 @@
 # python import
 import time
 import sys
-from StringIO import StringIO
+from io import StringIO
 from unittest import TestCase
 
 # keepnote imports
@@ -312,7 +312,7 @@ class Html (BufferBase):
                 isinstance(tag, RichTextIndentTag) or
                 tag == P_TAG))
         self.io.prepare_dom_write(dom)
-        print
+        print()
         dom.display()
 
         # check the internal indentation structure
@@ -437,8 +437,8 @@ class Html (BufferBase):
 
         self.buffer.toggle_bullet_list()
 
-        print [display_item(x) for x in iter_buffer_contents(
-            self.buffer, None, None, ignore_tag)]
+        print([display_item(x) for x in iter_buffer_contents(
+            self.buffer, None, None, ignore_tag)])
 
         self.buffer.undo()
 
@@ -485,7 +485,7 @@ class Html (BufferBase):
         it2.forward_chars(2)
 
         tag = self.buffer.tag_table.lookup("indent 2 none")
-        print tag.is_par_related()
+        print(tag.is_par_related())
         self.buffer.apply_tag_selected(tag, it, it2)
 
         contents1 = list(iter_buffer_contents(self.buffer,
@@ -644,7 +644,7 @@ class Html (BufferBase):
         self.read(self.buffer, StringIO(
             """<ul><li>hello</li></ul>\n"""))
 
-        print [display_item(x) for x in self.get_contents()]
+print([display_item(x) for x in self.get_contents()])
         self.buffer.place_cursor(self.buffer.get_start_iter())
     '''
 
@@ -655,7 +655,7 @@ class Html (BufferBase):
     def test_PushIter(self):
         """Test the PushIter class"""
         lst = []
-        it = PushIter(xrange(10))
+        it = PushIter(range(10))
 
         lst.append(it.next())
         lst.append(it.next())
@@ -703,4 +703,4 @@ class Speed (TestCase):
         io.load(None, buf,
                 "test/data/notebook-v4/stress tests/"
                 "A huge page of formatted text/page.html")
-        print time.time() - t
+        print(time.time() - t)

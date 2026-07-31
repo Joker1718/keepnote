@@ -25,11 +25,8 @@ TagTable and Tags for RichTextBuffer
 #
 
 # pygtk imports
-import pygtk
+from gi.repository import Gtk, Pango
 
-pygtk.require("2.0")
-import gtk
-import pango
 
 # richtext imports
 from .richtextbase_tags import RichTextBaseTagTable, RichTextTag
@@ -87,7 +84,7 @@ def get_text_scale():
     global _text_scale
     if _text_scale is None:
         _text_scale = (
-            float(gtk.gdk.screen_height()) / gtk.gdk.screen_height_mm()
+            float(Gdk.Screen.get_default().get_height()) / gtk.gdk.screen_height_mm()
         ) / 2.95566
 
     return _text_scale
@@ -124,10 +121,10 @@ class RichTextTagTable(RichTextBaseTagTable):
 
         # modification (mod) font tags
         # All of these can be combined
-        self.tag_class_add("mod", RichTextModTag("bold", weight=pango.WEIGHT_BOLD))
-        self.tag_class_add("mod", RichTextModTag("italic", style=pango.STYLE_ITALIC))
+        self.tag_class_add("mod", RichTextModTag("bold", weight=Pango.WEIGHT_BOLD))
+        self.tag_class_add("mod", RichTextModTag("italic", style=Pango.STYLE_ITALIC))
         self.tag_class_add(
-            "mod", RichTextModTag("underline", underline=pango.UNDERLINE_SINGLE)
+            "mod", RichTextModTag("underline", underline=Pango.UNDERLINE_SINGLE)
         )
         self.tag_class_add("mod", RichTextModTag("strike", strikethrough=True))
         self.tag_class_add("mod", RichTextModTag("tt", family="Monospace"))
@@ -135,16 +132,16 @@ class RichTextTagTable(RichTextBaseTagTable):
 
         # justify tags
         self.tag_class_add(
-            "justify", RichTextJustifyTag("left", justification=gtk.JUSTIFY_LEFT)
+            "justify", RichTextJustifyTag("left", justification=Gtk.Justification.LEFT)
         )
         self.tag_class_add(
-            "justify", RichTextJustifyTag("center", justification=gtk.JUSTIFY_CENTER)
+            "justify", RichTextJustifyTag("center", justification=Gtk.Justification.CENTER)
         )
         self.tag_class_add(
-            "justify", RichTextJustifyTag("right", justification=gtk.JUSTIFY_RIGHT)
+            "justify", RichTextJustifyTag("right", justification=Gtk.Justification.RIGHT)
         )
         self.tag_class_add(
-            "justify", RichTextJustifyTag("fill", justification=gtk.JUSTIFY_FILL)
+            "justify", RichTextJustifyTag("fill", justification=Gtk.Justification.FILL)
         )
 
         self.bullet_tag = self.tag_class_add("bullet", RichTextBulletTag())
@@ -173,10 +170,10 @@ class RichTextJustifyTag(RichTextTag):
     """
 
     justify2name = {
-        gtk.JUSTIFY_LEFT: "left",
-        gtk.JUSTIFY_RIGHT: "right",
-        gtk.JUSTIFY_CENTER: "center",
-        gtk.JUSTIFY_FILL: "fill",
+        Gtk.Justification.LEFT: "left",
+        Gtk.Justification.RIGHT: "right",
+        Gtk.Justification.CENTER: "center",
+        Gtk.Justification.FILL: "fill",
     }
 
     justify_names = {"left", "right", "center", "fill"}
@@ -399,7 +396,7 @@ class RichTextLinkTag(RichTextTag):
             self,
             f"link {href}",
             foreground=self.LINK_COLOR,
-            underline=pango.UNDERLINE_SINGLE,
+            underline=Pango.UNDERLINE_SINGLE,
         )
         self._href = href
 

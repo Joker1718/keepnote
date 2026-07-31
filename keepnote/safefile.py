@@ -24,17 +24,10 @@ Safely write to a tempfile before replacing previous file.
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
 #
 
-import codecs
+import io
 import os
 import sys
 import tempfile
-
-
-# NOTE: bypass easy_install's monkey patching of file
-# easy_install does not correctly emulate 'file'
-if type(file) != type:
-    # HACK: this works as long as sys.stdout is not patched
-    file = type(sys.stdout)
 
 
 def open(filename, mode="r", tmp=None, codec=None):
@@ -58,7 +51,10 @@ def open(filename, mode="r", tmp=None, codec=None):
     return stream
 
 
-class SafeFile(file):
+class SafeFile(io.IOBase):
+    """A file-like object that writes to a temp location and atomically
+    replaces the target file on close."""
+
     def __init__(self, filename, mode="r", tmp=None):
         """
         filename -- filename to open
@@ -73,21 +69,50 @@ class SafeFile(file):
 
         self._tmp = tmp
         self._filename = filename
+        self._mode = mode
 
-        # open file
+        # open underlying file
         if self._tmp:
-            file.__init__(self, self._tmp, mode)
+            self._file = open(self._tmp, self._mode, encoding="utf-8")
         else:
-            file.__init__(self, filename, mode)
+            self._file = open(filename, self._mode, encoding="utf-8")
+
+    # Delegate file-like methods to the underlying file object
+    def read(self, size=-1):
+        return self._file.read(size)
+
+    def write(self, data):
+        return self._file.write(data)
+
+    def flush(self):
+        return self._file.flush()
+
+    def fileno(self):
+        return self._file.fileno()
+
+    def seek(self, offset, whence=0):
+        return self._file.seek(offset, whence)
+
+    def tell(self):
+        return self._file.tell()
+
+    def readable(self):
+        return self._file.readable()
+
+    def writable(self):
+        return self._file.writable()
+
+    def seekable(self):
+        return self._file.seekable()
 
     def close(self):
         """Closes file and moves temp file to final location"""
         try:
             self.flush()
             os.fsync(self.fileno())
-        except:
+        except Exception:
             pass
-        file.close(self)
+        self._file.close()
 
         if self._tmp:
             # NOTE: windows will not allow rename when destination file exists
@@ -104,7 +129,7 @@ class SafeFile(file):
         Temp file does not replace existing file
         """
 
-        file.close(self)
+        self._file.close()
 
         if self._tmp:
             os.remove(self._tmp)

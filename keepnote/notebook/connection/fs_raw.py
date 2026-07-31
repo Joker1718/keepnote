@@ -79,7 +79,7 @@ class NodeFSSimple:
     VALID_REGEX = re.compile(r'^[a-z0-9_\-., "\']+$')
 
     def __init__(self, rootpath):
-        self._rootpath = unicode(rootpath)
+        self._rootpath = str(rootpath)
         self._fansize = 2
 
     def _is_valid(self, nodeid):
@@ -254,7 +254,7 @@ class NodeFS(NodeFSStandard):
         # Determine alternate nodeid for this nonstandard nodeid.
         alt_nodeid = self._index.get(nodeid, None)
         if not alt_nodeid:
-            alt_nodeid = unicode(uuid.uuid4())
+            alt_nodeid = str(uuid.uuid4())
             self._index[nodeid] = alt_nodeid
             self._index_alt[alt_nodeid] = nodeid
             self._index.commit()

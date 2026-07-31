@@ -25,11 +25,8 @@ ListView
 #
 
 # pygtk imports
-import pygtk
+from gi.repository import Gdk, Gtk
 
-pygtk.require("2.0")
-import gtk
-from gtk import gdk
 
 from keepnote.gui import basetreeview
 from keepnote.gui import treemodel
@@ -56,7 +53,7 @@ class KeepNoteListView(basetreeview.KeepNoteBaseTreeView):
         self.on_status = None
 
         # selection config
-        self.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
+        self.get_selection().set_mode(Gtk.SelectionMode.MULTIPLE)
 
         # init view
         self.connect("key-release-event", self.on_key_released)
@@ -70,7 +67,7 @@ class KeepNoteListView(basetreeview.KeepNoteBaseTreeView):
         self.set_sensitive(False)
 
         # init model
-        self.set_model(gtk.TreeModelSort(treemodel.KeepNoteTreeModel()))
+        self.set_model(Gtk.TreeModelSort(treemodel.KeepNoteTreeModel()))
 
         self.setup_columns()
 
@@ -190,7 +187,7 @@ class KeepNoteListView(basetreeview.KeepNoteBaseTreeView):
         # NOTE: must create a new TreeModelSort whenever we add new columns
         # to the rich_model that could be used in sorting
         # Perhaps something is being cached
-        self.set_model(gtk.TreeModelSort(self.rich_model))
+        self.set_model(Gtk.TreeModelSort(self.rich_model))
 
         # config columns view
         self.set_expander_column(self.get_column(0))
@@ -222,7 +219,7 @@ class KeepNoteListView(basetreeview.KeepNoteBaseTreeView):
         self._add_model_column(attr)
 
         # create column view
-        column = gtk.TreeViewColumn()
+        column = Gtk.TreeViewColumn()
         column.attr = attr
         column.set_property("sizing", gtk.TREE_VIEW_COLUMN_FIXED)
         column.set_property("resizable", True)
@@ -310,17 +307,17 @@ class KeepNoteListView(basetreeview.KeepNoteBaseTreeView):
         if self.editing_path:
             return
 
-        if event.keyval == gtk.keysyms.Delete:
+        if event.keyval == Gdk.keyval_from_name("Delete"):
             # capture node deletes
             self.stop_emission("key-release-event")
             self.emit("delete-node", self.get_selected_nodes())
 
-        elif event.keyval == gtk.keysyms.BackSpace and event.state & gdk.CONTROL_MASK:
+        elif event.keyval == Gdk.keyval_from_name("BackSpace") and event.state & gdk.CONTROL_MASK:
             # capture goto parent node
             self.stop_emission("key-release-event")
             self.emit("goto-parent-node")
 
-        elif event.keyval == gtk.keysyms.Return and event.state & gdk.CONTROL_MASK:
+        elif event.keyval == Gdk.keyval_from_name("Return") and event.state & gdk.CONTROL_MASK:
             # capture goto node
             self.stop_emission("key-release-event")
             self.emit("activate-node", None)

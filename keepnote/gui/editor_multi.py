@@ -28,9 +28,7 @@ the content-type of the node.
 #
 
 # pygtk imports
-import pygtk
 
-pygtk.require("2.0")
 
 # keepnote imports
 import keepnote
@@ -233,7 +231,7 @@ class ContentEditor(MultiEditor):
         else:
             content_type = nodes[0].get_attr("content_type").split("/")
 
-            for i in xrange(len(content_type), 0, -1):
+            for i in range(len(content_type), 0, -1):
                 editor = self._editors.get("/".join(content_type[:i]), None)
                 if editor:
                     self.set_editor(editor)

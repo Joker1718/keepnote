@@ -40,10 +40,8 @@ from keepnote.gui import extension
 
 # pygtk imports
 try:
-    import pygtk
+    from gi.repository import Gtk
 
-    pygtk.require("2.0")
-    import gtk
 
     from keepnote.gui import dialog_app_options
 except ImportError:
@@ -171,16 +169,16 @@ class EditorInsertDateSection(dialog_app_options.Section):
         self.ext = ext
 
         w = self.get_default_widget()
-        v = gtk.VBox(False, 5)
+        v = Gtk.VBox(False, 5)
         w.add(v)
 
-        table = gtk.Table(1, 2)
+        table = Gtk.Table(1, 2)
         v.pack_start(table, False, True, 0)
 
-        label = gtk.Label("Date format:")
+        label = Gtk.Label("Date format:")
         table.attach(label, 0, 1, 0, 1, xoptions=0, yoptions=0, xpadding=2, ypadding=2)
 
-        self.format = gtk.Entry()
+        self.format = Gtk.Entry()
         table.attach(
             self.format,
             1,
@@ -193,12 +191,7 @@ class EditorInsertDateSection(dialog_app_options.Section):
             ypadding=2,
         )
 
-        xml = gtk.glade.XML(
-            dialog_app_options.get_resource("rc", "keepnote.glade"),
-            "date_and_time_key",
-            keepnote.GETTEXT_DOMAIN,
-        )
-        key = xml.get_widget("date_and_time_key")
+        key = Gtk.TextView()
         key.set_size_request(400, 200)
         v.pack_start(key, True, True, 0)
 

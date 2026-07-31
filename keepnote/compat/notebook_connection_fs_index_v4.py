@@ -66,7 +66,7 @@ def match_words(infile, words):
                 matches[word] = True
 
     # return True if all words are found (AND)
-    for val in matches.itervalues():
+    for val in matches.values():
         if not val:
             return False
 
@@ -311,7 +311,7 @@ class NoteBookIndex:
             #            """)
 
             # initialize attribute tables
-            for attr in self._attrs.itervalues():
+            for attr in self._attrs.values():
                 attr.init(self.cur)
 
             con.commit()
@@ -467,7 +467,7 @@ class NoteBookIndex:
             )
 
             # update attrs
-            for attrindex in self._attrs.itervalues():
+            for attrindex in self._attrs.values():
                 attrindex.add_node(self.cur, nodeid, attr)
 
             # update fulltext
@@ -491,7 +491,7 @@ class NoteBookIndex:
             self.cur.execute("DELETE FROM NodeGraph WHERE nodeid=?", (nodeid,))
 
             # update attrs
-            for attr in self._attrs.itervalues():
+            for attr in self._attrs.values():
                 attr.remove_node(self.cur, nodeid)
 
             # delete children
@@ -752,7 +752,7 @@ class NoteBookIndex:
             if match_words(infile, words):
                 yield nodeid
             else:
-                # return frequently so that search does not block long
+                # return frequently so that search does not block int
                 yield None
 
             children = self._nconn._list_children_nodeids(nodeid)

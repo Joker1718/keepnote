@@ -117,7 +117,7 @@ def write_meta_data(node):
         out.write(notebooklib.XML_HEADER)
         out.write("<node>\n<version>2</version>\n")
 
-        for key, val in node._attr.iteritems():
+        for key, val in node._attr.items():
             attr = node._notebook.notebook_attrs.get(key, None)
 
             if attr is not None:

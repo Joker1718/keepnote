@@ -26,7 +26,7 @@ Command-line basic commands
 
 # python imports
 import sys
-import thread
+import _thread
 
 # keepnote imports
 import keepnote
@@ -90,7 +90,7 @@ class Extension(keepnote.gui.extension.Extension):
     def start_http(self, app, args):
 
         port = int(args[1])
-        notebook_path = unicode(args[2])
+        notebook_path = str(args[2])
 
         # connect to notebook on disk
         conn = NoteBookConnectionFS()

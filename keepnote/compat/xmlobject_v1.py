@@ -44,7 +44,7 @@ from keepnote import safefile
 ELEMENT_NODE = xml.dom.Node.ELEMENT_NODE
 
 
-class XmlError(StandardError):
+class XmlError(Exception):
     """Error for parsing XML"""
 
     pass
@@ -88,7 +88,7 @@ class Tag:
                 child_tag.write(obj, out)
         elif self._write_data:
             text = self._write_data(obj)
-            if not isinstance(text, basestring):
+            if not isinstance(text, str):
                 raise XmlError(
                     "bad text (%s,%s): %s"
                     % (self.name, str(self._object), str(type(text)))
@@ -223,7 +223,7 @@ class XmlObject:
                 tag.queue_data(data)
 
     def read(self, obj, filename):
-        if isinstance(filename, basestring):
+        if isinstance(filename, str):
             infile = open(filename)
         else:
             infile = filename
@@ -248,7 +248,7 @@ class XmlObject:
         infile.close()
 
     def write(self, obj, filename):
-        if isinstance(filename, basestring):
+        if isinstance(filename, str):
             # out = codecs.open(filename, "w", "utf-8")
             out = safefile.open(filename, "w", codec="utf-8")
             # out = file(filename, "w")
@@ -370,7 +370,7 @@ if __name__ == "__main__":
        </notebook>
     """)
 
-    for i in xrange(1):  # 0000):
+    for i in range(1):  # 0000):
         pref = Pref()
         pref.read(infile)
         pref.write(sys.stdout)

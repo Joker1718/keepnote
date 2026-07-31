@@ -28,12 +28,8 @@ Update notebook dialog
 import os
 
 # pygtk imports
-import pygtk
+from gi.repository import GObject, Gtk
 
-pygtk.require("2.0")
-import gobject
-import gtk
-import gtk.glade
 
 # keepnote imports
 import keepnote
@@ -52,11 +48,11 @@ _ = keepnote.translate
 def browse_file(parent, title, filename=None):
     """Callback for selecting file browser"""
 
-    dialog = gtk.FileChooserDialog(
+    dialog = Gtk.FileChooserDialog(
         title,
         parent,
-        action=gtk.FILE_CHOOSER_ACTION_OPEN,
-        buttons=(_("Cancel"), gtk.RESPONSE_CANCEL, _("Open"), gtk.RESPONSE_OK),
+        action=Gtk.FileChooserAction.OPEN,
+        buttons=(_("Cancel"), Gtk.ResponseType.CANCEL, _("Open"), Gtk.ResponseType.OK),
     )
     dialog.set_transient_for(parent)
     dialog.set_modal(True)
@@ -67,7 +63,7 @@ def browse_file(parent, title, filename=None):
 
     response = dialog.run()
 
-    if response == gtk.RESPONSE_OK and dialog.get_filename():
+    if response == Gtk.ResponseType.OK and dialog.get_filename():
         filename = unicode_gtk(dialog.get_filename())
     else:
         filename = None
@@ -91,30 +87,31 @@ class NodeIconDialog:
         self.main_window = window
         self.node = node
 
-        self.xml = gtk.glade.XML(
+        self.builder = Gtk.Builder()
+        self.builder.add_from_file(
             keepnote.gui.get_resource("rc", "keepnote.glade"),
             "node_icon_dialog",
             keepnote.GETTEXT_DOMAIN,
         )
-        self.dialog = self.xml.get_widget("node_icon_dialog")
-        self.xml.signal_autoconnect(self)
+        self.dialog = self.builder.get_object("node_icon_dialog")
+        self.builder.connect_signals(self)
         self.dialog.connect(
-            "close", lambda w: self.dialog.response(gtk.RESPONSE_CANCEL)
+            "close", lambda w: self.dialog.response(Gtk.ResponseType.CANCEL)
         )
         self.dialog.set_transient_for(self.main_window)
 
-        self.icon_entry = self.xml.get_widget("icon_entry")
-        self.icon_open_entry = self.xml.get_widget("icon_open_entry")
-        self.icon_image = self.xml.get_widget("icon_image")
-        self.icon_open_image = self.xml.get_widget("icon_open_image")
+        self.icon_entry = self.builder.get_object("icon_entry")
+        self.icon_open_entry = self.builder.get_object("icon_open_entry")
+        self.icon_image = self.builder.get_object("icon_image")
+        self.icon_open_image = self.builder.get_object("icon_open_image")
 
-        self.standard_iconview = self.xml.get_widget("standard_iconview")
-        self.notebook_iconview = self.xml.get_widget("notebook_iconview")
-        self.quick_iconview = self.xml.get_widget("quick_pick_iconview")
+        self.standard_iconview = self.builder.get_object("standard_iconview")
+        self.notebook_iconview = self.builder.get_object("notebook_iconview")
+        self.quick_iconview = self.builder.get_object("quick_pick_iconview")
 
-        self.standard_iconlist = gtk.ListStore(gtk.gdk.Pixbuf, str)
-        self.notebook_iconlist = gtk.ListStore(gtk.gdk.Pixbuf, str)
-        self.quick_iconlist = gtk.ListStore(gtk.gdk.Pixbuf, str)
+        self.standard_iconlist = Gtk.ListStore(gtk.gdk.Pixbuf, str)
+        self.notebook_iconlist = Gtk.ListStore(gtk.gdk.Pixbuf, str)
+        self.quick_iconlist = Gtk.ListStore(gtk.gdk.Pixbuf, str)
 
         self.iconviews = [
             self.standard_iconview,
@@ -150,7 +147,7 @@ class NodeIconDialog:
         icon_file = None
         icon_open_file = None
 
-        if response == gtk.RESPONSE_OK:
+        if response == Gtk.ResponseType.OK:
             # icon filenames
             icon_file = unicode_gtk(self.icon_entry.get_text())
             icon_open_file = unicode_gtk(self.icon_open_entry.get_text())

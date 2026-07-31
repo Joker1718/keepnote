@@ -26,10 +26,8 @@ RichText base classes for tags
 #
 
 # pygtk imports
-import pygtk
+from gi.repository import Gtk
 
-pygtk.require("2.0")
-import gtk
 
 
 # =============================================================================
@@ -45,7 +43,7 @@ class RichTextBaseTagTable(gtk.TextTagTable):
     # two sizes, or two justifications.
 
     def __init__(self):
-        gtk.TextTagTable.__init__(self)
+        Gtk.TextTagTable.__init__(self)
 
         self._tag_classes = {}
         self._tag2class = {}
@@ -62,7 +60,7 @@ class RichTextBaseTagTable(gtk.TextTagTable):
             self._buffers.remove(buf)
 
     def remove(self, tag):
-        gtk.TextTagTable.remove(self, tag)
+        Gtk.TextTagTable.remove(self, tag)
         if tag in self._expiring_tags:
             self._expiring_tags.remove(tag)
         cls = self._tag2class[tag]
@@ -101,12 +99,12 @@ class RichTextBaseTagTable(gtk.TextTagTable):
 
         # test to see if name is directly in table
         #  modifications and justifications are directly stored
-        tag = gtk.TextTagTable.lookup(self, name)
+        tag = Gtk.TextTagTable.lookup(self, name)
         if tag:
             return tag
 
         # make tag from scratch
-        for tag_class in self._tag_classes.itervalues():
+        for tag_class in self._tag_classes.values():
             if tag_class.class_type.is_name(name):
                 tag = tag_class.class_type.make_from_name(name)
                 self.tag_class_add(tag_class.name, tag)
@@ -184,10 +182,10 @@ class RichTextTag(gtk.TextTag):
     """A TextTag in a RichTextBuffer"""
 
     def __init__(self, name, **kargs):
-        gtk.TextTag.__init__(self, name)
+        Gtk.TextTag.__init__(self, name)
         self._count = 0
 
-        for key, val in kargs.iteritems():
+        for key, val in kargs.items():
             self.set_property(key.replace("_", "-"), val)
 
     def expires(self):

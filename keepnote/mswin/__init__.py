@@ -65,7 +65,7 @@ def get_my_documents():
     mydocs = shell.SHGetPathFromIDList(pidl)
 
     # TODO: may need to handle window-specific encoding here.
-    # encoding = locale.getdefaultlocale()[1]
+    # encoding = locale.getlocale()[1]
     # if encoding is None:
     #    encoding = "utf-8"
 
