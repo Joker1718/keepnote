@@ -7,6 +7,16 @@ on:
   pull_request:
     branches: [master, main]
   workflow_dispatch:
+    inputs:
+      python-version:
+        description: 'Python version'
+        required: false
+        default: '3.12'
+        type: choice
+        options:
+          - '3.10'
+          - '3.11'
+          - '3.12'
 
 permissions:
   contents: write
@@ -15,108 +25,146 @@ jobs:
   build-windows:
     runs-on: windows-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version: ['3.10', '3.11', '3.12']
+        include:
+          - python-version: '3.10'
+            msystem: MINGW64
+          - python-version: '3.11'
+            msystem: MINGW64
+          - python-version: '3.12'
+            msystem: MINGW64
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up MSYS2 with GTK3
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.msystem }}
+          update: true
+          install: >-
+            mingw-w64-x86_64-gtk3
+            mingw-w64-x86_64-python3
+            mingw-w64-x86_64-python3-pip
+            mingw-w64-x86_64-gobject-introspection
+            mingw-w64-x86_64-pycairo
+            mingw-w64-x86_64-pygobject
+            mingw-w64-x86_64-cairo
+            mingw-w64-x86_64-harfbuzz
+
+      - name: Set up Python ${{ matrix.python-version }} (standard)
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
 
       - name: Enable long paths (Windows 11)
+        shell: powershell
         run: |
           git config --system core.longpaths true
           New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" `
             -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
-        shell: powershell
 
-      - name: Install GTK3 and dependencies via MSYS2
-        run: |
-          echo "Installing MSYS2 and GTK3..."
-          choco install msys2 --no-progress
-          C:\tools\msys64\usr\bin\bash.exe -lc "pacman -Sy --noconfirm mingw-w64-x86_64-gtk3 mingw-w64-x86_64-python3 mingw-w64-x86_64-gobject-introspection mingw-w64-x86_64-pycairo"
-          echo "MSYS2_GTK_ROOT=C:\\tools\\msys64\\mingw64" >> $env:GITHUB_ENV
+      - name: Install PyInstaller and dependencies
         shell: powershell
-        timeout-minutes: 15
-
-      - name: Add MSYS2 MinGW to PATH
-        run: |
-          echo "${{ env.MSYS2_GTK_ROOT }}\bin" >> $env:GITHUB_PATH
-        shell: powershell
-
-      - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip setuptools wheel
-          pip install PyGObject pycairo pyinstaller
-        shell: powershell
+          pip install pyinstaller
 
-      - name: Install KeepNote in dev mode
-        run: |
-          pip install -e .
+      - name: Set GTK environment variables
         shell: powershell
+        run: |
+          $msysRoot = "D:\a\_temp\msys64\mingw64"
+          if (-not (Test-Path $msysRoot)) {
+            $msysRoot = "C:\msys64\mingw64"
+          }
+          if (-not (Test-Path $msysRoot)) {
+            # Find MSYS2 installation
+            $msysRoot = (Get-ChildItem -Path "C:\" -Filter "msys64" -Directory -Recurse -Depth 2 -ErrorAction SilentlyContinue | Select-Object -First 1).FullName + "\mingw64"
+          }
+          echo "GTK_ROOT=$msysRoot" >> $env:GITHUB_ENV
+          echo "$msysRoot\bin" >> $env:GITHUB_PATH
+          echo "GI_TYPELIB_PATH=$msysRoot\lib\girepository-1.0" >> $env:GITHUB_ENV
+          echo "Found GTK at: $msysRoot"
+          Test-Path "$msysRoot\bin\libgtk-3-0.dll"
 
       - name: Build with PyInstaller
+        shell: powershell
         run: |
           pyinstaller keepnote.spec --clean --noconfirm
-        shell: powershell
         env:
-          GI_TYPELIB_PATH: ${{ env.MSYS2_GTK_ROOT }}\lib\girepository-1.0
-          PATH: ${{ env.MSYS2_GTK_ROOT }}\bin;$env:PATH
+          GI_TYPELIB_PATH: ${{ env.GTK_ROOT }}\lib\girepository-1.0
 
-      - name: Copy GTK3 runtime files
+      - name: Bundle GTK3 runtime
+        shell: powershell
         run: |
           $distDir = "dist\KeepNote"
-          $gtkRoot = "${{ env.MSYS2_GTK_ROOT }}"
-          $libDir = "$distDir\lib"
-          $etcDir = "$distDir\etc"
-          $shareDir = "$distDir\share"
+          $gtkRoot = "${{ env.GTK_ROOT }}"
 
-          # Copy required DLLs
-          Copy-Item "$gtkRoot\bin\*.dll" -Destination $distDir -Force
+          echo "Bundling GTK3 from $gtkRoot..."
+
+          # Copy DLLs from mingw64/bin
+          $dlls = Get-ChildItem "$gtkRoot\bin\*.dll" -Exclude @('python*.dll','libpython*.dll')
+          foreach ($dll in $dlls) {
+            Copy-Item $dll.FullName -Destination $distDir -Force
+          }
 
           # Copy GI typelibs
-          if (-not (Test-Path "$distDir\lib\girepository-1.0")) {
-            New-Item -ItemType Directory -Path "$distDir\lib\girepository-1.0" -Force
-          }
-          Copy-Item "$gtkRoot\lib\girepository-1.0\*" -Destination "$distDir\lib\girepository-1.0" -Force
+          New-Item -ItemType Directory -Path "$distDir\lib\girepository-1.0" -Force | Out-Null
+          Copy-Item "$gtkRoot\lib\girepository-1.0\*" -Destination "$distDir\lib\girepository-1.0" -Recurse -Force
 
-          # Copy etc for GTK config
-          if (-not (Test-Path $etcDir)) {
-            New-Item -ItemType Directory -Path $etcDir -Force
-          }
-          Copy-Item "$gtkRoot\etc\gtk-3.0" -Destination "$etcDir\gtk-3.0" -Recurse -Force
-          Copy-Item "$gtkRoot\etc\fonts" -Destination "$etcDir\fonts" -Recurse -Force -ErrorAction SilentlyContinue
-          Copy-Item "$gtkRoot\etc\pango" -Destination "$etcDir\pango" -Recurse -Force -ErrorAction SilentlyContinue
+          # Copy GTK config
+          New-Item -ItemType Directory -Path "$distDir\etc\gtk-3.0" -Force | Out-Null
+          Copy-Item "$gtkRoot\etc\gtk-3.0\*" -Destination "$distDir\etc\gtk-3.0" -Recurse -Force -ErrorAction SilentlyContinue
 
-          # Copy share/icons and share/themes
-          if (-not (Test-Path $shareDir)) {
-            New-Item -ItemType Directory -Path $shareDir -Force
+          # Copy fonts config
+          if (Test-Path "$gtkRoot\etc\fonts") {
+            New-Item -ItemType Directory -Path "$distDir\etc\fonts" -Force | Out-Null
+            Copy-Item "$gtkRoot\etc\fonts\*" -Destination "$distDir\etc\fonts" -Recurse -Force
           }
-          Copy-Item "$gtkRoot\share\icons" -Destination "$shareDir\icons" -Recurse -Force -ErrorAction SilentlyContinue
-          Copy-Item "$gtkRoot\share\themes" -Destination "$shareDir\themes" -Recurse -Force -ErrorAction SilentlyContinue
-          Copy-Item "$gtkRoot\share\glib-2.0" -Destination "$shareDir\glib-2.0" -Recurse -Force -ErrorAction SilentlyContinue
+
+          # Copy pango config
+          if (Test-Path "$gtkRoot\etc\pango") {
+            New-Item -ItemType Directory -Path "$distDir\etc\pango" -Force | Out-Null
+            Copy-Item "$gtkRoot\etc\pango\*" -Destination "$distDir\etc\pango" -Recurse -Force
+          }
+
+          # Copy icons, themes, glib schemas
+          @('icons','themes','glib-2.0') | ForEach-Object {
+            if (Test-Path "$gtkRoot\share\$_") {
+              New-Item -ItemType Directory -Path "$distDir\share\$_" -Force | Out-Null
+              Copy-Item "$gtkRoot\share\$_" -Destination "$distDir\share\$_" -Recurse -Force -ErrorAction SilentlyContinue
+            }
+          }
 
           # Copy gdk-pixbuf loaders
-          $loadersSrc = "$gtkRoot\lib\gdk-pixbuf-2.0\2.10.0\loaders"
-          $loadersDst = "$distDir\lib\gdk-pixbuf-2.0\2.10.0\loaders"
-          if (-not (Test-Path $loadersDst)) {
-            New-Item -ItemType Directory -Path $loadersDst -Force
+          $loadersSrc = "$gtkRoot\lib\gdk-pixbuf-2.0\2.10.0\loaders.cache"
+          $loadersDir = "$distDir\lib\gdk-pixbuf-2.0\2.10.0\loaders"
+          if (Test-Path "$gtkRoot\lib\gdk-pixbuf-2.0\2.10.0\loaders") {
+            New-Item -ItemType Directory -Path $loadersDir -Force | Out-Null
+            Copy-Item "$gtkRoot\lib\gdk-pixbuf-2.0\2.10.0\loaders\*" -Destination $loadersDir -Force
           }
-          Copy-Item "$loadersSrc\*" -Destination $loadersDst -Force -ErrorAction SilentlyContinue
-        shell: powershell
+
+          # Copy gio modules
+          if (Test-Path "$gtkRoot\lib\gio\modules") {
+            New-Item -ItemType Directory -Path "$distDir\lib\gio\modules" -Force | Out-Null
+            Copy-Item "$gtkRoot\lib\gio\modules\*" -Destination "$distDir\lib\gio\modules" -Force
+          }
+
+          echo "Bundle complete."
+          Get-ChildItem $distDir | Select-Object Name
 
       - name: Create ZIP artifact
+        shell: powershell
         run: |
-          $version = python -c "import keepnote; print(keepnote.PROGRAM_VERSION_TEXT)"
+          $version = "0.7.9"
           $archiveName = "KeepNote-${version}-win11-py${{ matrix.python-version }}.zip"
           Compress-Archive -Path "dist\KeepNote\*" -DestinationPath $archiveName
           echo "ARCHIVE_NAME=$archiveName" >> $env:GITHUB_ENV
-        shell: powershell
+          echo "Created $archiveName"
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
@@ -127,7 +175,7 @@ jobs:
 
   release:
     needs: build-windows
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     if: startsWith(github.ref, 'refs/tags/v')
     permissions:
       contents: write
@@ -138,14 +186,8 @@ jobs:
         with:
           path: artifacts
 
-      - name: List artifacts
-        run: Get-ChildItem -Recurse artifacts
-        shell: powershell
-
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
           files: artifacts/**/*.zip
           generate_release_notes: true
-          draft: false
-          prerelease: false
