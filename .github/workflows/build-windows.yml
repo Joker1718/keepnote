@@ -53,15 +53,12 @@ jobs:
             mingw-w64-x86_64-gobject-introspection
             mingw-w64-x86_64-libffi
             mingw-w64-x86_64-pkgconf
-<<<<<<< HEAD
 
       - name: Python syntax check
         shell: msys2 {0}
         run: |
           export PATH="/mingw64/bin:$PATH"
           find . -name "*.py" -print0 | xargs -0 -n1 python -m py_compile
-=======
->>>>>>> 1e50d2a4bdb002be1f38f829baa71d8fab104018
 
       - name: Install PyInstaller in MSYS2
         shell: msys2 {0}
