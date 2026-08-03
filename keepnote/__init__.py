@@ -119,7 +119,7 @@ TRANSLATOR_CREDITS = (
 )
 
 
-BASEDIR = os.path.dirname(str(__file__, FS_ENCODING))
+BASEDIR = os.path.dirname(os.path.abspath(__file__))
 PLATFORM = None
 
 USER_PREF_DIR = "keepnote"
@@ -138,7 +138,7 @@ PORTABLE_FILE = "portable.txt"
 
 
 def get_basedir():
-    return os.path.dirname(str(__file__, FS_ENCODING))
+    return os.path.dirname(os.path.abspath(__file__))
 
 
 def set_basedir(basedir):
