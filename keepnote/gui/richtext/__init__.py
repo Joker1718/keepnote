@@ -1089,7 +1089,7 @@ print("get", repr(text))
     """
     def serialize(self, register_buf, content_buf, start, end, data):
 print("serialize", content_buf)
-        self.a = u"SERIALIZED"
+        self.a = "SERIALIZED"
         return self.a
 
     def deserialize(self, register_buf, content_buf, it, data,

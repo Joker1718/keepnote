@@ -14,8 +14,8 @@ and multi-thread access support::
 
 >>> mydict = SqliteDict('some.db', autocommit=True) # the mapping will be persisted to file `some.db`
 >>> mydict['some_key'] = any_picklable_object
->>> print mydict['some_key']
->>> print len(mydict) # etc... all dict functions work
+>>> print(mydict['some_key'])
+>>> print(len(mydict)) # etc... all dict functions work
 
 Pickle is used internally to serialize the values. Keys are strings.
 
@@ -305,7 +305,7 @@ class SqliteMultithread(Thread):
 
 
 # running sqlitedict.py as script will perform a simple unit test
-if __name__ in '__main___':
+if __name__ == '__main__':
     logging.basicConfig(format='%(asctime)s : %(levelname)s : %(module)s:%(lineno)d : %(funcName)s(%(threadName)s) : %(message)s')
     logging.root.setLevel(level=logging.INFO)
     for d in SqliteDict(), SqliteDict('example', flag='n'):

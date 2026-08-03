@@ -42,7 +42,7 @@ class PushIter(object):
         if len(self._queue) > 0:
             return self._queue.pop()
         else:
-            return self.next(_it)
+            return next(self._it)
 
     def push(self, item):
         """Push a new item onto the front of the iteration stream"""
