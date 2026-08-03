@@ -1,11 +1,6 @@
 name: Build KeepNote for Windows
 
 on:
-  push:
-    branches: [master, main]
-    tags: ['v*']
-  pull_request:
-    branches: [master, main]
   workflow_dispatch:
     inputs:
       python-version:
