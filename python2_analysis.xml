@@ -1,0 +1,4076 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<python2_analysis_report>
+  <metadata>
+    <analyzer_version>1.0.0</analyzer_version>
+    <python_version>3.12.10 (main, Apr  9 2025, 00:30:28) [GCC 12.2.0]</python_version>
+    <files_analyzed>100</files_analyzed>
+    <description>Detailed analysis of Python 2 syntax and constructs found in the codebase</description>
+  </metadata>
+  <summary>
+    <total_findings>488</total_findings>
+    <by_severity>
+      <critical>270</critical>
+      <high>25</high>
+      <low>176</low>
+      <medium>17</medium>
+    </by_severity>
+    <by_type>
+      <apply_function>11</apply_function>
+      <backtick_repr>260</backtick_repr>
+      <basestring_check>5</basestring_check>
+      <cmp_function>4</cmp_function>
+      <except_comma>4</except_comma>
+      <file_xreadlines>2</file_xreadlines>
+      <has_key_call>4</has_key_call>
+      <intern_function>6</intern_function>
+      <iteritems_call>3</iteritems_call>
+      <iterkeys_call>2</iterkeys_call>
+      <itervalues_call>2</itervalues_call>
+      <long_literal>2</long_literal>
+      <next_method>5</next_method>
+      <octal_literal>129</octal_literal>
+      <print_chevron>10</print_chevron>
+      <raise_comma>6</raise_comma>
+      <raw_input_call>3</raw_input_call>
+      <reload_function>3</reload_function>
+      <unichr_function>4</unichr_function>
+      <unicode_prefix>13</unicode_prefix>
+      <viewitems_call>2</viewitems_call>
+      <viewkeys_call>3</viewkeys_call>
+      <viewvalues_call>2</viewvalues_call>
+      <xrange_call>3</xrange_call>
+    </by_type>
+  </summary>
+  <files>
+    <file path="/workspace/keepnote/__init__.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/cache.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>25</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/commands.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/compat/__init__.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>17</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/compat/notebook_connection_fs_index_v4.py">
+      <finding_count>4</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="2">
+          <type>unicode_prefix</type>
+          <severity>low</severity>
+          <line>191</line>
+          <content><![CDATA[# self.con.execute(u&quot;PRAGMA read_uncommitted = true;&quot;)]]></content>
+          <description>Unicode string prefix u'' (default in Python 3)</description>
+        </finding>
+        <finding id="3">
+          <type>unicode_prefix</type>
+          <severity>low</severity>
+          <line>308</line>
+          <content><![CDATA[# con.execute(u&quot;&quot;&quot;CREATE TABLE IF NOT EXISTS AttrDefs]]></content>
+          <description>Unicode string prefix u'' (default in Python 3)</description>
+        </finding>
+        <finding id="4">
+          <type>unicode_prefix</type>
+          <severity>low</severity>
+          <line>499</line>
+          <content><![CDATA[#    u&quot;SELECT nodeid FROM NodeGraph WHERE parentid=?&quot;, (nodeid,)):]]></content>
+          <description>Unicode string prefix u'' (default in Python 3)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/compat/notebook_connection_fs_v4.py">
+      <finding_count>2</finding_count>
+      <findings>
+        <finding id="1">
+          <type>raise_comma</type>
+          <severity>critical</severity>
+          <line>799</line>
+          <content><![CDATA[# TODO: raise warning, not all children read]]></content>
+          <description>Python 2 raise statement with comma syntax</description>
+        </finding>
+        <finding id="2">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>25</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/compat/notebook_connection_v4.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>25</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/compat/notebook_update_v1_2.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/compat/notebook_update_v5_6.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/compat/notebook_v1.py">
+      <finding_count>2</finding_count>
+      <findings>
+        <finding id="1">
+          <type>raise_comma</type>
+          <severity>critical</severity>
+          <line>622</line>
+          <content><![CDATA[# TODO: raise warning, not all children read]]></content>
+          <description>Python 2 raise statement with comma syntax</description>
+        </finding>
+        <finding id="2">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/compat/notebook_v2.py">
+      <finding_count>2</finding_count>
+      <findings>
+        <finding id="1">
+          <type>raise_comma</type>
+          <severity>critical</severity>
+          <line>707</line>
+          <content><![CDATA[# TODO: raise warning, not all children read]]></content>
+          <description>Python 2 raise statement with comma syntax</description>
+        </finding>
+        <finding id="2">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/compat/notebook_v3.py">
+      <finding_count>2</finding_count>
+      <findings>
+        <finding id="1">
+          <type>raise_comma</type>
+          <severity>critical</severity>
+          <line>915</line>
+          <content><![CDATA[# TODO: raise warning, not all children read]]></content>
+          <description>Python 2 raise statement with comma syntax</description>
+        </finding>
+        <finding id="2">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>28</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/compat/notebook_v4.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/compat/pref.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/compat/xmlobject_v1.py">
+      <finding_count>2</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>26</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="2">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>367</line>
+          <content><![CDATA[for i in range(1):  # 0000):]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/compat/xmlobject_v3.py">
+      <finding_count>3</finding_count>
+      <findings>
+        <finding id="1">
+          <type>except_comma</type>
+          <severity>critical</severity>
+          <line>225</line>
+          <content><![CDATA[# except Exception, e:]]></content>
+          <description>Python 2 except clause with comma syntax (use "except Exception as e")</description>
+        </finding>
+        <finding id="2">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>26</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="3">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>459</line>
+          <content><![CDATA[for i in range(1):  # 0000):]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/extension.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>22</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/extensions/backup_tar/__init__.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/extensions/command_basics/__init__.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/extensions/editor_insert_date/__init__.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/extensions/export_html/__init__.py">
+      <finding_count>3</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="2">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>283</line>
+          <content><![CDATA[color: #000;]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="3">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>290</line>
+          <content><![CDATA[color: #000;]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/extensions/new_file/__init__.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/extensions/notebook_http/__init__.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/extensions/python_prompt/__init__.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/extensions/python_prompt/dialog_python.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/__init__.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/basetreeview.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/colortool.py">
+      <finding_count>2</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="2">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>651</line>
+          <content><![CDATA[border_color = &quot;#000000&quot;]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/dialog_app_options.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/dialog_drag_drop_test.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/dialog_find.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/dialog_image_new.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/dialog_image_resize.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/dialog_node_icon.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/dialog_update_notebook.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/dialog_wait.py">
+      <finding_count>2</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="2">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>93</line>
+          <content><![CDATA[step = max(min(old_div(timestep, pulse_rate), 0.1), 0.001)]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/editor.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/editor_multi.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>27</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/editor_richtext.py">
+      <finding_count>2</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="2">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>1571</line>
+          <content><![CDATA[self.fg_color_button = FgColorTool(14, 15, &quot;#000000&quot;)]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/editor_sourceview.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/editor_text.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/extension.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>22</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/font_selector.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/icon_menu.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/icons.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/link_editor.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/listview.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/main_window.py">
+      <finding_count>2</finding_count>
+      <findings>
+        <finding id="1">
+          <type>except_comma</type>
+          <severity>critical</severity>
+          <line>767</line>
+          <content><![CDATA[# except Exception, e:]]></content>
+          <description>Python 2 except clause with comma syntax (use "except Exception as e")</description>
+        </finding>
+        <finding id="2">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/richtext/__init__.py">
+      <finding_count>6</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="2">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>1434</line>
+          <content><![CDATA[RichTextFGColorTag.tag_name(&quot;#000000&quot;)]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="3">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>1450</line>
+          <content><![CDATA[RichTextBGColorTag.tag_name(&quot;#000000&quot;)]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="4">
+          <type>unicode_prefix</type>
+          <severity>low</severity>
+          <line>90</line>
+          <content><![CDATA[QUOTE_FORMAT = 'from &lt;a href=&quot;%u&quot;&gt;%t&lt;/a&gt;:&lt;br/&gt;%s']]></content>
+          <description>Unicode string prefix u'' (default in Python 3)</description>
+        </finding>
+        <finding id="5">
+          <type>unicode_prefix</type>
+          <severity>low</severity>
+          <line>914</line>
+          <content><![CDATA[quote_format, {&quot;%u&quot;: escape(url), &quot;%t&quot;: escape(title), &quot;%s&quot;: unique}]]></content>
+          <description>Unicode string prefix u'' (default in Python 3)</description>
+        </finding>
+        <finding id="6">
+          <type>unicode_prefix</type>
+          <severity>low</severity>
+          <line>1092</line>
+          <content><![CDATA[self.a = u&quot;SERIALIZED&quot;]]></content>
+          <description>Unicode string prefix u'' (default in Python 3)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/richtext/font_handler.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/richtext/indent_handler.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/richtext/richtext_tags.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/richtext/richtextbase_tags.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>25</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/richtext/richtextbasebuffer.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/richtext/richtextbuffer.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/richtext/textbuffer_tools.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/richtext/undo_handler.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/tabbed_viewer.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/three_pane_viewer.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/treemodel.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/treeview.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>23</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/gui/viewer.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/history.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/linked_list.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/linked_tree.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/listening.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/maskdict.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/mswin/screenshot.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>25</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/notebook/__init__.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/notebook/connection/__init__.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>25</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/notebook/connection/fs/__init__.py">
+      <finding_count>2</finding_count>
+      <findings>
+        <finding id="1">
+          <type>raise_comma</type>
+          <severity>critical</severity>
+          <line>972</line>
+          <content><![CDATA[# TODO: raise warning, not all children read]]></content>
+          <description>Python 2 raise statement with comma syntax</description>
+        </finding>
+        <finding id="2">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>25</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/notebook/connection/fs/index.py">
+      <finding_count>2</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="2">
+          <type>unicode_prefix</type>
+          <severity>low</severity>
+          <line>87</line>
+          <content><![CDATA[#self.con.execute(u&quot;PRAGMA read_uncommitted = true;&quot;)]]></content>
+          <description>Unicode string prefix u'' (default in Python 3)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/notebook/connection/fs_raw.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>25</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/notebook/connection/http.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>25</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/notebook/connection/index.py">
+      <finding_count>2</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="2">
+          <type>unicode_prefix</type>
+          <severity>low</severity>
+          <line>234</line>
+          <content><![CDATA[# con.execute(u&quot;&quot;&quot;CREATE TABLE IF NOT EXISTS AttrDefs]]></content>
+          <description>Unicode string prefix u'' (default in Python 3)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/notebook/connection/mem.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>27</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/notebook/sync.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>25</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/notebook/update.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/orderdict.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>22</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/plist.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>26</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/pref.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/safefile.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/server/__init__.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>25</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/server/bottle.py">
+      <finding_count>232</finding_count>
+      <findings>
+        <finding id="1">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>252</line>
+          <content><![CDATA[The path-rule is either a static path (e.g. `/contact`) or a dynamic]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="2">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>253</line>
+          <content><![CDATA[path that contains wildcards (e.g. `/wiki/&lt;page&gt;`). The wildcard syntax]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="3">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>254</line>
+          <content><![CDATA[and details on the matching order are described in docs:`routing`.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="4">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>469</line>
+          <content><![CDATA[#: The path-rule string (e.g. ``/wiki/:page``).]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="5">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>469</line>
+          <content><![CDATA[#: The path-rule string (e.g. ``/wiki/:page``).]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="6">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>471</line>
+          <content><![CDATA[#: The HTTP method as a string (e.g. ``GET``).]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="7">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>471</line>
+          <content><![CDATA[#: The HTTP method as a string (e.g. ``GET``).]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="8">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>475</line>
+          <content><![CDATA[#: The name of the route (if specified) or ``None``.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="9">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>475</line>
+          <content><![CDATA[#: The name of the route (if specified) or ``None``.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="10">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>477</line>
+          <content><![CDATA[#: A list of route-specific plugins (see :meth:`Bottle.route`).]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="11">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>479</line>
+          <content><![CDATA[#: A list of plugins to not apply to this route (see :meth:`Bottle.route`).]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="12">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>481</line>
+          <content><![CDATA[#: Additional keyword arguments passed to the :meth:`Bottle.route`]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="13">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>493</line>
+          <content><![CDATA[&quot;&quot;&quot;Forget any cached values. The next time :attr:`call` is accessed,]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="14">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>575</line>
+          <content><![CDATA[#: A :class:`ConfigDict` for app specific configuration.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="15">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>583</line>
+          <content><![CDATA[#: A :class:`ResourceManager` for application files]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="16">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>586</line>
+          <content><![CDATA[self.routes = []  # List of installed :class:`Route` instances.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="17">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>587</line>
+          <content><![CDATA[self.router = Router()  # Maps requests to :class:`Route` instances.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="18">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>596</line>
+          <content><![CDATA[#: If true, most exceptions are caught and returned as :exc:`HTTPError`]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="19">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>615</line>
+          <content><![CDATA[Called whenever :meth:`Bottle.reset` is called.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="20">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>634</line>
+          <content><![CDATA[:meth:`add_hook` for details.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="21">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>643</line>
+          <content><![CDATA[&quot;&quot;&quot;Mount an application (:class:`Bottle` or plain WSGI) to a specific]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="22">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>648</line>
+          <content><![CDATA[:param prefix: path prefix or `mount-point`. If it ends in a slash,]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="23">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>650</line>
+          <content><![CDATA[:param app: an instance of :class:`Bottle` or a WSGI application.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="24">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>652</line>
+          <content><![CDATA[All other parameters are passed to the underlying :meth:`route` call.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="25">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>691</line>
+          <content><![CDATA[&quot;&quot;&quot;Merge the routes of another :class:`Bottle` application or a list of]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="26">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>692</line>
+          <content><![CDATA[:class:`Route` objects into this application. The routes keep their]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="27">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>693</line>
+          <content><![CDATA['owner', meaning that the :data:`Route.app` attribute is not]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="28">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>703</line>
+          <content><![CDATA[decorator or an object that implements the :class:`Plugin` API.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="29">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>716</line>
+          <content><![CDATA[all plugins with a matching ``name`` attribute or ``True`` to remove all]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="30">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>716</line>
+          <content><![CDATA[all plugins with a matching ``name`` attribute or ``True`` to remove all]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="31">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>716</line>
+          <content><![CDATA[all plugins with a matching ``name`` attribute or ``True`` to remove all]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="32">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>716</line>
+          <content><![CDATA[all plugins with a matching ``name`` attribute or ``True`` to remove all]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="33">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>758</line>
+          <content><![CDATA[&quot;&quot;&quot;Calls :func:`run` with the same parameters.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="34">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>762</line>
+          <content><![CDATA[&quot;&quot;&quot;Search for a matching route and return a (:class:`Route` , urlargs)]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="35">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>764</line>
+          <content><![CDATA[from the URL. Raise :exc:`HTTPError` (404/405) on a non-match.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="36">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>774</line>
+          <content><![CDATA[&quot;&quot;&quot;Add a route object, but do not change the :data:`Route.app`]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="37">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>797</line>
+          <content><![CDATA[The ``:name`` part is a wildcard. See :class:`Router` for syntax]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="38">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>797</line>
+          <content><![CDATA[The ``:name`` part is a wildcard. See :class:`Router` for syntax]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="39">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>797</line>
+          <content><![CDATA[The ``:name`` part is a wildcard. See :class:`Router` for syntax]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="40">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>803</line>
+          <content><![CDATA[:param method: HTTP method (`GET`, `POST`, `PUT`, ...) or a list of]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="41">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>803</line>
+          <content><![CDATA[:param method: HTTP method (`GET`, `POST`, `PUT`, ...) or a list of]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="42">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>803</line>
+          <content><![CDATA[:param method: HTTP method (`GET`, `POST`, `PUT`, ...) or a list of]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="43">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>804</line>
+          <content><![CDATA[methods to listen to. (default: `GET`)]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="44">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>806</line>
+          <content><![CDATA[syntax. ``route(..., callback=func)`` equals ``route(...)(func)``]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="45">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>806</line>
+          <content><![CDATA[syntax. ``route(..., callback=func)`` equals ``route(...)(func)``]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="46">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>806</line>
+          <content><![CDATA[syntax. ``route(..., callback=func)`` equals ``route(...)(func)``]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="47">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>806</line>
+          <content><![CDATA[syntax. ``route(..., callback=func)`` equals ``route(...)(func)``]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="48">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>811</line>
+          <content><![CDATA[plugins are not installed to this route. ``True`` skips all.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="49">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>811</line>
+          <content><![CDATA[plugins are not installed to this route. ``True`` skips all.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="50">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>814</line>
+          <content><![CDATA[configuration and passed to plugins (see :meth:`Plugin.apply`).]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="51">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>843</line>
+          <content><![CDATA[&quot;&quot;&quot;Equals :meth:`route`.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="52">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>847</line>
+          <content><![CDATA[&quot;&quot;&quot;Equals :meth:`route` with a ``POST`` method parameter.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="53">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>847</line>
+          <content><![CDATA[&quot;&quot;&quot;Equals :meth:`route` with a ``POST`` method parameter.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="54">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>847</line>
+          <content><![CDATA[&quot;&quot;&quot;Equals :meth:`route` with a ``POST`` method parameter.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="55">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>851</line>
+          <content><![CDATA[&quot;&quot;&quot;Equals :meth:`route` with a ``PUT`` method parameter.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="56">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>851</line>
+          <content><![CDATA[&quot;&quot;&quot;Equals :meth:`route` with a ``PUT`` method parameter.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="57">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>851</line>
+          <content><![CDATA[&quot;&quot;&quot;Equals :meth:`route` with a ``PUT`` method parameter.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="58">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>855</line>
+          <content><![CDATA[&quot;&quot;&quot;Equals :meth:`route` with a ``DELETE`` method parameter.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="59">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>855</line>
+          <content><![CDATA[&quot;&quot;&quot;Equals :meth:`route` with a ``DELETE`` method parameter.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="60">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>855</line>
+          <content><![CDATA[&quot;&quot;&quot;Equals :meth:`route` with a ``DELETE`` method parameter.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="61">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>859</line>
+          <content><![CDATA[&quot;&quot;&quot;Equals :meth:`route` with a ``PATCH`` method parameter.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="62">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>859</line>
+          <content><![CDATA[&quot;&quot;&quot;Equals :meth:`route` with a ``PATCH`` method parameter.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="63">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>859</line>
+          <content><![CDATA[&quot;&quot;&quot;Equals :meth:`route` with a ``PATCH`` method parameter.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="64">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1044</line>
+          <content><![CDATA[#: Maximum size of memory buffer for :attr:`body` in bytes.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="65">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1061</line>
+          <content><![CDATA[&quot;&quot;&quot;The bottle :class:`Route` object that matches this request.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="66">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1071</line>
+          <content><![CDATA[&quot;&quot;&quot;The value of ``PATH_INFO`` with exactly one prefixed slash (to fix]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="67">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1071</line>
+          <content><![CDATA[&quot;&quot;&quot;The value of ``PATH_INFO`` with exactly one prefixed slash (to fix]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="68">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1077</line>
+          <content><![CDATA[&quot;&quot;&quot;The ``REQUEST_METHOD`` value as an uppercase string.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="69">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1077</line>
+          <content><![CDATA[&quot;&quot;&quot;The ``REQUEST_METHOD`` value as an uppercase string.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="70">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1082</line>
+          <content><![CDATA[&quot;&quot;&quot;A :class:`WSGIHeaderDict` that provides case-insensitive access to]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="71">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1092</line>
+          <content><![CDATA[&quot;&quot;&quot;Cookies parsed into a :class:`FormsDict`. Signed cookies are NOT]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="72">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1093</line>
+          <content><![CDATA[decoded. Use :meth:`get_cookie` if you expect signed cookies.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="73">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1098</line>
+          <content><![CDATA[&quot;&quot;&quot;Return the content of a cookie. To read a `Signed Cookie`, the]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="74">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1099</line>
+          <content><![CDATA[`secret` must match the one used to create the cookie (see]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="75">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1100</line>
+          <content><![CDATA[:meth:`BaseResponse.set_cookie`). If anything goes wrong (missing]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="76">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1110</line>
+          <content><![CDATA[&quot;&quot;&quot;The :attr:`query_string` parsed into a :class:`FormsDict`. These]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="77">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1110</line>
+          <content><![CDATA[&quot;&quot;&quot;The :attr:`query_string` parsed into a :class:`FormsDict`. These]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="78">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1113</line>
+          <content><![CDATA[:class:`Router`.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="79">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1122</line>
+          <content><![CDATA[&quot;&quot;&quot;Form values parsed from an `url-encoded` or `multipart/form-data`]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="80">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1122</line>
+          <content><![CDATA[&quot;&quot;&quot;Form values parsed from an `url-encoded` or `multipart/form-data`]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="81">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1124</line>
+          <content><![CDATA[:class:`FormsDict`. All keys and values are strings. File uploads]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="82">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1125</line>
+          <content><![CDATA[are stored separately in :attr:`files`.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="83">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1134</line>
+          <content><![CDATA[&quot;&quot;&quot;A :class:`FormsDict` with the combined values of :attr:`query` and]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="84">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1134</line>
+          <content><![CDATA[&quot;&quot;&quot;A :class:`FormsDict` with the combined values of :attr:`query` and]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="85">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1135</line>
+          <content><![CDATA[:attr:`forms`. File uploads are stored in :attr:`files`.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="86">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1135</line>
+          <content><![CDATA[:attr:`forms`. File uploads are stored in :attr:`files`.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="87">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1145</line>
+          <content><![CDATA[&quot;&quot;&quot;File uploads parsed from `multipart/form-data` encoded POST or PUT]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="88">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1146</line>
+          <content><![CDATA[request body. The values are instances of :class:`FileUpload`.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="89">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1157</line>
+          <content><![CDATA[&quot;&quot;&quot;If the ``Content-Type`` header is ``application/json``, this]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="90">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1157</line>
+          <content><![CDATA[&quot;&quot;&quot;If the ``Content-Type`` header is ``application/json``, this]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="91">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1157</line>
+          <content><![CDATA[&quot;&quot;&quot;If the ``Content-Type`` header is ``application/json``, this]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="92">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1157</line>
+          <content><![CDATA[&quot;&quot;&quot;If the ``Content-Type`` header is ``application/json``, this]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="93">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1159</line>
+          <content><![CDATA[smaller than :attr:`MEMFILE_MAX` are processed to avoid memory]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="94">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1243</line>
+          <content><![CDATA[:attr:`MEMFILE_MAX`, this is either a temporary file or a]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="95">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1244</line>
+          <content><![CDATA[:class:`io.BytesIO` instance. Accessing this property for the first]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="96">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1245</line>
+          <content><![CDATA[time reads and replaces the ``wsgi.input`` environ variable.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="97">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1245</line>
+          <content><![CDATA[time reads and replaces the ``wsgi.input`` environ variable.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="98">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1246</line>
+          <content><![CDATA[Subsequent accesses just do a `seek(0)` on the file object.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="99">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1255</line>
+          <content><![CDATA[#: An alias for :attr:`query`.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="100">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1260</line>
+          <content><![CDATA[&quot;&quot;&quot;The values of :attr:`forms` and :attr:`files` combined into a single]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="101">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1260</line>
+          <content><![CDATA[&quot;&quot;&quot;The values of :attr:`forms` and :attr:`files` combined into a single]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="102">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1261</line>
+          <content><![CDATA[:class:`FormsDict`. Values are either strings (form values) or]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="103">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1262</line>
+          <content><![CDATA[instances of :class:`cgi.FieldStorage` (file uploads).]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="104">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1295</line>
+          <content><![CDATA[results, make sure that the ``X-Forwarded-Host`` header is set]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="105">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1295</line>
+          <content><![CDATA[results, make sure that the ``X-Forwarded-Host`` header is set]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="106">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1301</line>
+          <content><![CDATA[&quot;&quot;&quot;The :attr:`url` string as an :class:`urlparse.SplitResult` tuple.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="107">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1301</line>
+          <content><![CDATA[&quot;&quot;&quot;The :attr:`url` string as an :class:`urlparse.SplitResult` tuple.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="108">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1319</line>
+          <content><![CDATA[&quot;&quot;&quot;Request path including :attr:`script_name` (if present).&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="109">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1324</line>
+          <content><![CDATA[&quot;&quot;&quot;The raw :attr:`query` part of the URL (everything in between ``?``]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="110">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1324</line>
+          <content><![CDATA[&quot;&quot;&quot;The raw :attr:`query` part of the URL (everything in between ``?``]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="111">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1324</line>
+          <content><![CDATA[&quot;&quot;&quot;The raw :attr:`query` part of the URL (everything in between ``?``]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="112">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1325</line>
+          <content><![CDATA[and ``#``) as a string.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="113">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1325</line>
+          <content><![CDATA[and ``#``) as a string.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="114">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1330</line>
+          <content><![CDATA[&quot;&quot;&quot;The initial portion of the URL's `path` that was removed by a higher]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="115">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1338</line>
+          <content><![CDATA[&quot;&quot;&quot;Shift path segments from :attr:`path` to :attr:`script_name` and]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="116">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1338</line>
+          <content><![CDATA[&quot;&quot;&quot;Shift path segments from :attr:`path` to :attr:`script_name` and]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="117">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1351</line>
+          <content><![CDATA[and -1 is returned. In this case, :attr:`body` will be empty.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="118">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1362</line>
+          <content><![CDATA[works with JavaScript libraries that support the `X-Requested-With`]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="119">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1369</line>
+          <content><![CDATA[&quot;&quot;&quot;Alias for :attr:`is_xhr`. &quot;Ajax&quot; is not the right term.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="120">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1378</line>
+          <content><![CDATA[the user field is looked up from the ``REMOTE_USER`` environ]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="121">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1378</line>
+          <content><![CDATA[the user field is looked up from the ``REMOTE_USER`` environ]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="122">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1392</line>
+          <content><![CDATA[work if all proxies support the ```X-Forwarded-For`` header. Note]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="123">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1392</line>
+          <content><![CDATA[work if all proxies support the ```X-Forwarded-For`` header. Note]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="124">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1408</line>
+          <content><![CDATA[&quot;&quot;&quot;Return a new :class:`Request` with a shallow :attr:`environ` copy.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="125">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1408</line>
+          <content><![CDATA[&quot;&quot;&quot;Return a new :class:`Request` with a shallow :attr:`environ` copy.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="126">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1559</line>
+          <content><![CDATA[&quot;&quot;&quot;The HTTP status line as a string (e.g. ``404 Not Found``).&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="127">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1559</line>
+          <content><![CDATA[&quot;&quot;&quot;The HTTP status line as a string (e.g. ``404 Not Found``).&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="128">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1589</line>
+          <content><![CDATA[phrase (e.g. &quot;404 Brain not found&quot;). Both :data:`status_line` and]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="129">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1590</line>
+          <content><![CDATA[:data:`status_code` are updated accordingly. The return value is]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="130">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1597</line>
+          <content><![CDATA[&quot;&quot;&quot;An instance of :class:`HeaderDict`, a case-insensitive dict-like]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="131">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1666</line>
+          <content><![CDATA[&quot;&quot;&quot;Create a new cookie or replace an old one. If the `secret` parameter is]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="132">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1667</line>
+          <content><![CDATA[set, create a `Signed Cookie` (described below).]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="133">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1674</line>
+          <content><![CDATA[supported by :class:`cookie.Morsel`, including:]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="134">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1685</line>
+          <content><![CDATA[If neither `expires` nor `max_age` is set (default), the cookie will]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="135">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1685</line>
+          <content><![CDATA[If neither `expires` nor `max_age` is set (default), the cookie will]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="136">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1723</line>
+          <content><![CDATA[&quot;&quot;&quot;Delete a cookie. Be sure to use the same `domain` and `path`]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="137">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1723</line>
+          <content><![CDATA[&quot;&quot;&quot;Delete a cookie. Be sure to use the same `domain` and `path`]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="138">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1755</line>
+          <content><![CDATA[&quot;&quot;&quot;A thread-local subclass of :class:`BaseRequest` with a different]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="139">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1757</line>
+          <content><![CDATA[instance of this class (:data:`request`). If accessed during a]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="140">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1766</line>
+          <content><![CDATA[&quot;&quot;&quot;A thread-local subclass of :class:`BaseResponse` with a different]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="141">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1768</line>
+          <content><![CDATA[instance of this class (:data:`response`). Its attributes are used]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="142">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1849</line>
+          <content><![CDATA[&quot;&quot;&quot;This plugin applies the :func:`view` decorator to all routes with a]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="143">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1850</line>
+          <content><![CDATA[`template` config parameter. If the parameter is a tuple, the second]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="144">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1851</line>
+          <content><![CDATA[element must be a dict with additional options (e.g. `template_engine`)]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="145">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1983</line>
+          <content><![CDATA[&quot;&quot;&quot;This :class:`MultiDict` subclass is used to store request form data.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="146">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1987</line>
+          <content><![CDATA[or recoded to match :attr:`input_encoding` (default: 'utf8'). Missing]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="147">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1992</line>
+          <content><![CDATA[#: If true (default), str strings are first encoded with `latin1`]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="148">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1993</line>
+          <content><![CDATA[#: and then decoded to match :attr:`input_encoding`.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="149">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2006</line>
+          <content><![CDATA[:attr:`input_encoding`. Some libraries (e.g. WTForms) want a]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="150">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2030</line>
+          <content><![CDATA[&quot;&quot;&quot;A case-insensitive version of :class:`MultiDict` that defaults to]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="151">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2080</line>
+          <content><![CDATA[#: List of keys that do not have a ``HTTP_`` prefix.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="152">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2080</line>
+          <content><![CDATA[#: List of keys that do not have a ``HTTP_`` prefix.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="153">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2135</line>
+          <content><![CDATA[&quot;&quot;&quot;Load values from an ``*.ini`` style config file.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="154">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2135</line>
+          <content><![CDATA[&quot;&quot;&quot;Load values from an ``*.ini`` style config file.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="155">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2139</line>
+          <content><![CDATA[``DEFAULT`` and ``bottle`` refer to the root namespace (no prefix).]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="156">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2139</line>
+          <content><![CDATA[``DEFAULT`` and ``bottle`` refer to the root namespace (no prefix).]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="157">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2139</line>
+          <content><![CDATA[``DEFAULT`` and ``bottle`` refer to the root namespace (no prefix).]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="158">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2139</line>
+          <content><![CDATA[``DEFAULT`` and ``bottle`` refer to the root namespace (no prefix).]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="159">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2172</line>
+          <content><![CDATA[Example: ``update('some.namespace', key='value')``&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="160">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2172</line>
+          <content><![CDATA[Example: ``update('some.namespace', key='value')``&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="161">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2221</line>
+          <content><![CDATA[&quot;&quot;&quot;Add a new :class:`Bottle` instance to the stack&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="162">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2264</line>
+          <content><![CDATA[:param base: default value for :meth:`add_path` calls.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="163">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2275</line>
+          <content><![CDATA[#: A list of search paths. See :meth:`add_path` for details.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="164">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2277</line>
+          <content><![CDATA[#: A cache for resolved paths. ``res.cache.clear()`` clears the cache.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="165">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2277</line>
+          <content><![CDATA[#: A cache for resolved paths. ``res.cache.clear()`` clears the cache.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="166">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2286</line>
+          <content><![CDATA[(not ending in `/`), the filename is stripped off.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="167">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2288</line>
+          <content><![CDATA[Defaults to :attr:`base` which defaults to ``os.getcwd()``.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="168">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2288</line>
+          <content><![CDATA[Defaults to :attr:`base` which defaults to ``os.getcwd()``.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="169">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2288</line>
+          <content><![CDATA[Defaults to :attr:`base` which defaults to ``os.getcwd()``.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="170">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2292</line>
+          <content><![CDATA[The `base` parameter makes it easy to reference files installed]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="171">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2326</line>
+          <content><![CDATA[&quot;&quot;&quot;Search for a resource and return an absolute file path, or `None`.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="172">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2328</line>
+          <content><![CDATA[The :attr:`path` list is searched in order. The first match is]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="173">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2359</line>
+          <content><![CDATA[#: A :class:`HeaderDict` with additional headers (e.g. content-type)]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="174">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2395</line>
+          <content><![CDATA[If *destination* is a directory, :attr:`filename` is added to the]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="175">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2447</line>
+          <content><![CDATA[&quot;&quot;&quot;Open a file in a safe way and return :exc:`HTTPResponse` with status]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="176">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2448</line>
+          <content><![CDATA[code 200, 305, 403 or 404. The ``Content-Type``, ``Content-Encoding``,]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="177">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2448</line>
+          <content><![CDATA[code 200, 305, 403 or 404. The ``Content-Type``, ``Content-Encoding``,]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="178">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2448</line>
+          <content><![CDATA[code 200, 305, 403 or 404. The ``Content-Type``, ``Content-Encoding``,]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="179">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2448</line>
+          <content><![CDATA[code 200, 305, 403 or 404. The ``Content-Type``, ``Content-Encoding``,]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="180">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2449</line>
+          <content><![CDATA[``Content-Length`` and ``Last-Modified`` headers are set if possible.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="181">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2449</line>
+          <content><![CDATA[``Content-Length`` and ``Last-Modified`` headers are set if possible.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="182">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2449</line>
+          <content><![CDATA[``Content-Length`` and ``Last-Modified`` headers are set if possible.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="183">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2449</line>
+          <content><![CDATA[``Content-Length`` and ``Last-Modified`` headers are set if possible.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="184">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2450</line>
+          <content><![CDATA[Special support for ``If-Modified-Since``, ``Range`` and ``HEAD``]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="185">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2450</line>
+          <content><![CDATA[Special support for ``If-Modified-Since``, ``Range`` and ``HEAD``]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="186">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2450</line>
+          <content><![CDATA[Special support for ``If-Modified-Since``, ``Range`` and ``HEAD``]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="187">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2450</line>
+          <content><![CDATA[Special support for ``If-Modified-Since``, ``Range`` and ``HEAD``]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="188">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2450</line>
+          <content><![CDATA[Special support for ``If-Modified-Since``, ``Range`` and ``HEAD``]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="189">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2450</line>
+          <content><![CDATA[Special support for ``If-Modified-Since``, ``Range`` and ``HEAD``]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="190">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2458</line>
+          <content><![CDATA[:param download: If True, ask the browser to open a `Save as...` dialog]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="191">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2462</line>
+          <content><![CDATA[:param charset: The charset to use for files with a ``text/*``]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="192">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2462</line>
+          <content><![CDATA[:param charset: The charset to use for files with a ``text/*``]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="193">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2627</line>
+          <content><![CDATA[&quot;&quot;&quot;Escape HTML special characters ``&amp;&lt;&gt;`` and quotes ``'&quot;``.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="194">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2627</line>
+          <content><![CDATA[&quot;&quot;&quot;Escape HTML special characters ``&amp;&lt;&gt;`` and quotes ``'&quot;``.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="195">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2627</line>
+          <content><![CDATA[&quot;&quot;&quot;Escape HTML special characters ``&amp;&lt;&gt;`` and quotes ``'&quot;``.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="196">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2627</line>
+          <content><![CDATA[&quot;&quot;&quot;Escape HTML special characters ``&amp;&lt;&gt;`` and quotes ``'&quot;``.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="197">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2950</line>
+          <content><![CDATA[* `fast` (default: False) uses libevent's http server, but has some]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="198">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3003</line>
+          <content><![CDATA[* `backlog` adjust the eventlet backlog parameter which is the maximum]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="199">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3006</line>
+          <content><![CDATA[* `family`: (default is 2) socket family, optional. See socket]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="200">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3101</line>
+          <content><![CDATA[* ``package.module`` returns `module` as a module object.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="201">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3101</line>
+          <content><![CDATA[* ``package.module`` returns `module` as a module object.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="202">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3101</line>
+          <content><![CDATA[* ``package.module`` returns `module` as a module object.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="203">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3102</line>
+          <content><![CDATA[* ``pack.mod:name`` returns the module variable `name` from `pack.mod`.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="204">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3102</line>
+          <content><![CDATA[* ``pack.mod:name`` returns the module variable `name` from `pack.mod`.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="205">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3102</line>
+          <content><![CDATA[* ``pack.mod:name`` returns the module variable `name` from `pack.mod`.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="206">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3102</line>
+          <content><![CDATA[* ``pack.mod:name`` returns the module variable `name` from `pack.mod`.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="207">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3103</line>
+          <content><![CDATA[* ``pack.mod:func()`` calls `pack.mod.func()` and returns the result.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="208">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3103</line>
+          <content><![CDATA[* ``pack.mod:func()`` calls `pack.mod.func()` and returns the result.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="209">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3103</line>
+          <content><![CDATA[* ``pack.mod:func()`` calls `pack.mod.func()` and returns the result.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="210">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3107</line>
+          <content><![CDATA[local variables. Example: ``import_string('re:compile(x)', x='[a-z]')``]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="211">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3107</line>
+          <content><![CDATA[local variables. Example: ``import_string('re:compile(x)', x='[a-z]')``]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="212">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3124</line>
+          <content><![CDATA[application object. See :func:`load` for the target parameter.&quot;&quot;&quot;]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="213">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3154</line>
+          <content><![CDATA[:func:`load_app`. (default: :func:`default_app`)]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="214">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3154</line>
+          <content><![CDATA[:func:`load_app`. (default: :func:`default_app`)]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="215">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3155</line>
+          <content><![CDATA[:param server: Server adapter to use. See :data:`server_names` keys]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="216">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3156</line>
+          <content><![CDATA[for valid names or pass a :class:`ServerAdapter` subclass.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="217">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3157</line>
+          <content><![CDATA[(default: `wsgiref`)]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="218">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3158</line>
+          <content><![CDATA[:param host: Server address to bind to. Pass ``0.0.0.0`` to listens on]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="219">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3158</line>
+          <content><![CDATA[:param host: Server address to bind to. Pass ``0.0.0.0`` to listens on]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="220">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3831</line>
+          <content><![CDATA[#: A thread-safe instance of :class:`LocalRequest`. If accessed from within a]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="221">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3836</line>
+          <content><![CDATA[#: A thread-safe instance of :class:`LocalResponse`. It is used to change the]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="222">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3849</line>
+          <content><![CDATA[#: Example: ``import bottle.ext.sqlite`` actually imports `bottle_sqlite`.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="223">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>3849</line>
+          <content><![CDATA[#: Example: ``import bottle.ext.sqlite`` actually imports `bottle_sqlite`.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="224">
+          <type>apply_function</type>
+          <severity>high</severity>
+          <line>521</line>
+          <content><![CDATA[callback = plugin.apply(callback, self)]]></content>
+          <description>apply() function (use direct call with *)</description>
+        </finding>
+        <finding id="225">
+          <type>apply_function</type>
+          <severity>high</severity>
+          <line>708</line>
+          <content><![CDATA[raise TypeError(&quot;Plugins must be callable or implement .apply()&quot;)]]></content>
+          <description>apply() function (use direct call with *)</description>
+        </finding>
+        <finding id="226">
+          <type>apply_function</type>
+          <severity>high</severity>
+          <line>934</line>
+          <content><![CDATA[out.apply(response)]]></content>
+          <description>apply() function (use direct call with *)</description>
+        </finding>
+        <finding id="227">
+          <type>apply_function</type>
+          <severity>high</severity>
+          <line>940</line>
+          <content><![CDATA[out.apply(response)]]></content>
+          <description>apply() function (use direct call with *)</description>
+        </finding>
+        <finding id="228">
+          <type>apply_function</type>
+          <severity>high</severity>
+          <line>1788</line>
+          <content><![CDATA[def apply(self, other):]]></content>
+          <description>apply() function (use direct call with *)</description>
+        </finding>
+        <finding id="229">
+          <type>apply_function</type>
+          <severity>high</severity>
+          <line>1823</line>
+          <content><![CDATA[def apply(self, callback, _):]]></content>
+          <description>apply() function (use direct call with *)</description>
+        </finding>
+        <finding id="230">
+          <type>apply_function</type>
+          <severity>high</severity>
+          <line>1857</line>
+          <content><![CDATA[def apply(self, callback, route):]]></content>
+          <description>apply() function (use direct call with *)</description>
+        </finding>
+        <finding id="231">
+          <type>print_chevron</type>
+          <severity>low</severity>
+          <line>2154</line>
+          <content><![CDATA[&gt;&gt;&gt; c = ConfigDict()]]></content>
+          <description>Print chevron syntax (print &gt;&gt; file)</description>
+        </finding>
+        <finding id="232">
+          <type>print_chevron</type>
+          <severity>low</severity>
+          <line>2155</line>
+          <content><![CDATA[&gt;&gt;&gt; c.load_dict({'some': {'namespace': {'key': 'value'} } })]]></content>
+          <description>Print chevron syntax (print &gt;&gt; file)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/sqlitedict.py">
+      <finding_count>21</finding_count>
+      <findings>
+        <finding id="1">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>15</line>
+          <content><![CDATA[&gt;&gt;&gt; mydict = SqliteDict('some.db', autocommit=True) # the mapping will be persisted to file `some.db]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="2">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>23</line>
+          <content><![CDATA[don't forget to call `mydict.commit()` when done with a transaction.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="3">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>63</line>
+          <content><![CDATA[be a table `tablename` in database file `filename`. A single file (=database)]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="4">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>63</line>
+          <content><![CDATA[be a table `tablename` in database file `filename`. A single file (=database)]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="5">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>66</line>
+          <content><![CDATA[If no `filename` is given, a random file in temp will be used (and deleted]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="6">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>69</line>
+          <content><![CDATA[If you enable `autocommit`, changes will be committed after each operation]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="7">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>70</line>
+          <content><![CDATA[(more inefficient but safer). Otherwise, changes are committed on `self.commit()`,]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="8">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>71</line>
+          <content><![CDATA[`self.clear()` and `self.close()`.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="9">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>71</line>
+          <content><![CDATA[`self.clear()` and `self.close()`.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="10">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>73</line>
+          <content><![CDATA[Set `journal_mode` to 'OFF' if you're experiencing sqlite I/O problems]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="11">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>76</line>
+          <content><![CDATA[The `flag` parameter:]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="12">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>78</line>
+          <content><![CDATA['w': open for r/w, but drop `tablename` contents first (start with empty table)]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="13">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>79</line>
+          <content><![CDATA['n': create a new database (erasing any existing tables, not just `tablename`!).]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="14">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>111</line>
+          <content><![CDATA[# `select count (*)` is super slow in sqlite (does a linear scan!!)]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="15">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>266</line>
+          <content><![CDATA[`execute` calls are non-blocking: just queue up the request and return immediately.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="16">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>279</line>
+          <content><![CDATA[The result of `select` starts filling up with values as soon as the]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="17">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>281</line>
+          <content><![CDATA[(`for res in self.select(): ...`), the entire result will be in memory.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="18">
+          <type>print_chevron</type>
+          <severity>low</severity>
+          <line>15</line>
+          <content><![CDATA[&gt;&gt;&gt; mydict = SqliteDict('some.db', autocommit=True) # the mapping will be persisted to file `some.db]]></content>
+          <description>Print chevron syntax (print &gt;&gt; file)</description>
+        </finding>
+        <finding id="19">
+          <type>print_chevron</type>
+          <severity>low</severity>
+          <line>16</line>
+          <content><![CDATA[&gt;&gt;&gt; mydict['some_key'] = any_picklable_object]]></content>
+          <description>Print chevron syntax (print &gt;&gt; file)</description>
+        </finding>
+        <finding id="20">
+          <type>print_chevron</type>
+          <severity>low</severity>
+          <line>17</line>
+          <content><![CDATA[&gt;&gt;&gt; print mydict['some_key']]]></content>
+          <description>Print chevron syntax (print &gt;&gt; file)</description>
+        </finding>
+        <finding id="21">
+          <type>print_chevron</type>
+          <severity>low</severity>
+          <line>18</line>
+          <content><![CDATA[&gt;&gt;&gt; print len(mydict) # etc... all dict functions work]]></content>
+          <description>Print chevron syntax (print &gt;&gt; file)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/tarfile.py">
+      <finding_count>28</finding_count>
+      <findings>
+        <finding id="1">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>495</line>
+          <content><![CDATA[# To avoid irksome warnings from the `struct` module, force]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="2">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1507</line>
+          <content><![CDATA[&quot;&quot;&quot;Open an (uncompressed) tar archive `name'. `mode' is either 'r' to]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="3">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1509</line>
+          <content><![CDATA[file or 'w' to create a new file overwriting an existing one. `mode']]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="4">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1512</line>
+          <content><![CDATA[can be determined, `mode' is overridden by `fileobj's mode.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="5">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1513</line>
+          <content><![CDATA[`fileobj' is not closed, when TarFile is closed.]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="6">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1784</line>
+          <content><![CDATA[&quot;&quot;&quot;Return a TarInfo object for member `name'. If `name' can not be]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="7">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1812</line>
+          <content><![CDATA[object `fileobj' (using os.fstat on its file descriptor). You can]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="8">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1910</line>
+          <content><![CDATA[&quot;&quot;&quot;Print a table of contents to sys.stdout. If `verbose' is False, only]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="9">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1942</line>
+          <content><![CDATA[&quot;&quot;&quot;Add the file `name' to the archive. `name' may be any type of file]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="10">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1943</line>
+          <content><![CDATA[(directory, fifo, symbolic link, etc.). If given, `arcname']]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="11">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1946</line>
+          <content><![CDATA[setting `recursive' to False. `exclude' is a function that should]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="12">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>1999</line>
+          <content><![CDATA[&quot;&quot;&quot;Add the TarInfo object `tarinfo' to the archive. If `fileobj' is]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="13">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2027</line>
+          <content><![CDATA[directories afterwards. `path' specifies a different directory]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="14">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2064</line>
+          <content><![CDATA[as possible. `member' may be a filename or a TarInfo object. You can]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="15">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2095</line>
+          <content><![CDATA[&quot;&quot;&quot;Extract a member from the archive as a file object. `member' may be]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="16">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>2097</line>
+          <content><![CDATA[file-like object is returned. If `member' is a link, a file-like]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="17">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>38</line>
+          <content><![CDATA[__date__    = &quot;$Date: 2009-03-22 17:29:48 -0400 (Sun, 22 Mar 2009) $&quot;]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="18">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>38</line>
+          <content><![CDATA[__date__    = &quot;$Date: 2009-03-22 17:29:48 -0400 (Sun, 22 Mar 2009) $&quot;]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="19">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>39</line>
+          <content><![CDATA[__cvsid__   = &quot;$Id: tarfile.py 70528 2009-03-22 21:29:48Z lars.gustaebel $&quot;]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="20">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>212</line>
+          <content><![CDATA[# that if necessary. A leading 0200 byte indicates this particular]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="21">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>453</line>
+          <content><![CDATA[self.__write(&quot;\037\213\010\010%s\002\377&quot; % timestamp)]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="22">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>453</line>
+          <content><![CDATA[self.__write(&quot;\037\213\010\010%s\002\377&quot; % timestamp)]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="23">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>453</line>
+          <content><![CDATA[self.__write(&quot;\037\213\010\010%s\002\377&quot; % timestamp)]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="24">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>453</line>
+          <content><![CDATA[self.__write(&quot;\037\213\010\010%s\002\377&quot; % timestamp)]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="25">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>512</line>
+          <content><![CDATA[if self.__read(2) != &quot;\037\213&quot;:]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="26">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>514</line>
+          <content><![CDATA[if self.__read(1) != &quot;\010&quot;:]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="27">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>625</line>
+          <content><![CDATA[if self.buf.startswith(&quot;\037\213\010&quot;):]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="28">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>625</line>
+          <content><![CDATA[if self.buf.startswith(&quot;\037\213\010&quot;):]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/tasklib.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/teefile.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>26</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/timestamp.py">
+      <finding_count>11</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>25</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="2">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>65</line>
+          <content><![CDATA[%d  Day of the month as a decimal number [01,31].]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="3">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>66</line>
+          <content><![CDATA[%H  Hour (24-hour clock) as a decimal number [00,23].]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="4">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>67</line>
+          <content><![CDATA[%I  Hour (12-hour clock) as a decimal number [01,12].]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="5">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>68</line>
+          <content><![CDATA[%j  Day of the year as a decimal number [001,366].]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="6">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>69</line>
+          <content><![CDATA[%m  Month as a decimal number [01,12].]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="7">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>70</line>
+          <content><![CDATA[%M  Minute as a decimal number [00,59].]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="8">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>72</line>
+          <content><![CDATA[%S  Second as a decimal number [00,61].  (2)]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="9">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>74</line>
+          <content><![CDATA[decimal number [00,53]. All days in a new year preceding the first]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="10">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>78</line>
+          <content><![CDATA[decimal number [00,53]. All days in a new year preceding the first]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="11">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>82</line>
+          <content><![CDATA[%y  Year without century as a decimal number [00,99].]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/trans.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>22</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/undo.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/util.py">
+      <finding_count>2</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="2">
+          <type>next_method</type>
+          <severity>medium</severity>
+          <line>45</line>
+          <content><![CDATA[return self.next(_it)]]></content>
+          <description>iterator.next() method (use next(iterator))</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/keepnote/xdg.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>25</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/py2_analyzer.py">
+      <finding_count>74</finding_count>
+      <findings>
+        <finding id="1">
+          <type>except_comma</type>
+          <severity>critical</severity>
+          <line>19</line>
+          <content><![CDATA['except_comma': r'except\s+\w+\s*,\s*\w+',  # except Exception, e: syntax]]></content>
+          <description>Python 2 except clause with comma syntax (use "except Exception as e")</description>
+        </finding>
+        <finding id="2">
+          <type>except_comma</type>
+          <severity>critical</severity>
+          <line>287</line>
+          <content><![CDATA[xml_parts.append('        &lt;example_py2&gt;except Exception, e:&lt;/example_py2&gt;')]]></content>
+          <description>Python 2 except clause with comma syntax (use "except Exception as e")</description>
+        </finding>
+        <finding id="3">
+          <type>raise_comma</type>
+          <severity>critical</severity>
+          <line>20</line>
+          <content><![CDATA['raise_comma': r'raise\s+\w+\s*,\s*\w+',  # raise Exception, args syntax]]></content>
+          <description>Python 2 raise statement with comma syntax</description>
+        </finding>
+        <finding id="4">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>21</line>
+          <content><![CDATA['backtick_repr': r'`[^`]+`',  # `expr` repr syntax]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="5">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>21</line>
+          <content><![CDATA['backtick_repr': r'`[^`]+`',  # `expr` repr syntax]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="6">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>21</line>
+          <content><![CDATA['backtick_repr': r'`[^`]+`',  # `expr` repr syntax]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="7">
+          <type>backtick_repr</type>
+          <severity>critical</severity>
+          <line>150</line>
+          <content><![CDATA['backtick_repr': 'Backtick repr syntax (`expr`) - use repr(expr)',]]></content>
+          <description>Backtick repr syntax (`expr`) - use repr(expr)</description>
+        </finding>
+        <finding id="8">
+          <type>long_literal</type>
+          <severity>low</severity>
+          <line>22</line>
+          <content><![CDATA['long_literal': r'\d+[lL]\b',  # 123L long literal]]></content>
+          <description>Long integer literal suffix L (automatic in Python 3)</description>
+        </finding>
+        <finding id="9">
+          <type>long_literal</type>
+          <severity>low</severity>
+          <line>302</line>
+          <content><![CDATA[xml_parts.append('        &lt;example_py2&gt;123456789L&lt;/example_py2&gt;')]]></content>
+          <description>Long integer literal suffix L (automatic in Python 3)</description>
+        </finding>
+        <finding id="10">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>23</line>
+          <content><![CDATA['octal_literal': r'\b0[0-7]+\b',  # 0755 octal (not 0o755)]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="11">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>307</line>
+          <content><![CDATA[xml_parts.append('        &lt;example_py2&gt;0755&lt;/example_py2&gt;')]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="12">
+          <type>unicode_prefix</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA['unicode_prefix': r&quot;\bu['\&quot;]&quot;,  # u'string' unicode prefix]]></content>
+          <description>Unicode string prefix u'' (default in Python 3)</description>
+        </finding>
+        <finding id="13">
+          <type>unicode_prefix</type>
+          <severity>low</severity>
+          <line>153</line>
+          <content><![CDATA['unicode_prefix': &quot;Unicode string prefix u'' (default in Python 3)&quot;,]]></content>
+          <description>Unicode string prefix u'' (default in Python 3)</description>
+        </finding>
+        <finding id="14">
+          <type>unicode_prefix</type>
+          <severity>low</severity>
+          <line>312</line>
+          <content><![CDATA[xml_parts.append('        &lt;example_py2&gt;u&quot;hello&quot;&lt;/example_py2&gt;')]]></content>
+          <description>Unicode string prefix u'' (default in Python 3)</description>
+        </finding>
+        <finding id="15">
+          <type>xrange_call</type>
+          <severity>high</severity>
+          <line>25</line>
+          <content><![CDATA['xrange_call': r'\bxrange\s*\(',  # xrange() function]]></content>
+          <description>xrange() function (use range() in Python 3)</description>
+        </finding>
+        <finding id="16">
+          <type>xrange_call</type>
+          <severity>high</severity>
+          <line>154</line>
+          <content><![CDATA['xrange_call': 'xrange() function (use range() in Python 3)',]]></content>
+          <description>xrange() function (use range() in Python 3)</description>
+        </finding>
+        <finding id="17">
+          <type>xrange_call</type>
+          <severity>high</severity>
+          <line>317</line>
+          <content><![CDATA[xml_parts.append('        &lt;example_py2&gt;xrange(10)&lt;/example_py2&gt;')]]></content>
+          <description>xrange() function (use range() in Python 3)</description>
+        </finding>
+        <finding id="18">
+          <type>raw_input_call</type>
+          <severity>high</severity>
+          <line>26</line>
+          <content><![CDATA['raw_input_call': r'\braw_input\s*\(',  # raw_input() function]]></content>
+          <description>raw_input() function (use input() in Python 3)</description>
+        </finding>
+        <finding id="19">
+          <type>raw_input_call</type>
+          <severity>high</severity>
+          <line>155</line>
+          <content><![CDATA['raw_input_call': 'raw_input() function (use input() in Python 3)',]]></content>
+          <description>raw_input() function (use input() in Python 3)</description>
+        </finding>
+        <finding id="20">
+          <type>raw_input_call</type>
+          <severity>high</severity>
+          <line>322</line>
+          <content><![CDATA[xml_parts.append('        &lt;example_py2&gt;raw_input(&quot;Enter: &quot;)&lt;/example_py2&gt;')]]></content>
+          <description>raw_input() function (use input() in Python 3)</description>
+        </finding>
+        <finding id="21">
+          <type>has_key_call</type>
+          <severity>high</severity>
+          <line>27</line>
+          <content><![CDATA['has_key_call': r'\.has_key\s*\(',  # dict.has_key() method]]></content>
+          <description>dict.has_key() method (use "key in dict")</description>
+        </finding>
+        <finding id="22">
+          <type>has_key_call</type>
+          <severity>high</severity>
+          <line>156</line>
+          <content><![CDATA['has_key_call': 'dict.has_key() method (use &quot;key in dict&quot;)',]]></content>
+          <description>dict.has_key() method (use "key in dict")</description>
+        </finding>
+        <finding id="23">
+          <type>has_key_call</type>
+          <severity>high</severity>
+          <line>331</line>
+          <content><![CDATA[xml_parts.append('        &lt;description&gt;Python 2 dict.has_key() method was removed.&lt;/description&gt;')]]></content>
+          <description>dict.has_key() method (use "key in dict")</description>
+        </finding>
+        <finding id="24">
+          <type>has_key_call</type>
+          <severity>high</severity>
+          <line>332</line>
+          <content><![CDATA[xml_parts.append('        &lt;example_py2&gt;d.has_key(k)&lt;/example_py2&gt;')]]></content>
+          <description>dict.has_key() method (use "key in dict")</description>
+        </finding>
+        <finding id="25">
+          <type>iteritems_call</type>
+          <severity>medium</severity>
+          <line>28</line>
+          <content><![CDATA['iteritems_call': r'\.iteritems\s*\(',  # dict.iteritems()]]></content>
+          <description>dict.iteritems() method (use dict.items())</description>
+        </finding>
+        <finding id="26">
+          <type>iteritems_call</type>
+          <severity>medium</severity>
+          <line>157</line>
+          <content><![CDATA['iteritems_call': 'dict.iteritems() method (use dict.items())',]]></content>
+          <description>dict.iteritems() method (use dict.items())</description>
+        </finding>
+        <finding id="27">
+          <type>iteritems_call</type>
+          <severity>medium</severity>
+          <line>327</line>
+          <content><![CDATA[xml_parts.append('        &lt;example_py2&gt;d.iteritems(), d.viewkeys()&lt;/example_py2&gt;')]]></content>
+          <description>dict.iteritems() method (use dict.items())</description>
+        </finding>
+        <finding id="28">
+          <type>iterkeys_call</type>
+          <severity>medium</severity>
+          <line>29</line>
+          <content><![CDATA['iterkeys_call': r'\.iterkeys\s*\(',  # dict.iterkeys()]]></content>
+          <description>dict.iterkeys() method (use dict.keys())</description>
+        </finding>
+        <finding id="29">
+          <type>iterkeys_call</type>
+          <severity>medium</severity>
+          <line>158</line>
+          <content><![CDATA['iterkeys_call': 'dict.iterkeys() method (use dict.keys())',]]></content>
+          <description>dict.iterkeys() method (use dict.keys())</description>
+        </finding>
+        <finding id="30">
+          <type>itervalues_call</type>
+          <severity>medium</severity>
+          <line>30</line>
+          <content><![CDATA['itervalues_call': r'\.itervalues\s*\(',  # dict.itervalues()]]></content>
+          <description>dict.itervalues() method (use dict.values())</description>
+        </finding>
+        <finding id="31">
+          <type>itervalues_call</type>
+          <severity>medium</severity>
+          <line>159</line>
+          <content><![CDATA['itervalues_call': 'dict.itervalues() method (use dict.values())',]]></content>
+          <description>dict.itervalues() method (use dict.values())</description>
+        </finding>
+        <finding id="32">
+          <type>viewitems_call</type>
+          <severity>low</severity>
+          <line>31</line>
+          <content><![CDATA['viewitems_call': r'\.viewitems\s*\(',  # dict.viewitems() (py2.7+)]]></content>
+          <description>dict.viewitems() method (use dict.items())</description>
+        </finding>
+        <finding id="33">
+          <type>viewitems_call</type>
+          <severity>low</severity>
+          <line>160</line>
+          <content><![CDATA['viewitems_call': 'dict.viewitems() method (use dict.items())',]]></content>
+          <description>dict.viewitems() method (use dict.items())</description>
+        </finding>
+        <finding id="34">
+          <type>viewkeys_call</type>
+          <severity>low</severity>
+          <line>32</line>
+          <content><![CDATA['viewkeys_call': r'\.viewkeys\s*\(',  # dict.viewkeys() (py2.7+)]]></content>
+          <description>dict.viewkeys() method (use dict.keys())</description>
+        </finding>
+        <finding id="35">
+          <type>viewkeys_call</type>
+          <severity>low</severity>
+          <line>161</line>
+          <content><![CDATA['viewkeys_call': 'dict.viewkeys() method (use dict.keys())',]]></content>
+          <description>dict.viewkeys() method (use dict.keys())</description>
+        </finding>
+        <finding id="36">
+          <type>viewkeys_call</type>
+          <severity>low</severity>
+          <line>327</line>
+          <content><![CDATA[xml_parts.append('        &lt;example_py2&gt;d.iteritems(), d.viewkeys()&lt;/example_py2&gt;')]]></content>
+          <description>dict.viewkeys() method (use dict.keys())</description>
+        </finding>
+        <finding id="37">
+          <type>viewvalues_call</type>
+          <severity>low</severity>
+          <line>33</line>
+          <content><![CDATA['viewvalues_call': r'\.viewvalues\s*\(',  # dict.viewvalues() (py2.7+)]]></content>
+          <description>dict.viewvalues() method (use dict.values())</description>
+        </finding>
+        <finding id="38">
+          <type>viewvalues_call</type>
+          <severity>low</severity>
+          <line>162</line>
+          <content><![CDATA['viewvalues_call': 'dict.viewvalues() method (use dict.values())',]]></content>
+          <description>dict.viewvalues() method (use dict.values())</description>
+        </finding>
+        <finding id="39">
+          <type>next_method</type>
+          <severity>medium</severity>
+          <line>34</line>
+          <content><![CDATA['next_method': r'\.next\s*\(',  # iterator.next() instead of next(iterator)]]></content>
+          <description>iterator.next() method (use next(iterator))</description>
+        </finding>
+        <finding id="40">
+          <type>next_method</type>
+          <severity>medium</severity>
+          <line>163</line>
+          <content><![CDATA['next_method': 'iterator.next() method (use next(iterator))',]]></content>
+          <description>iterator.next() method (use next(iterator))</description>
+        </finding>
+        <finding id="41">
+          <type>next_method</type>
+          <severity>medium</severity>
+          <line>366</line>
+          <content><![CDATA[xml_parts.append('        &lt;description&gt;Python 2 iterators have .next() method.&lt;/description&gt;')]]></content>
+          <description>iterator.next() method (use next(iterator))</description>
+        </finding>
+        <finding id="42">
+          <type>next_method</type>
+          <severity>medium</severity>
+          <line>367</line>
+          <content><![CDATA[xml_parts.append('        &lt;example_py2&gt;it.next()&lt;/example_py2&gt;')]]></content>
+          <description>iterator.next() method (use next(iterator))</description>
+        </finding>
+        <finding id="43">
+          <type>file_xreadlines</type>
+          <severity>low</severity>
+          <line>35</line>
+          <content><![CDATA['file_xreadlines': r'\.xreadlines\s*\(',  # file.xreadlines()]]></content>
+          <description>file.xreadlines() method (use file or iter(file))</description>
+        </finding>
+        <finding id="44">
+          <type>file_xreadlines</type>
+          <severity>low</severity>
+          <line>164</line>
+          <content><![CDATA['file_xreadlines': 'file.xreadlines() method (use file or iter(file))',]]></content>
+          <description>file.xreadlines() method (use file or iter(file))</description>
+        </finding>
+        <finding id="45">
+          <type>basestring_check</type>
+          <severity>medium</severity>
+          <line>36</line>
+          <content><![CDATA['basestring_check': r'\bbasestring\b',  # basestring type]]></content>
+          <description>basestring type (use str in Python 3)</description>
+        </finding>
+        <finding id="46">
+          <type>basestring_check</type>
+          <severity>medium</severity>
+          <line>165</line>
+          <content><![CDATA['basestring_check': 'basestring type (use str in Python 3)',]]></content>
+          <description>basestring type (use str in Python 3)</description>
+        </finding>
+        <finding id="47">
+          <type>basestring_check</type>
+          <severity>medium</severity>
+          <line>340</line>
+          <content><![CDATA[xml_parts.append('      &lt;construct name=&quot;basestring&quot;&gt;')]]></content>
+          <description>basestring type (use str in Python 3)</description>
+        </finding>
+        <finding id="48">
+          <type>basestring_check</type>
+          <severity>medium</severity>
+          <line>341</line>
+          <content><![CDATA[xml_parts.append('        &lt;description&gt;Python 2 basestring is parent of str and unicode.&lt;/descriptio]]></content>
+          <description>basestring type (use str in Python 3)</description>
+        </finding>
+        <finding id="49">
+          <type>basestring_check</type>
+          <severity>medium</severity>
+          <line>342</line>
+          <content><![CDATA[xml_parts.append('        &lt;example_py2&gt;isinstance(x, basestring)&lt;/example_py2&gt;')]]></content>
+          <description>basestring type (use str in Python 3)</description>
+        </finding>
+        <finding id="50">
+          <type>cmp_function</type>
+          <severity>high</severity>
+          <line>37</line>
+          <content><![CDATA['cmp_function': r'\bcmp\s*\(',  # cmp() function]]></content>
+          <description>cmp() function (removed in Python 3)</description>
+        </finding>
+        <finding id="51">
+          <type>cmp_function</type>
+          <severity>high</severity>
+          <line>166</line>
+          <content><![CDATA['cmp_function': 'cmp() function (removed in Python 3)',]]></content>
+          <description>cmp() function (removed in Python 3)</description>
+        </finding>
+        <finding id="52">
+          <type>cmp_function</type>
+          <severity>high</severity>
+          <line>346</line>
+          <content><![CDATA[xml_parts.append('        &lt;description&gt;Python 2 cmp() function compares two values.&lt;/description&gt;')]]></content>
+          <description>cmp() function (removed in Python 3)</description>
+        </finding>
+        <finding id="53">
+          <type>cmp_function</type>
+          <severity>high</severity>
+          <line>347</line>
+          <content><![CDATA[xml_parts.append('        &lt;example_py2&gt;cmp(a, b)&lt;/example_py2&gt;')]]></content>
+          <description>cmp() function (removed in Python 3)</description>
+        </finding>
+        <finding id="54">
+          <type>apply_function</type>
+          <severity>high</severity>
+          <line>38</line>
+          <content><![CDATA['apply_function': r'\bapply\s*\(',  # apply() function]]></content>
+          <description>apply() function (use direct call with *)</description>
+        </finding>
+        <finding id="55">
+          <type>apply_function</type>
+          <severity>high</severity>
+          <line>167</line>
+          <content><![CDATA['apply_function': 'apply() function (use direct call with *)',]]></content>
+          <description>apply() function (use direct call with *)</description>
+        </finding>
+        <finding id="56">
+          <type>apply_function</type>
+          <severity>high</severity>
+          <line>351</line>
+          <content><![CDATA[xml_parts.append('        &lt;description&gt;Python 2 apply() calls function with args tuple.&lt;/description]]></content>
+          <description>apply() function (use direct call with *)</description>
+        </finding>
+        <finding id="57">
+          <type>apply_function</type>
+          <severity>high</severity>
+          <line>352</line>
+          <content><![CDATA[xml_parts.append('        &lt;example_py2&gt;apply(func, args)&lt;/example_py2&gt;')]]></content>
+          <description>apply() function (use direct call with *)</description>
+        </finding>
+        <finding id="58">
+          <type>reload_function</type>
+          <severity>low</severity>
+          <line>39</line>
+          <content><![CDATA['reload_function': r'\breload\s*\(',  # reload() function (now importlib.reload)]]></content>
+          <description>reload() builtin (use importlib.reload())</description>
+        </finding>
+        <finding id="59">
+          <type>reload_function</type>
+          <severity>low</severity>
+          <line>168</line>
+          <content><![CDATA['reload_function': 'reload() builtin (use importlib.reload())',]]></content>
+          <description>reload() builtin (use importlib.reload())</description>
+        </finding>
+        <finding id="60">
+          <type>reload_function</type>
+          <severity>low</severity>
+          <line>168</line>
+          <content><![CDATA['reload_function': 'reload() builtin (use importlib.reload())',]]></content>
+          <description>reload() builtin (use importlib.reload())</description>
+        </finding>
+        <finding id="61">
+          <type>intern_function</type>
+          <severity>low</severity>
+          <line>40</line>
+          <content><![CDATA['intern_function': r'\bintern\s*\(',  # intern() function (now sys.intern)]]></content>
+          <description>intern() builtin (use sys.intern())</description>
+        </finding>
+        <finding id="62">
+          <type>intern_function</type>
+          <severity>low</severity>
+          <line>169</line>
+          <content><![CDATA['intern_function': 'intern() builtin (use sys.intern())',]]></content>
+          <description>intern() builtin (use sys.intern())</description>
+        </finding>
+        <finding id="63">
+          <type>intern_function</type>
+          <severity>low</severity>
+          <line>169</line>
+          <content><![CDATA['intern_function': 'intern() builtin (use sys.intern())',]]></content>
+          <description>intern() builtin (use sys.intern())</description>
+        </finding>
+        <finding id="64">
+          <type>intern_function</type>
+          <severity>low</severity>
+          <line>356</line>
+          <content><![CDATA[xml_parts.append('        &lt;description&gt;Python 2 intern() is builtin, Python 3 moved to sys.&lt;/descrip]]></content>
+          <description>intern() builtin (use sys.intern())</description>
+        </finding>
+        <finding id="65">
+          <type>intern_function</type>
+          <severity>low</severity>
+          <line>357</line>
+          <content><![CDATA[xml_parts.append('        &lt;example_py2&gt;intern(s)&lt;/example_py2&gt;')]]></content>
+          <description>intern() builtin (use sys.intern())</description>
+        </finding>
+        <finding id="66">
+          <type>intern_function</type>
+          <severity>low</severity>
+          <line>358</line>
+          <content><![CDATA[xml_parts.append('        &lt;example_py3&gt;sys.intern(s)&lt;/example_py3&gt;')]]></content>
+          <description>intern() builtin (use sys.intern())</description>
+        </finding>
+        <finding id="67">
+          <type>unichr_function</type>
+          <severity>low</severity>
+          <line>41</line>
+          <content><![CDATA['unichr_function': r'\bunichr\s*\(',  # unichr() function (now chr())]]></content>
+          <description>unichr() function (use chr() in Python 3)</description>
+        </finding>
+        <finding id="68">
+          <type>unichr_function</type>
+          <severity>low</severity>
+          <line>170</line>
+          <content><![CDATA['unichr_function': 'unichr() function (use chr() in Python 3)',]]></content>
+          <description>unichr() function (use chr() in Python 3)</description>
+        </finding>
+        <finding id="69">
+          <type>unichr_function</type>
+          <severity>low</severity>
+          <line>361</line>
+          <content><![CDATA[xml_parts.append('        &lt;description&gt;Python 2 unichr() returns unicode character.&lt;/description&gt;')]]></content>
+          <description>unichr() function (use chr() in Python 3)</description>
+        </finding>
+        <finding id="70">
+          <type>unichr_function</type>
+          <severity>low</severity>
+          <line>362</line>
+          <content><![CDATA[xml_parts.append('        &lt;example_py2&gt;unichr(65)&lt;/example_py2&gt;')]]></content>
+          <description>unichr() function (use chr() in Python 3)</description>
+        </finding>
+        <finding id="71">
+          <type>print_chevron</type>
+          <severity>low</severity>
+          <line>43</line>
+          <content><![CDATA['print_chevron': r'&gt;&gt;\s*\w+',  # print &gt;&gt; file syntax]]></content>
+          <description>Print chevron syntax (print &gt;&gt; file)</description>
+        </finding>
+        <finding id="72">
+          <type>print_chevron</type>
+          <severity>low</severity>
+          <line>172</line>
+          <content><![CDATA['print_chevron': 'Print chevron syntax (print &gt;&gt; file)',]]></content>
+          <description>Print chevron syntax (print &gt;&gt; file)</description>
+        </finding>
+        <finding id="73">
+          <type>print_chevron</type>
+          <severity>low</severity>
+          <line>381</line>
+          <content><![CDATA[xml_parts.append('        &lt;description&gt;Python 2 print supports &gt;&gt; for file output.&lt;/description&gt;')]]></content>
+          <description>Print chevron syntax (print &gt;&gt; file)</description>
+        </finding>
+        <finding id="74">
+          <type>print_chevron</type>
+          <severity>low</severity>
+          <line>382</line>
+          <content><![CDATA[xml_parts.append('        &lt;example_py2&gt;print &gt;&gt; sys.stderr, &quot;error&quot;&lt;/example_py2&gt;')]]></content>
+          <description>Print chevron syntax (print &gt;&gt; file)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/pywin.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>23</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/setup.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>31</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/tests/data/test_extension/__init__.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>24</line>
+          <content><![CDATA[# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/tests/test_notebook_index.py">
+      <finding_count>1</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>205</line>
+          <content><![CDATA[time.sleep(.001)]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/tests/test_plist.py">
+      <finding_count>2</finding_count>
+      <findings>
+        <finding id="1">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>29</line>
+          <content><![CDATA[&quot;measure&quot;: 3.03,]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+        <finding id="2">
+          <type>octal_literal</type>
+          <severity>low</severity>
+          <line>41</line>
+          <content><![CDATA[&lt;key&gt;measure&lt;/key&gt;&lt;real&gt;3.030000&lt;/real&gt;]]></content>
+          <description>Old-style octal literal (use 0o prefix)</description>
+        </finding>
+      </findings>
+    </file>
+    <file path="/workspace/tests/test_richtext_html.py">
+      <finding_count>2</finding_count>
+      <findings>
+        <finding id="1">
+          <type>unicode_prefix</type>
+          <severity>low</severity>
+          <line>575</line>
+          <content><![CDATA[u'\u2022 ',]]></content>
+          <description>Unicode string prefix u'' (default in Python 3)</description>
+        </finding>
+        <finding id="2">
+          <type>unicode_prefix</type>
+          <severity>low</severity>
+          <line>582</line>
+          <content><![CDATA[u'\u2022 ',]]></content>
+          <description>Unicode string prefix u'' (default in Python 3)</description>
+        </finding>
+      </findings>
+    </file>
+  </files>
+  <reference>
+    <python2_constructs>
+      <construct name="print_statement">
+        <description>In Python 2, print is a statement. In Python 3, it is a function.</description>
+        <example_py2>print "hello"</example_py2>
+        <example_py3>print("hello")</example_py3>
+      </construct>
+      <construct name="except_syntax">
+        <description>Python 2 uses comma to bind exception to variable.</description>
+        <example_py2>except Exception, e:</example_py2>
+        <example_py3>except Exception as e:</example_py3>
+      </construct>
+      <construct name="raise_syntax">
+        <description>Python 2 allows raising with comma-separated values.</description>
+        <example_py2>raise ValueError, "message"</example_py2>
+        <example_py3>raise ValueError("message")</example_py3>
+      </construct>
+      <construct name="backtick_repr">
+        <description>Backticks are shorthand for repr() in Python 2.</description>
+        <example_py2>`x`</example_py2>
+        <example_py3>repr(x)</example_py3>
+      </construct>
+      <construct name="long_literals">
+        <description>Python 2 has explicit long integer literals with L suffix.</description>
+        <example_py2>123456789L</example_py2>
+        <example_py3>123456789 (all ints are long in Python 3)</example_py3>
+      </construct>
+      <construct name="octal_literals">
+        <description>Python 2 uses 0 prefix for octal, Python 3 requires 0o.</description>
+        <example_py2>0755</example_py2>
+        <example_py3>0o755</example_py3>
+      </construct>
+      <construct name="unicode_strings">
+        <description>Python 2 distinguishes str and unicode. Python 3 str is unicode.</description>
+        <example_py2>u"hello"</example_py2>
+        <example_py3>"hello" (unicode by default)</example_py3>
+      </construct>
+      <construct name="xrange">
+        <description>Python 2 has xrange for lazy evaluation, range returns list.</description>
+        <example_py2>xrange(10)</example_py2>
+        <example_py3>range(10) (lazy like xrange)</example_py3>
+      </construct>
+      <construct name="raw_input">
+        <description>Python 2 raw_input returns string, input evaluates.</description>
+        <example_py2>raw_input("Enter: ")</example_py2>
+        <example_py3>input("Enter: ")</example_py3>
+      </construct>
+      <construct name="dict_methods">
+        <description>Python 2 has iter* and view* methods for dictionaries.</description>
+        <example_py2>d.iteritems(), d.viewkeys()</example_py2>
+        <example_py3>d.items(), d.keys()</example_py3>
+      </construct>
+      <construct name="has_key">
+        <description>Python 2 dict.has_key() method was removed.</description>
+        <example_py2>d.has_key(k)</example_py2>
+        <example_py3>k in d</example_py3>
+      </construct>
+      <construct name="old_classes">
+        <description>Python 2 has old-style classes without object base.</description>
+        <example_py2>class MyClass:</example_py2>
+        <example_py3>class MyClass(object): (or just class MyClass:)</example_py3>
+      </construct>
+      <construct name="basestring">
+        <description>Python 2 basestring is parent of str and unicode.</description>
+        <example_py2>isinstance(x, basestring)</example_py2>
+        <example_py3>isinstance(x, str)</example_py3>
+      </construct>
+      <construct name="cmp_function">
+        <description>Python 2 cmp() function compares two values.</description>
+        <example_py2>cmp(a, b)</example_py2>
+        <example_py3>(a > b) - (a < b) or use functools.cmp_to_key</example_py3>
+      </construct>
+      <construct name="apply_function">
+        <description>Python 2 apply() calls function with args tuple.</description>
+        <example_py2>apply(func, args)</example_py2>
+        <example_py3>func(*args)</example_py3>
+      </construct>
+      <construct name="intern_function">
+        <description>Python 2 intern() is builtin, Python 3 moved to sys.</description>
+        <example_py2>intern(s)</example_py2>
+        <example_py3>sys.intern(s)</example_py3>
+      </construct>
+      <construct name="unichr_function">
+        <description>Python 2 unichr() returns unicode character.</description>
+        <example_py2>unichr(65)</example_py2>
+        <example_py3>chr(65)</example_py3>
+      </construct>
+      <construct name="next_method">
+        <description>Python 2 iterators have .next() method.</description>
+        <example_py2>it.next()</example_py2>
+        <example_py3>next(it)</example_py3>
+      </construct>
+      <construct name="file_type">
+        <description>Python 2 file type and FileType were removed.</description>
+        <example_py2>isinstance(f, file)</example_py2>
+        <example_py3>isinstance(f, io.IOBase)</example_py3>
+      </construct>
+      <construct name="exec_statement">
+        <description>Python 2 exec is a statement, Python 3 it is a function.</description>
+        <example_py2>exec code</example_py2>
+        <example_py3>exec(code)</example_py3>
+      </construct>
+      <construct name="print_chevron">
+        <description>Python 2 print supports >> for file output.</description>
+        <example_py2>print >> sys.stderr, "error"</example_py2>
+        <example_py3>print("error", file=sys.stderr)</example_py3>
+      </construct>
+      <construct name="division">
+        <description>Python 2 / is integer division for ints, Python 3 is float.</description>
+        <example_py2>5 / 2 == 2 (or use from __future__ import division)</example_py2>
+        <example_py3>5 / 2 == 2.5 (use // for integer division)</example_py3>
+      </construct>
+    </python2_constructs>
+  </reference>
+</python2_analysis_report>

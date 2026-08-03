@@ -1,3 +1,1 @@
-```
-*.bak
-```
+(py2_analyzer.py and python2_analysis.xml are source/config files, so no ignores needed)
