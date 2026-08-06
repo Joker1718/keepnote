@@ -1,1 +1,1 @@
-(py2_analyzer.py and python2_analysis.xml are source/config files, so no ignores needed)
+Nothing needs to be added to .gitignore since only a markdown file (TECHNICAL_AUDIT_REPORT.md) was added, which is a source/config file and not a build artifact, dependency, or temporary file.
