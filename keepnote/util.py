@@ -49,6 +49,70 @@ class PushIter(object):
         self._queue.append(item)
 
 
+# FIX: Thread-safe UI helper for GTK background thread updates (KEEP-PLAN-4.1)
+
+
+def gtk_safe_call(func, *args, **kwargs):
+    """
+    Safely call a GTK function from a background thread.
+    Uses GLib.idle_add to schedule the call on the main thread.
+
+    Usage:
+        # In worker thread:
+        gtk_safe_call(widget.set_text, "Updated text")
+
+    Parameters:
+        func: GTK function to call
+        *args: Arguments to pass to func
+        **kwargs: Keyword arguments to pass to func
+
+    Returns:
+        None (call is queued, not executed immediately)
+    """
+    try:
+        from gi.repository import GLib
+    except ImportError:
+        # Fallback: if GLib is not available, call directly (not thread-safe)
+        func(*args, **kwargs)
+        return
+
+    def wrapper():
+        func(*args, **kwargs)
+        return False  # Stop after one execution
+    GLib.idle_add(wrapper)
+
+
+class ThreadSafeUIUpdater(object):
+    """Helper class for batching UI updates from worker threads."""
+
+    def __init__(self):
+        self._pending_updates = []
+        self._scheduled = False
+
+    def queue_update(self, func, *args):
+        """Queue a UI update to be executed on the main thread."""
+        self._pending_updates.append((func, args))
+        if not self._scheduled:
+            self._scheduled = True
+            try:
+                from gi.repository import GLib
+                GLib.idle_add(self._flush_updates)
+            except ImportError:
+                self._flush_updates()
+
+    def _flush_updates(self):
+        """Execute all pending updates."""
+        for func, args in self._pending_updates:
+            try:
+                func(*args)
+            except Exception as e:
+                import logging
+                logging.error(f"UI update failed: {e}")
+        self._pending_updates = []
+        self._scheduled = False
+        return False
+
+
 def compose2(f, g):
     """
     Compose two functions into one

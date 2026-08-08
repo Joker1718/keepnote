@@ -30,7 +30,7 @@ import sys
 import threading
 
 # pygtk imports
-from gi.repository import GObject, Gdk
+from gi.repository import GObject, Gdk, GLib
 
 # keepnote imports
 import keepnote
@@ -275,6 +275,20 @@ class UIManager(gtk.UIManager):
         self.force_stock = force_stock
 
         self.c = Gtk.VBox()
+
+    # FIX: Add dispose method to prevent GObject memory leaks (KEEP-PLAN-4.1)
+    def dispose(self):
+        """Clean up UIManager GObject references to prevent memory leaks"""
+        try:
+            self.insert_action_group(None, 0)
+        except Exception:
+            pass
+        try:
+            if hasattr(self, 'c') and self.c is not None:
+                self.c.destroy()
+                self.c = None
+        except Exception:
+            pass
 
     def _on_connect_proxy(self, uimanager, action, widget):
         """Callback for a widget entering management"""

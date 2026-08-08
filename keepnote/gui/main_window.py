@@ -31,7 +31,8 @@ import sys
 import uuid
 
 # pygtk imports
-from gi.repository import GObject, Gtk
+from gi.repository import GObject, Gtk, GLib
+# FIX: GLib import added for idle_add and timeout_add (KEEP-PLAN-3.1/3.2)
 
 # keepnote imports
 import keepnote
@@ -267,7 +268,8 @@ class KeepNoteWindow(gtk.Window):
             # explicitly maximize if not maximized
             # NOTE: this is needed to work around a MS windows GTK bug
             if self._was_maximized:
-                gobject.idle_add(self.maximize)
+                # FIX: Use GLib.idle_add instead of deprecated gobject (KEEP-PLAN-3.2)
+                GLib.idle_add(self.maximize)
 
     def _on_window_size(self, window, event):
         """Callback for resize events"""
@@ -305,15 +307,21 @@ class KeepNoteWindow(gtk.Window):
         if self._iconified:
             return
 
-        # TODO: add timer in case minimize fails
-        def on_window_state(window, event):
-            if event.new_window_state & gtk.gdk.WINDOW_STATE_ICONIFIED:
-                Gtk.main_quit()
+        # FIX: Replace blocking Gtk.main() with non-blocking timeout callback
+        # This prevents Win32 event loop deadlocks on Windows (KEEP-PLAN-3.1)
+        self._minimize_wait_count = 0
 
-        sig = self.connect("window-state-event", on_window_state)
+        def check_minimized():
+            self._minimize_wait_count += 1
+            # Timeout after 2 seconds (20 checks * 100ms)
+            if self._minimize_wait_count > 20 or self._iconified:
+                return False  # Stop timeout
+            return True  # Continue checking
+
         self.iconify()
-        Gtk.main()
-        self.disconnect(sig)
+        # Start polling every 100ms instead of blocking
+        GLib.timeout_add(100, check_minimized)
+        # Note: No need to wait synchronously - iconify is async on Windows
 
     def restore_window(self):
         """Restore the window from minimization"""
@@ -1653,7 +1661,8 @@ class SearchBox(gtk.Entry):
                     alldone.release()
                 return more
 
-            gobject.idle_add(gui_update)
+            # FIX: Use GLib.idle_add instead of deprecated gobject (KEEP-PLAN-3.2)
+            GLib.idle_add(gui_update)
 
             # init search
             notebook = self._window.get_notebook()

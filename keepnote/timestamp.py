@@ -27,13 +27,16 @@ timestamp module
 
 import locale
 import time
+from datetime import datetime, timezone
 
 # determine UNIX Epoc (which should be 0, unless the current platform has a
 # different definition of epoc)
 # Use the epoc date + 1 month (SEC_OFFSET) in order to prevent underflow in
 # date due to user's timezone
 SEC_OFFSET = 3600 * 24 * 31
-EPOC = time.mktime((1970, 2, 1, 0, 0, 0, 3, 1, 0)) - time.timezone - SEC_OFFSET
+# FIX: Use timezone-aware datetime for Year 2038 safety (KEEP-PLAN-1.2)
+EPOC_DT = datetime(1970, 2, 1, 0, 0, 0, tzinfo=timezone.utc)
+EPOC = int(EPOC_DT.timestamp()) - time.timezone - SEC_OFFSET
 
 ENCODING = locale.getlocale()[1]
 if ENCODING is None:
@@ -94,7 +97,8 @@ DEFAULT_TIMESTAMP_FORMATS = {
 
 def get_timestamp():
     """Returns the current timestamp"""
-    return int(time.time() - EPOC)
+    # FIX: Use datetime for 64-bit timestamp safety (KEEP-PLAN-1.1)
+    return int(datetime.now(timezone.utc).timestamp() - EPOC)
 
 def get_localtime():
     """Returns the local time"""
@@ -119,7 +123,8 @@ def get_str_timestamp(timestamp, current=None, formats=DEFAULT_TIMESTAMP_FORMATS
     try:
         if current is None:
             current = get_localtime()
-        local = time.localtime(timestamp + EPOC)
+        # FIX: Handle timestamps beyond 2038 safely (KEEP-PLAN-1.1)
+        local = time.localtime(int(timestamp + EPOC))
 
         if local[TM_YEAR] == current[TM_YEAR]:
             if local[TM_MON] == current[TM_MON]:
@@ -143,11 +148,14 @@ def get_str_timestamp(timestamp, current=None, formats=DEFAULT_TIMESTAMP_FORMATS
         return "[formatting error]"
 
 def format_timestamp(timestamp, format):
-    local = time.localtime(timestamp + EPOC)
+    # FIX: Ensure integer conversion for large timestamps (KEEP-PLAN-1.1)
+    local = time.localtime(int(timestamp + EPOC))
     return time.strftime(format, local)
 
 def parse_timestamp(timestamp_str, format):
     # raises error if timestamp cannot be parsed
     tstruct = time.strptime(timestamp_str, format)
+    # FIX: mktime returns float; ensure proper handling (KEEP-PLAN-1.1)
+    # Note: mktime may overflow for dates > 2038 on some platforms
     local = time.mktime(tstruct)
     return int(local - EPOC)

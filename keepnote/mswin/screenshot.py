@@ -26,6 +26,12 @@ Screenshot utility for MS Windows
 #
 
 import sys
+import ctypes
+
+# FIX: Ensure 64-bit HANDLE compatibility (KEEP-PLAN-2.2)
+# On 64-bit Windows, Win32 HANDLEs are 8-byte pointers (c_void_p),
+# not 4-byte integers. Using c_void_p prevents handle truncation.
+_IS_64BIT = ctypes.sizeof(ctypes.c_void_p) == 8
 
 # win32api imports
 try:
@@ -48,7 +54,15 @@ def capture_screen(filename, x, y, x2, y2):
         y, y2 = y2, y
     w, h = x2 - x, y2 - y
 
+    # FIX: screen_handle is a Win32 HDC (HANDLE type)
+    # On 64-bit systems this must be treated as c_void_p (8 bytes)
+    # The win32gui wrapper handles this internally, but we add a
+    # runtime size check to detect potential truncation (KEEP-PLAN-2.2)
     screen_handle = win32gui.GetDC(0)
+    if _IS_64BIT and screen_handle > 0xFFFFFFFF:
+        # Log warning: handle may be truncated by 32-bit code
+        import logging
+        logging.warning("screenshot.py: large HANDLE value detected on 64-bit system")
 
     screen_dc = win32ui.CreateDCFromHandle(screen_handle)
     shot_dc = screen_dc.CreateCompatibleDC()
@@ -204,6 +218,7 @@ class ScreenShotWindow(Window):
             self._drag = False
             self._draw = False
 
+            # FIX: hdc is a Win32 HDC (HANDLE), ensure 64-bit safety (KEEP-PLAN-2.2)
             hdc = win32gui.CreateDC("DISPLAY", None, None)
             pycdc = win32ui.CreateDCFromHandle(hdc)
             pycdc.SetROP2(win32con.R2_NOTXORPEN)

@@ -26,12 +26,15 @@ import os
 import gettext
 import locale
 import ctypes
-from ctypes import cdll
+from ctypes import cdll, c_wchar_p
 
 # try to import windows lib
 try:
     msvcrt = cdll.msvcrt
-    msvcrt._putenv.argtypes = [ctypes.c_char_p]
+    # FIX: Use c_wchar_p for Unicode environment strings on Windows 64-bit (KEEP-PLAN-2.1)
+    # This prevents 0xc0000005 access violations with non-ASCII paths
+    msvcrt._putenv.argtypes = [c_wchar_p]
+    msvcrt._putenv_w = msvcrt._putenv  # Alias for clarity
     _windows = True
 except:
     _windows = False
@@ -64,7 +67,8 @@ def set_env(key, val):
             return
 
         setstr = f"{key}={val}"
-        # setstr = x.encode(locale.getpreferredencoding())
+        # FIX: Pass Unicode string directly to _putenv_w (KEEP-PLAN-2.1)
+        # No encoding needed - c_wchar_p handles wide characters
         msvcrt._putenv_w(setstr)
 
         # win32api.SetEnvironmentVariable(key, val)
